@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* --- DESIGN SYSTEM DO MODELO 3: EXECUTIVE TECH --- */
+        :root {
+            --primary-dark: #2c3e50;   /* Cor principal (alterável via JS) */
+            --accent-steel: #34495e;   /* Cor secundária */
+            --bg-soft: #f4f7f6;
+            --font-main: 'Montserrat', sans-serif;
+            --text-color: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--text-color);
+            background: white;
+            line-height: 1.4;
+        }
+
+        .cv-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 0; /* O preenchimento é feito pelos elementos internos */
+            margin: auto;
+        }
+
+        /* --- CABEÇALHO EXECUTIVO --- */
+        header {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 40px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            font-size: 24pt;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+        }
+
+        .header-left p {
+            font-size: 12pt;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+
+        .header-right {
+            text-align: right;
+            font-size: 9pt;
+            line-height: 1.8;
+        }
+
+        /* --- CORPO DO CURRÍCULO --- */
+        .main-content {
+            padding: 30px 50px;
+        }
+
+        /* --- ELEMENTOS GEOMÉTRICOS --- */
+        .section-wrapper {
+            margin-bottom: 35px;
+        }
+
+        .title-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .rect-deco {
+            width: 30px;
+            height: 15px;
+            background-color: var(--primary-dark);
+            margin-right: 15px;
+        }
+
+        h2 {
+            font-size: 14pt;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        /* --- BLOCOS DE CONTEÚDO --- */
+        .experience-block {
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 2px solid var(--primary-dark);
+        }
+
+        .exp-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 11pt;
+            margin-bottom: 3px;
+        }
+
+        .exp-sub {
+            color: var(--accent-steel);
+            font-size: 10pt;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .description {
+            font-size: 10pt;
+            text-align: justify;
+        }
+
+        /* --- GRID DE SKILLS EXECUTIVO --- */
+        .skills-table {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .skill-row {
+            display: flex;
+            background: var(--bg-soft);
+            padding: 8px 12px;
+            align-items: center;
+        }
+
+        .skill-square {
+            width: 8px;
+            height: 8px;
+            background: var(--primary-dark);
+            margin-right: 10px;
+        }
+
+        .skill-text {
+            font-size: 9pt;
+            font-weight: 600;
+        }
+
+        /* --- TAGS DE TRANSIÇÃO --- */
+        .status-badge {
+            font-size: 8pt;
+            padding: 2px 6px;
+            background: #e1e8ed;
+            border-radius: 4px;
+            margin-left: 10px;
+            color: var(--primary-dark);
+        }
+
+        .page-break { page-break-before: always; }
+    </style>
+</head>
+<body>
+
+    <div class="cv-page">
+        <header>
+            <div class="header-left">
+                <h1 id="nome">João Pedro A. Lagemann</h1>
+                <p>Desenvolvedor Full Stack</p>
+            </div>
+            <div class="header-right">
+                <div id="local">Sorocaba, SP</div>
+                <div id="tel">+55 15 98808-5892</div>
+                <div id="email">jp252529@gmail.com</div>
+                <div id="linkedin">linkedin.com/in/joaolagemann-jiukon</div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Perfil Profissional</h2>
+                </div>
+                <p class="description" id="resumo">
+                    Especialista em desenvolvimento Web com proficiência em <strong>React, Node.js e Vue.js</strong>. 
+                    Experiência sólida em suporte técnico corporativo e administração de infraestrutura (Active Directory, TOTVS). 
+                    Capacidade analítica desenvolvida através da transição acadêmica estratégica para ADS, visando a otimização de sistemas e análise preditiva com IA.
+                </p>
+            </div>
+
+            <div class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Trajetória Profissional</h2>
+                </div>
+                
+                <div class="experience-block">
+                    <div class="exp-header">
+                        <span>Estagiário do Laboratório de Informática</span>
+                        <span>2025</span>
+                    </div>
+                    <div class="exp-sub">Facens | Sorocaba, SP</div>
+                    <p class="description">Gestão de acessos críticos, suporte N1/N2 e administração de domínios privados universitários.</p>
+                </div>
+
+                <div class="experience-block">
+                    <div class="exp-header">
+                        <span>Desenvolvedor Web (Freelancer)</span>
+                        <span>2023 — 2025</span>
+                    </div>
+                    <div class="exp-sub">Projetos Web Full Stack</div>
+                    <p class="description">Desenvolvimento de soluções personalizadas com foco em escalabilidade e experiência do usuário.</p>
+                </div>
+
+                <div class="experience-block">
+                    <div class="exp-header">
+                        <span>Estagiário de TI & Instrutor</span>
+                        <span>2024</span>
+                    </div>
+                    <div class="exp-sub">Objetivo Sorocaba</div>
+                    <p class="description">Docência em tecnologia e manutenção de infraestrutura crítica de servidores e hardware.</p>
+                </div>
+            </div>
+
+            <div class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Formação Acadêmica</h2>
+                </div>
+                
+                <div class="experience-block">
+                    <div class="exp-header">
+                        <span>Análise e Desenvolvimento de Sistemas <span class="status-badge">Cursando</span></span>
+                        <span>Jun 2027</span>
+                    </div>
+                    <div class="exp-sub">Facens | EAD</div>
+                </div>
+
+                <div class="experience-block">
+                    <div class="exp-header">
+                        <span>Engenharia de Computação <span class="status-badge">Transferido</span></span>
+                        <span>2023 — 2024</span>
+                    </div>
+                    <div class="exp-sub">Facens | Presencial</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cv-page page-break">
+        <div class="main-content" style="padding-top: 50px;">
+            <div class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Competências Técnicas</h2>
+                </div>
+                <div class="skills-table">
+                    <div class="skill-row"><div class="skill-square"></div><div class="skill-text">JavaScript / React / Vue.js</div></div>
+                    <div class="skill-row"><div class="skill-square"></div><div class="skill-text">Node.js / SQL / APIs REST</div></div>
+                    <div class="skill-row"><div class="skill-square"></div><div class="skill-text">Java / C# / Rust / C++</div></div>
+                    <div class="skill-row"><div class="skill-square"></div><div class="skill-text">Active Directory / TOTVS</div></div>
+                    <div class="skill-row"><div class="skill-square"></div><div class="skill-text">Metodologias Ágeis (SCRUM)</div></div>
+                    <div class="skill-row"><div class="skill-square"></div><div class="skill-text">Inglês Avançado (C1)</div></div>
+                </div>
+            </div>
+
+            <div class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Certificações Adicionais</h2>
+                </div>
+                <div class="experience-block">
+                    <div class="exp-header">Arquitetura de Aplicações Web</div>
+                    <div class="exp-sub">Janeiro 2024</div>
+                </div>
+                <div class="experience-block">
+                    <div class="exp-header">Gestão de Projetos Ágeis</div>
+                    <div class="exp-sub">Certificação SCRUM</div>
+                </div>
+                <div class="experience-block">
+                    <div class="exp-header">Manutenção de Sistemas e Hardware</div>
+                    <div class="exp-sub">Certificação Técnica</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

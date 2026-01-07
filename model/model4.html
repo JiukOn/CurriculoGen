@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* --- DESIGN SYSTEM DO MODELO 4: GRID MODERNIST --- */
+        :root {
+            --primary-dark: #2d3748;   /* Grafite */
+            --accent-steel: #718096;   /* Cinza Médio */
+            --highlight-bg: #edf2f7;   /* Fundo Suave */
+            --font-main: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main);
+            color: #1a202c;
+            background: white;
+            line-height: 1.5;
+        }
+
+        .cv-grid {
+            width: 210mm;
+            min-height: 297mm;
+            display: grid;
+            grid-template-columns: 70mm 1fr; /* Coluna lateral e principal */
+            margin: auto;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* --- COLUNA LATERAL (DARK) --- */
+        .sidebar {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 40px 25px;
+        }
+
+        .sidebar h1 {
+            font-size: 22pt;
+            text-transform: uppercase;
+            line-height: 1.1;
+            margin-bottom: 10px;
+            border-bottom: 4px solid var(--accent-steel);
+            padding-bottom: 15px;
+        }
+
+        .sidebar-section { margin-bottom: 40px; }
+        .sidebar-title {
+            font-size: 11pt;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-steel);
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .sidebar-item {
+            font-size: 9pt;
+            margin-bottom: 10px;
+            word-wrap: break-word;
+        }
+
+        /* --- COLUNA PRINCIPAL --- */
+        .main-content {
+            padding: 40px;
+            background: white;
+        }
+
+        /* ELEMENTOS GRÁFICOS: RETÂNGULOS DE TÍTULO */
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .rect-marker {
+            width: 40px;
+            height: 12px;
+            background: var(--primary-dark);
+            margin-right: 15px;
+        }
+
+        h2 {
+            font-size: 14pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary-dark);
+        }
+
+        /* BLOCOS DE CONTEÚDO */
+        .exp-item {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .exp-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            color: var(--primary-dark);
+            font-size: 11pt;
+        }
+
+        .exp-sub {
+            color: var(--accent-steel);
+            font-size: 10pt;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .badge-transfer {
+            background: var(--highlight-bg);
+            color: var(--primary-dark);
+            padding: 2px 8px;
+            font-size: 8pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+
+        .description {
+            font-size: 10pt;
+            text-align: justify;
+        }
+
+        /* SKILLS COM RETÂNGULOS DE NÍVEL */
+        .skill-bar-container {
+            margin-bottom: 12px;
+        }
+
+        .skill-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9pt;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .bar-bg {
+            height: 6px;
+            background: var(--highlight-bg);
+            width: 100%;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: var(--primary-dark);
+        }
+
+        .page-break { page-break-before: always; }
+    </style>
+</head>
+<body>
+
+    <div class="cv-grid">
+        <aside class="sidebar">
+            <h1 id="nome">João Pedro<br>Lagemann</h1>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">Contato</div>
+                <div class="sidebar-item" id="local">Sorocaba, SP [cite: 2]</div>
+                <div class="sidebar-item" id="tel">+55 15 988085892 [cite: 3]</div>
+                <div class="sidebar-item" id="email">jp252529@gmail.com [cite: 3]</div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Expertise</div>
+                <div class="sidebar-item">React / Vue.js / Node.js [cite: 27]</div>
+                <div class="sidebar-item">Java / C# / Rust [cite: 28]</div>
+                <div class="sidebar-item">Active Directory / TOTVS </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Idiomas</div>
+                <div class="sidebar-item">Português: Nativo [cite: 42]</div>
+                <div class="sidebar-item">Inglês: C1 (Avançado) [cite: 43, 44, 47]</div>
+                <div class="sidebar-item">Espanhol: A1 (Iniciante) [cite: 45, 46, 48]</div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="section-header">
+                <div class="rect-marker"></div>
+                <h2>Resumo</h2>
+            </div>
+            <p class="description" id="resumo" style="margin-bottom: 40px;">
+                Programador Web com atuação em projetos freelance e suporte técnico corporativo[cite: 6, 7, 12, 17]. 
+                Especialista em criar soluções funcionais com stack JavaScript e administração de sistemas de larga escala[cite: 10, 15]. 
+                Foco em performance e usabilidade[cite: 10].
+            </p>
+
+            <div class="section-header">
+                <div class="rect-marker"></div>
+                <h2>Experiência</h2>
+            </div>
+
+            <div class="exp-item">
+                <div class="exp-header">
+                    <span>Estágio Laboratório Informática</span>
+                    <span>2025</span>
+                </div>
+                <div class="exp-sub">Facens | Sorocaba, SP [cite: 13]</div>
+                <p class="description">Focado em suporte técnico N1 e N2, com gerenciamento de usuários em domínios privados[cite: 14, 15].</p>
+            </div>
+
+            <div class="exp-item">
+                <div class="exp-header">
+                    <span>Programador Web (Freelance)</span>
+                    <span>2023 — 2025</span>
+                </div>
+                <div class="exp-sub">Desenvolvimento Full Stack [cite: 7]</div>
+                <p class="description">Responsável pelo desenvolvimento de websites institucionais e comerciais utilizando React e Vue.js[cite: 9, 10].</p>
+            </div>
+
+            <div class="exp-item">
+                <div class="exp-header">
+                    <span>Estagiário de TI</span>
+                    <span>2024</span>
+                </div>
+                <div class="exp-sub">Objetivo Sorocaba [cite: 18]</div>
+                <p class="description">Ministração de aulas eletivas de tecnologia e manutenção de infraestrutura de hardware[cite: 19, 20].</p>
+            </div>
+
+            <div class="section-header">
+                <div class="rect-marker"></div>
+                <h2>Formação</h2>
+            </div>
+
+            <div class="exp-item">
+                <div class="exp-header">
+                    <span>ADS (Tecnólogo)</span>
+                    <span>Jun 2027</span>
+                </div>
+                <div class="exp-sub">Facens | Cursando [cite: 23, 24]</div>
+            </div>
+
+            <div class="exp-item">
+                <div class="exp-header">
+                    <span>Engenharia de Computação</span>
+                    <span class="badge-transfer">Transferido</span>
+                </div>
+                <div class="exp-sub">Facens | 2023 — 2024</div>
+            </div>
+        </main>
+    </div>
+
+    <div class="cv-grid page-break">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Certificações</div>
+                <div class="sidebar-item">Arquitetura Web (2024) [cite: 31]</div>
+                <div class="sidebar-item">SCRUM (2021) [cite: 39]</div>
+                <div class="sidebar-item">Dev Jogos (2018-2021) [cite: 40]</div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="section-header">
+                <div class="rect-marker"></div>
+                <h2>Skills & Proficiência</h2>
+            </div>
+
+            <div class="skill-bar-container">
+                <div class="skill-label"><span>JavaScript / React / Vue.js [cite: 26, 27]</span><span>95%</span></div>
+                <div class="bar-bg"><div class="bar-fill" style="width: 95%;"></div></div>
+            </div>
+
+            <div class="skill-bar-container">
+                <div class="skill-label"><span>Node.js / SQL [cite: 27, 29]</span><span>85%</span></div>
+                <div class="bar-bg"><div class="bar-fill" style="width: 85%;"></div></div>
+            </div>
+
+            <div class="skill-bar-container">
+                <div class="skill-label"><span>Java / C# / Rust / C++ [cite: 28, 29]</span><span>75%</span></div>
+                <div class="bar-bg"><div class="bar-fill" style="width: 75%;"></div></div>
+            </div>
+
+            <div class="section-header" style="margin-top: 40px;">
+                <div class="rect-marker"></div>
+                <h2>Outras Qualificações</h2>
+            </div>
+            
+            <ul style="font-size: 10pt; list-style: square; padding-left: 20px;">
+                <li>Edição de imagem e vídeo [cite: 35]</li>
+                <li>Excel Avançado [cite: 37]</li>
+                <li>Office 365 e Google Workspace [cite: 36]</li>
+                <li>Manutenção de Celulares e Computadores [cite: 38]</li>
+                <li>Pensamento Crítico e Adaptabilidade [cite: 32, 33]</li>
+            </ul>
+        </main>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* --- DESIGN SYSTEM DO MODELO 2 --- */
+        :root {
+            --primary-dark: #252523;   /* Cor padrão que será alterada pelo JS */
+            --accent-steel: #4a5568;   /* Cor secundária */
+            --highlight-bg: #f8fafc;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main);
+            color: #2d3748;
+            line-height: 1.6;
+            background: white;
+        }
+
+        .cv-container {
+            width: 210mm;
+            padding: 20mm;
+            margin: auto;
+        }
+
+        /* --- CABEÇALHO COM REQUADRO --- */
+        .header-box {
+            border: 2px solid var(--primary-dark);
+            padding: 30px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .header-box::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--accent-steel);
+            z-index: -1;
+        }
+
+        h1 {
+            font-size: 26pt;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .contact-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 10pt;
+            font-weight: 500;
+        }
+
+        /* --- SEÇÕES COM BLOCOS COLORIDOS --- */
+        .section-title {
+            display: flex;
+            align-items: center;
+            background: var(--primary-dark);
+            color: white;
+            padding: 8px 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 13pt;
+            margin: 30px 0 20px 0;
+        }
+
+        .section-title .square {
+            width: 10px;
+            height: 10px;
+            background: white;
+            margin-right: 15px;
+        }
+
+        /* --- EXPERIÊNCIA E FORMAÇÃO --- */
+        .entry {
+            margin-bottom: 25px;
+            padding-left: 20px;
+            border-left: 3px solid var(--highlight-bg);
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            color: var(--primary-dark);
+            font-size: 12pt;
+        }
+
+        .entry-sub {
+            color: var(--accent-steel);
+            font-style: italic;
+            font-size: 11pt;
+            margin-bottom: 5px;
+        }
+
+        .tag-status {
+            display: inline-block;
+            background: var(--highlight-bg);
+            border: 1px solid var(--accent-steel);
+            padding: 2px 8px;
+            font-size: 9pt;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        /* --- GRID DE COMPETÊNCIAS --- */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .skill-card {
+            background: var(--highlight-bg);
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .skill-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-steel);
+        }
+
+        /* --- CONTROLE DE PÁGINA --- */
+        .page-break { page-break-before: always; }
+
+        @media print {
+            .cv-container { padding: 0; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cv-container">
+        <div class="header-box">
+            <h1 id="nome">João Pedro A. Lagemann</h1>
+            <p style="font-size: 14pt; color: var(--accent-steel);">Desenvolvedor Full Stack & Especialista em TI</p>
+            <div class="contact-row">
+                <span id="local">Sorocaba, SP</span>
+                <span id="tel">(15) 98808-5892</span>
+                <span id="email">jp252529@gmail.com</span>
+            </div>
+        </div>
+
+        <div class="section-title"><div class="square"></div>Resumo Profissional</div>
+        <p id="resumo" style="text-align: justify;">
+            Programador focado em tecnologias modernas (React, Node.js) com sólida base em lógica de programação e arquitetura web [cite: 26-27, 31]. 
+            Atuação estratégica em suporte técnico N1/N2, administração de sistemas Active Directory e ERP TOTVS [cite: 14-15]. 
+            Destaque pela autonomia em projetos freelancer e facilidade em ministrar capacitações técnicas[cite: 7, 19].
+        </p>
+
+        <div class="section-title"><div class="square"></div>Experiência de Carreira</div>
+        
+        <div id="experiencias">
+            <div class="entry">
+                <div class="entry-header">
+                    <span>Estagiário do Laboratório de Informática</span>
+                    <span>2025</span>
+                </div>
+                <div class="entry-sub">Facens [cite: 13]</div>
+                <p>Suporte técnico N1 e N2, gerenciamento de Active Directory e sistemas TOTVS [cite: 14-15].</p>
+            </div>
+
+            <div class="entry">
+                <div class="entry-header">
+                    <span>Desenvolvedor Web (Freelancer)</span>
+                    <span>2023 - 2025</span>
+                </div>
+                <div class="entry-sub">Projetos Institucionais e Comerciais [cite: 7-9]</div>
+                <p>Criação de websites e landing pages com React, Vue.js e Node.js[cite: 10].</p>
+            </div>
+
+            <div class="entry">
+                <div class="entry-header">
+                    <span>Estagiário de TI</span>
+                    <span>2024</span>
+                </div>
+                <div class="entry-sub">Objetivo Sorocaba [cite: 18]</div>
+                <p>Docência em lógica de programação e suporte a infraestrutura de servidores [cite: 19-20].</p>
+            </div>
+        </div>
+
+        <div class="section-title"><div class="square"></div>Formação e Transições</div>
+        
+        <div id="formacao">
+            <div class="entry">
+                <div class="entry-header">
+                    <span>Análise e Desenvolvimento de Sistemas</span>
+                    <span>Jun 2027</span>
+                </div>
+                <div class="entry-sub">Facens | EAD <span class="tag-status">Cursando</span></div>
+                <p>Foco em desenvolvimento de software e análise preditiva.</p>
+            </div>
+
+            <div class="entry" id="transicao-curso">
+                <div class="entry-header">
+                    <span>Engenharia de Computação</span>
+                    <span>2023 - 2024</span>
+                </div>
+                <div class="entry-sub">Facens | Presencial <span class="tag-status">Transferido</span></div>
+                <p>Base sólida em cálculo, eletrônica e arquitetura de computadores.</p>
+            </div>
+        </div>
+
+        <div class="page-break"></div> <div class="section-title"><div class="square"></div>Competências Técnicas</div>
+        <div class="skills-grid">
+            <div class="skill-card">
+                <strong>Desenvolvimento</strong>
+                <p>JavaScript, React, Vue.js, Node.js [cite: 26-27].</p>
+            </div>
+            <div class="skill-card">
+                <strong>Linguagens</strong>
+                <p>Java, C#, Rust, C/C++, SQL [cite: 28-29].</p>
+            </div>
+            <div class="skill-card">
+                <strong>Idiomas</strong>
+                <p>Inglês (C1 - Avançado)[cite: 44, 47].</p>
+            </div>
+        </div>
+
+        <div class="section-title"><div class="square"></div>Cursos e Especializações</div>
+        <div class="skills-grid">
+            <div class="skill-card">
+                <strong>Arquitetura Web</strong>
+                <p>Certificação em Arquitetura de Aplicações (2024)[cite: 31].</p>
+            </div>
+            <div class="skill-card">
+                <strong>Agilidade</strong>
+                <p>Gestão de Projetos Ágeis com SCRUM[cite: 39].</p>
+            </div>
+            <div class="skill-card">
+                <strong>Hardware</strong>
+                <p>Manutenção de Celulares e Computadores[cite: 38].</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

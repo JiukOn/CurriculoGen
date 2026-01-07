@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curriculo_Joao_Lagemann_2026_Design</title>
+    <style>
+        /* --- CONFIGURAÇÕES DE DESIGN E CORES --- */
+        :root {
+            --primary-dark: #252523;   /* Grafite Profissional */
+            --accent-steel: #4a5568;   /* Aço Moderno */
+            --highlight: #cbd5e0;      /* Cinza de Destaque */
+            --text-main: #2d3748;
+            --bg-page: #ffffff;
+            --font-stack: 'Inter', 'Segoe UI', Arial, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-stack);
+            color: var(--text-main);
+            background-color: #f0f2f5;
+            line-height: 1.5;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 30px auto;
+            background: var(--bg-page);
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        /* --- ELEMENTO GRÁFICO LATERAL (DECORATIVO) --- */
+        .page::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-dark), var(--accent-steel));
+        }
+
+        /* --- CABEÇALHO --- */
+        header {
+            margin-bottom: 30px;
+            padding-left: 15px;
+        }
+
+        h1 {
+            font-size: 32pt;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .role-badge {
+            display: inline-block;
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 5px 15px;
+            font-size: 14pt;
+            margin-top: 10px;
+            font-weight: 300;
+        }
+
+        .info-bar {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 10pt;
+            border-bottom: 1px solid var(--highlight);
+            padding-bottom: 15px;
+        }
+
+        /* --- TÍTULOS COM ELEMENTOS QUADRADOS --- */
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            margin-top: 30px;
+        }
+
+        .square-deco {
+            width: 12px;
+            height: 12px;
+            background-color: var(--primary-dark);
+            margin-right: 12px;
+        }
+
+        h2 {
+            font-size: 15pt;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            flex-grow: 1;
+        }
+
+        .line-deco {
+            height: 2px;
+            background-color: var(--highlight);
+            flex-grow: 10;
+            margin-left: 15px;
+        }
+
+        /* --- BLOCOS DE CONTEÚDO --- */
+        .content-box {
+            padding-left: 24px;
+            border-left: 1px solid var(--highlight);
+            margin-left: 5px;
+        }
+
+        .job-card {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .job-card::after {
+            content: "";
+            display: block;
+            width: 40px;
+            height: 4px;
+            background-color: var(--highlight);
+            margin-top: 15px;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .job-sub {
+            color: var(--accent-steel);
+            font-style: italic;
+            margin-bottom: 8px;
+            font-size: 11pt;
+        }
+
+        /* --- SKILLS GRID COM RETÂNGULOS --- */
+        .skills-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .skill-item {
+            background-color: #f8fafc;
+            border: 1px solid var(--highlight);
+            padding: 10px;
+            border-left: 4px solid var(--accent-steel);
+        }
+
+        .skill-item strong {
+            display: block;
+            font-size: 10pt;
+            color: var(--primary-dark);
+            margin-bottom: 3px;
+        }
+
+        /* --- UTILITÁRIOS --- */
+        .page-break { page-break-before: always; }
+        
+        @media print {
+            body { background: none; }
+            .page { box-shadow: none; margin: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page">
+        <header>
+            <h1>João Pedro A. Lagemann</h1>
+            <div class="role-badge">Desenvolvedor Full Stack | Analista de TI</div>
+            
+            <div class="info-bar">
+                <span>📍 Sorocaba, SP</span>
+                <span>📞 (15) 98808-5892</span>
+                <span>📧 jp252529@gmail.com</span>
+                <span>🔗 linkedin.com/in/joaolagemann-jiukon</span>
+            </div>
+        </header>
+
+        <div class="section-header">
+            <div class="square-deco"></div>
+            <h2>Resumo Profissional</h2>
+            <div class="line-deco"></div>
+        </div>
+        <div class="content-box">
+            <p style="text-align: justify;">
+                Programador Web especializado em ecossistemas modernos (React, Node.js) e infraestrutura de TI corporativa[cite: 9, 10]. 
+                Foco em otimização de performance e automação de processos, com experiência em suporte N1/N2 e gestão de sistemas 
+                como Active Directory e TOTVS[cite: 14, 15]. Inglês avançado (C1) e perfil orientado a resultados[cite: 44, 47].
+            </p>
+        </div>
+
+        <div class="section-header">
+            <div class="square-deco"></div>
+            <h2>Experiência Profissional</h2>
+            <div class="line-deco"></div>
+        </div>
+        <div class="content-box">
+            
+            <div class="job-card">
+                <div class="job-header">
+                    <span>Estagiário do Laboratório de Informática</span>
+                    <span>2025</span>
+                </div>
+                <div class="job-sub">Facens | Sorocaba, SP [cite: 13]</div>
+                <ul style="list-style: square; margin-left: 20px; font-size: 11pt;">
+                    <li>Suporte técnico N1/N2 e gerenciamento de usuários.</li>
+                    <li>Administração de acessos via Active Directory e suporte ao ERP TOTVS[cite: 15].</li>
+                </ul>
+            </div>
+
+            <div class="job-card">
+                <div class="job-header">
+                    <span>Programador Web (Freelancer)</span>
+                    <span>2023 - 2025</span>
+                </div>
+                <div class="job-sub">Projetos Institucionais e Comerciais [cite: 7, 9]</div>
+                <ul style="list-style: square; margin-left: 20px; font-size: 11pt;">
+                    <li>Desenvolvimento de interfaces responsivas com React e Vue.js[cite: 10].</li>
+                    <li>Otimização de performance e implementação de soluções Full Stack com Node.js[cite: 10].</li>
+                </ul>
+            </div>
+
+            <div class="job-card">
+                <div class="job-header">
+                    <span>Estagiário de TI</span>
+                    <span>2024</span>
+                </div>
+                <div class="job-sub">Objetivo Sorocaba | Sorocaba, SP [cite: 18]</div>
+                <ul style="list-style: square; margin-left: 20px; font-size: 11pt;">
+                    <li>Instrutor de Lógica de Programação e Desenvolvimento Web[cite: 19].</li>
+                    <li>Manutenção de hardware e configuração de servidores locais.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="page page-break">
+        
+        <div class="section-header">
+            <div class="square-deco"></div>
+            <h2>Formação Acadêmica</h2>
+            <div class="line-deco"></div>
+        </div>
+        <div class="content-box">
+            <div class="job-header">
+                <span>Análise e Desenvolvimento de Sistemas</span>
+                <span>Jun 2027</span>
+            </div>
+            <div class="job-sub">Facens (EAD) - Cursando [cite: 23, 24]</div>
+        </div>
+
+        <div class="section-header">
+            <div class="square-deco"></div>
+            <h2>Hard Skills</h2>
+            <div class="line-deco"></div>
+        </div>
+        <div class="content-box">
+            <div class="skills-container">
+                <div class="skill-item">
+                    <strong>Linguagens:</strong>
+                    JavaScript, Java, C#, Rust, C/C++, SQL [cite: 26-29].
+                </div>
+                <div class="skill-item">
+                    <strong>Frameworks/Web:</strong>
+                    React, Vue.js, Node.js, HTML5, CSS3[cite: 26, 27].
+                </div>
+                <div class="skill-item">
+                    <strong>Ferramentas:</strong>
+                    Git/GitHub, SCRUM, Active Directory, TOTVS[cite: 15, 34, 39].
+                </div>
+                <div class="skill-item">
+                    <strong>Idiomas:</strong>
+                    Inglês (Avançado - C1), Espanhol (Básico) [cite: 42-46].
+                </div>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <div class="square-deco"></div>
+            <h2>Cursos & Certificações</h2>
+            <div class="line-deco"></div>
+        </div>
+        <div class="content-box">
+            <ul style="list-style: none; font-size: 11pt;">
+                <li style="margin-bottom: 8px;">▪ Arquitetura de Aplicações Web (2024) [cite: 31]</li>
+                <li style="margin-bottom: 8px;">▪ Manutenção de Celulares e Computadores (2022) [cite: 38]</li>
+                <li style="margin-bottom: 8px;">▪ Projetos Ágeis com SCRUM (2021) [cite: 39]</li>
+                <li style="margin-bottom: 8px;">▪ Desenvolvimento de Jogos (2018-2021) [cite: 40]</li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>
