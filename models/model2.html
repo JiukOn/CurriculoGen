@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* --- DESIGN SYSTEM DO MODELO 2 --- */
+        :root {
+            --primary-dark: #252523;   /* Cor padrão alterada pelo JS */
+            --accent-steel: #4a5568;   /* Cor secundária */
+            --highlight-bg: #f8fafc;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main);
+            color: #2d3748;
+            line-height: 1.6;
+            background: white;
+        }
+
+        .cv-container {
+            width: 210mm;
+            padding: 20mm;
+            margin: auto;
+        }
+
+        /* --- CABEÇALHO COM REQUADRO --- */
+        .header-box {
+            border: 2px solid var(--primary-dark);
+            padding: 30px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .header-box::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--accent-steel);
+            z-index: -1;
+        }
+
+        h1 {
+            font-size: 26pt;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .contact-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 10pt;
+            font-weight: 500;
+        }
+
+        /* --- SEÇÕES COM BLOCOS COLORIDOS --- */
+        .section-title {
+            display: flex;
+            align-items: center;
+            background: var(--primary-dark);
+            color: white;
+            padding: 8px 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 13pt;
+            margin: 30px 0 20px 0;
+        }
+
+        .section-title .square {
+            width: 10px;
+            height: 10px;
+            background: white;
+            margin-right: 15px;
+        }
+
+        /* --- EXPERIÊNCIA E FORMAÇÃO --- */
+        .entry {
+            margin-bottom: 25px;
+            padding-left: 20px;
+            border-left: 3px solid var(--highlight-bg);
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            color: var(--primary-dark);
+            font-size: 12pt;
+        }
+
+        .entry-sub {
+            color: var(--accent-steel);
+            font-style: italic;
+            font-size: 11pt;
+            margin-bottom: 5px;
+        }
+
+        .tag-status {
+            display: inline-block;
+            background: var(--highlight-bg);
+            border: 1px solid var(--accent-steel);
+            padding: 2px 8px;
+            font-size: 9pt;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-left: 10px;
+            border-radius: 4px;
+        }
+
+        /* --- GRID DE COMPETÊNCIAS --- */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .skill-card {
+            background: var(--highlight-bg);
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .skill-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-steel);
+        }
+
+        /* --- SOFT SKILLS --- */
+        .soft-skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .soft-tag {
+            background: var(--highlight-bg);
+            border: 1px solid var(--accent-steel);
+            padding: 5px 12px;
+            font-size: 10pt;
+            font-weight: 500;
+            border-radius: 2px;
+        }
+
+        /* --- CONTROLE DE PÁGINA --- */
+        .page-break { page-break-before: always; }
+
+        @media print {
+            .cv-container { padding: 0; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cv-container">
+        <div class="header-box">
+            <h1 id="nome">NOME DO CANDIDATO</h1>
+            <p id="cargo" style="font-size: 14pt; color: var(--accent-steel);">TÍTULO PROFISSIONAL</p>
+            <div id="contato" class="contact-row">
+                <span id="local">Localização</span>
+                <span id="tel">Telefone</span>
+                <span id="email">E-mail</span>
+                <span id="linkedin">LinkedIn</span>
+            </div>
+        </div>
+
+        <div id="section-resumo">
+            <div class="section-title"><div class="square"></div>Resumo Profissional</div>
+            <p id="resumo" style="text-align: justify;">Breve descrição sobre sua trajetória.</p>
+        </div>
+
+        <div id="section-experiencia">
+            <div class="section-title"><div class="square"></div>Experiência Profissional</div>
+            <div id="experiencias">
+                </div>
+        </div>
+
+        <div id="section-formacao">
+            <div class="section-title"><div class="square"></div>Formação e Transições</div>
+            <div id="formacao">
+                </div>
+        </div>
+
+        <div class="page-break"></div> 
+
+        <div id="section-hard-skills">
+            <div class="section-title"><div class="square"></div>Competências Técnicas</div>
+            <div id="hard-skills-lista" class="skills-grid">
+                </div>
+        </div>
+
+        <div id="section-soft-skills">
+            <div class="section-title"><div class="square"></div>Habilidades Interpessoais</div>
+            <div id="soft-skills-lista" class="soft-skills-container">
+                </div>
+        </div>
+
+        <div id="section-cursos">
+            <div class="section-title"><div class="square"></div>Cursos e Especializações</div>
+            <div id="cursos-lista" class="skills-grid">
+                </div>
+        </div>
+    </div>
+
+</body>
+</html>

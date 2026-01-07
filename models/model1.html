@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelo 1 - Gerador Interativo</title>
+    <style>
+        /* --- CONFIGURAÇÕES DE DESIGN E CORES --- */
+        :root {
+            --primary-dark: #252523;   
+            --accent-steel: #4a5568;   
+            --highlight: #cbd5e0;      
+            --text-main: #2d3748;
+            --bg-page: #ffffff;
+            --font-stack: 'Inter', 'Segoe UI', Arial, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-stack);
+            color: var(--text-main);
+            background-color: #f0f2f5;
+            line-height: 1.5;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 30px auto;
+            background: var(--bg-page);
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .page::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-dark), var(--accent-steel));
+        }
+
+        header {
+            margin-bottom: 30px;
+            padding-left: 15px;
+        }
+
+        h1 {
+            font-size: 32pt;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .role-badge {
+            display: inline-block;
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 5px 15px;
+            font-size: 14pt;
+            margin-top: 10px;
+            font-weight: 300;
+        }
+
+        .info-bar {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 10pt;
+            border-bottom: 1px solid var(--highlight);
+            padding-bottom: 15px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            margin-top: 30px;
+        }
+
+        .square-deco {
+            width: 12px;
+            height: 12px;
+            background-color: var(--primary-dark);
+            margin-right: 12px;
+        }
+
+        h2 {
+            font-size: 15pt;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            flex-grow: 1;
+        }
+
+        .line-deco {
+            height: 2px;
+            background-color: var(--highlight);
+            flex-grow: 10;
+            margin-left: 15px;
+        }
+
+        .content-box {
+            padding-left: 24px;
+            border-left: 1px solid var(--highlight);
+            margin-left: 5px;
+        }
+
+        .entry-item {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .entry-item::after {
+            content: "";
+            display: block;
+            width: 40px;
+            height: 4px;
+            background-color: var(--highlight);
+            margin-top: 15px;
+        }
+
+        .skills-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .skill-item {
+            background-color: #f8fafc;
+            border: 1px solid var(--highlight);
+            padding: 10px;
+            border-left: 4px solid var(--accent-steel);
+        }
+
+        .skill-item strong {
+            display: block;
+            font-size: 10pt;
+            color: var(--primary-dark);
+            margin-bottom: 3px;
+        }
+
+        /* Estilo para Soft Skills (Tags) */
+        .soft-skills-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .soft-tag {
+            background: var(--primary-dark);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 10pt;
+            font-weight: 500;
+        }
+
+        .page-break { page-break-before: always; }
+        
+        @media print {
+            body { background: none; }
+            .page { box-shadow: none; margin: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page">
+        <header>
+            <h1 id="nome">NOME COMPLETO</h1>
+            <div id="cargo" class="role-badge">TÍTULO PROFISSIONAL</div>
+            
+            <div id="contato" class="info-bar">
+                <span id="local">Cidade, UF</span>
+                <span id="tel">Telefone</span>
+                <span id="email">E-mail</span>
+                <span id="linkedin">Link Perfil</span>
+            </div>
+        </header>
+
+        <div id="section-resumo">
+            <div class="section-header">
+                <div class="square-deco"></div>
+                <h2>Resumo Profissional</h2>
+                <div class="line-deco"></div>
+            </div>
+            <div class="content-box">
+                <p id="resumo" style="text-align: justify;">Texto de resumo profissional.</p>
+            </div>
+        </div>
+
+        <div id="section-experiencia">
+            <div class="section-header">
+                <div class="square-deco"></div>
+                <h2>Experiência Profissional</h2>
+                <div class="line-deco"></div>
+            </div>
+            <div id="experiencias" class="content-box">
+                </div>
+        </div>
+    </div>
+
+    <div class="page page-break">
+        
+        <div id="section-formacao">
+            <div class="section-header">
+                <div class="square-deco"></div>
+                <h2>Formação Acadêmica</h2>
+                <div class="line-deco"></div>
+            </div>
+            <div id="formacao" class="content-box">
+                </div>
+        </div>
+
+        <div id="section-hard-skills">
+            <div class="section-header">
+                <div class="square-deco"></div>
+                <h2>Competências Técnicas</h2>
+                <div class="line-deco"></div>
+            </div>
+            <div class="content-box">
+                <div id="hard-skills-lista" class="skills-container">
+                    </div>
+            </div>
+        </div>
+
+        <div id="section-soft-skills">
+            <div class="section-header">
+                <div class="square-deco"></div>
+                <h2>Habilidades Interpessoais</h2>
+                <div class="line-deco"></div>
+            </div>
+            <div class="content-box">
+                <div id="soft-skills-lista" class="soft-skills-wrapper">
+                    </div>
+            </div>
+        </div>
+
+        <div id="section-cursos">
+            <div class="section-header">
+                <div class="square-deco"></div>
+                <h2>Cursos & Certificações</h2>
+                <div class="line-deco"></div>
+            </div>
+            <div class="content-box">
+                <ul id="cursos-lista" style="list-style: none; font-size: 11pt;">
+                    </ul>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

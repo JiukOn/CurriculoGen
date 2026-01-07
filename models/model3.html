@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* --- DESIGN SYSTEM DO MODELO 3: EXECUTIVE TECH --- */
+        :root {
+            --primary-dark: #2c3e50;   /* Cor alterada pelo JS */
+            --accent-steel: #34495e;   /* Cor secundária */
+            --bg-soft: #f4f7f6;
+            --font-main: 'Montserrat', sans-serif;
+            --text-color: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--text-color);
+            background: white;
+            line-height: 1.4;
+        }
+
+        .cv-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 0;
+            margin: auto;
+        }
+
+        /* --- CABEÇALHO EXECUTIVO --- */
+        header {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 40px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            font-size: 24pt;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+        }
+
+        .header-left p {
+            font-size: 12pt;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+
+        .header-right {
+            text-align: right;
+            font-size: 9pt;
+            line-height: 1.8;
+        }
+
+        /* --- CORPO DO CURRÍCULO --- */
+        .main-content {
+            padding: 30px 50px;
+        }
+
+        .section-wrapper {
+            margin-bottom: 35px;
+        }
+
+        .title-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .rect-deco {
+            width: 30px;
+            height: 15px;
+            background-color: var(--primary-dark);
+            margin-right: 15px;
+        }
+
+        h2 {
+            font-size: 14pt;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        /* --- BLOCOS DE CONTEÚDO --- */
+        .experience-block {
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 2px solid var(--primary-dark);
+        }
+
+        .exp-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 11pt;
+            margin-bottom: 3px;
+        }
+
+        .exp-sub {
+            color: var(--accent-steel);
+            font-size: 10pt;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .description {
+            font-size: 10pt;
+            text-align: justify;
+        }
+
+        /* --- GRID DE COMPETÊNCIAS --- */
+        .skills-table {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .skill-row {
+            display: flex;
+            background: var(--bg-soft);
+            padding: 8px 12px;
+            align-items: center;
+        }
+
+        .skill-square {
+            width: 8px;
+            height: 8px;
+            background: var(--primary-dark);
+            margin-right: 10px;
+        }
+
+        .skill-text {
+            font-size: 9pt;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            font-size: 8pt;
+            padding: 2px 6px;
+            background: #e1e8ed;
+            border-radius: 4px;
+            margin-left: 10px;
+            color: var(--primary-dark);
+            font-weight: bold;
+        }
+
+        .page-break { page-break-before: always; }
+    </style>
+</head>
+<body>
+
+    <div class="cv-page">
+        <header>
+            <div class="header-left">
+                <h1 id="nome">NOME COMPLETO</h1>
+                <p id="cargo">TÍTULO PROFISSIONAL</p>
+            </div>
+            <div id="contato" class="header-right">
+                <div id="local">Localização</div>
+                <div id="tel">Telefone</div>
+                <div id="email">E-mail</div>
+                <div id="linkedin">Perfil Online</div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div id="section-resumo" class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Perfil Profissional</h2>
+                </div>
+                <p class="description" id="resumo">Texto de apresentação profissional.</p>
+            </div>
+
+            <div id="section-experiencia" class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Trajetória Profissional</h2>
+                </div>
+                <div id="experiencias">
+                    </div>
+            </div>
+
+            <div id="section-formacao" class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Formação Acadêmica</h2>
+                </div>
+                <div id="formacao">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cv-page page-break">
+        <div class="main-content" style="padding-top: 50px;">
+            
+            <div id="section-hard-skills" class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Competências Técnicas</h2>
+                </div>
+                <div id="hard-skills-lista" class="skills-table">
+                    </div>
+            </div>
+
+            <div id="section-soft-skills" class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Habilidades Interpessoais</h2>
+                </div>
+                <div id="soft-skills-lista" class="skills-table">
+                    </div>
+            </div>
+
+            <div id="section-cursos" class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Certificações Adicionais</h2>
+                </div>
+                <div id="cursos-lista">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
