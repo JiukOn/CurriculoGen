@@ -1,29 +1,51 @@
-/* --- TÍTULOS BONITOS: JIUKURRICULO DESIGN SYSTEM 2026 (FINAL) --- */
+/* --- TÍTULOS BONITOS: JIUKURRICULO DESIGN SYSTEM 2026 (THEMED) --- */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
 
 :root {
-  /* Dimensões */
+  /* --- DIMENSÕES & ESTRUTURA --- */
   --sidebar-width: 420px;
+  --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   
-  /* Cores de Fundo */
-  --dark-bg: #0a0a0c;
-  --panel-bg: rgba(15, 15, 18, 0.95); /* Levemente mais opaco para leitura */
-  --input-bg: rgba(255, 255, 255, 0.05);
+  /* --- PALETA DE CORES (MODO ESCURO - PADRÃO) --- */
+  --bg-app: #0a0a0c;
+  --bg-sidebar: rgba(15, 15, 18, 0.95);
+  --bg-input: rgba(255, 255, 255, 0.05);
+  --bg-card: rgba(255, 255, 255, 0.03);
   
-  /* Cores de Destaque */
-  --success-green: #2ecc71;
-  --success-glow: rgba(46, 204, 113, 0.5);
-  --accent-blue: #3498db;
-  --error-red: #e74c3c;
-  
-  /* Tipografia */
   --text-main: #f5f5f7;
   --text-muted: #86868b;
   
-  /* Animações */
-  --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --shadow-color: rgba(0, 0, 0, 0.8);
+  --preview-bg: #050505;
+  --dots-color: #444;
+
+  /* --- CORES DE DESTAQUE (NEON) --- */
+  --primary: #2ecc71;
+  --primary-glow: rgba(46, 204, 113, 0.4);
+  --error-red: #e74c3c;
+  --accent-blue: #3498db;
+}
+
+/* --- MODO CLARO (OVERRIDE) --- */
+[data-theme="light"] {
+  --bg-app: #eef2f5;
+  --bg-sidebar: rgba(255, 255, 255, 0.85);
+  --bg-input: rgba(0, 0, 0, 0.05);
+  --bg-card: rgba(255, 255, 255, 0.6);
+
+  --text-main: #1a1a1c;
+  --text-muted: #555;
+
+  --border-color: rgba(0, 0, 0, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --preview-bg: #dce1e6;
+  --dots-color: #bbb;
+
+  --primary: #27ae60; /* Verde mais escuro para contraste no branco */
+  --primary-glow: rgba(39, 174, 96, 0.3);
 }
 
 * {
@@ -34,10 +56,12 @@
 
 body {
   font-family: 'Inter', -apple-system, sans-serif;
-  background-color: var(--dark-bg);
+  background-color: var(--bg-app);
   color: var(--text-main);
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
+  /* Transição suave ao trocar de tema */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* --- TÍTULOS BONITOS: LAYOUT GLOBAL --- */
@@ -46,61 +70,90 @@ body {
   display: flex;
   height: 100vh;
   width: 100vw;
-  background: var(--dark-bg);
+  background: var(--bg-app);
+  transition: background-color 0.3s ease;
 }
 
-/* --- TÍTULOS BONITOS: SIDEBAR JIUKURRCUILO --- */
+/* --- TÍTULOS BONITOS: SIDEBAR JIUKURRICULO --- */
 
 .sidebar-controls {
   width: var(--sidebar-width);
   min-width: var(--sidebar-width);
-  background: var(--panel-bg);
+  background: var(--bg-sidebar);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   padding: 30px;
   z-index: 100;
-  box-shadow: 20px 0 60px rgba(0, 0, 0, 0.8);
+  box-shadow: 20px 0 60px var(--shadow-color);
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .control-sections-scroll {
   flex: 1;
   overflow-y: auto;
-  padding-right: 10px; /* Espaço para scrollbar */
+  padding-right: 10px;
 }
 
 /* Scrollbar Minimalista */
 .control-sections-scroll::-webkit-scrollbar { width: 4px; }
 .control-sections-scroll::-webkit-scrollbar-track { background: transparent; }
 .control-sections-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border-color);
   border-radius: 10px;
 }
 .control-sections-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--text-muted);
 }
 
-/* --- TÍTULOS BONITOS: BRANDING --- */
+/* --- TÍTULOS BONITOS: BRANDING & HEADER --- */
 
 .brand-header-neon {
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .brand-title-jiu {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 900;
   letter-spacing: -1.5px;
-  color: #fff;
+  color: var(--text-main);
   line-height: 1;
 }
 
 .brand-title-jiu span {
-  color: var(--success-green);
-  text-shadow: 0 0 25px var(--success-glow);
+  color: var(--primary);
+  text-shadow: 0 0 25px var(--primary-glow);
+}
+
+/* Botão de Trocar Tema */
+.theme-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: var(--transition);
+}
+
+.theme-toggle-btn:hover {
+  background: var(--bg-input);
+  transform: rotate(15deg);
+  border-color: var(--primary);
 }
 
 .status-line {
@@ -117,25 +170,24 @@ body {
 .pulse-dot {
   width: 8px;
   height: 8px;
-  background: var(--success-green);
+  background: var(--primary);
   border-radius: 50%;
-  box-shadow: 0 0 10px var(--success-green);
+  box-shadow: 0 0 10px var(--primary);
   animation: pulse 2s infinite;
 }
 
 /* --- TÍTULOS BONITOS: COMPONENTES GLASS --- */
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 24px;
   transition: var(--transition);
 }
 
 .glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--primary);
 }
 
 .panel-header {
@@ -146,8 +198,8 @@ body {
 }
 
 .step-indicator {
-  background: var(--success-green);
-  color: #000;
+  background: var(--primary);
+  color: #fff; /* Texto sempre branco no indicador para contraste */
   font-weight: 900;
   width: 28px;
   height: 28px;
@@ -156,12 +208,7 @@ body {
   justify-content: center;
   border-radius: 8px;
   font-size: 0.75rem;
-}
-
-.panel-header h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .modern-label {
@@ -169,20 +216,20 @@ body {
   font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
-  color: var(--success-green);
+  color: var(--primary);
   margin-bottom: 12px;
   letter-spacing: 1.5px;
 }
 
-/* --- TÍTULOS BONITOS: INPUTS & SELECTS LIMPOS --- */
+/* --- TÍTULOS BONITOS: INPUTS & SELECTS (CORRIGIDOS) --- */
 
 .custom-select-wrapper { position: relative; }
 
 .modern-select {
   width: 100%;
-  background: var(--input-bg);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
   padding: 14px;
   border-radius: 12px;
   outline: none;
@@ -192,11 +239,22 @@ body {
 }
 
 .modern-select:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: var(--primary);
 }
 
-/* Remove a seta padrão feia do navegador */
+/* CORREÇÃO CRÍTICA PARA LEGIBILIDADE DAS OPÇÕES */
+.modern-select option {
+  background-color: #1a1a1c; /* Fundo escuro por padrão */
+  color: #fff;
+  padding: 10px;
+}
+
+/* No modo claro, as opções ficam claras */
+[data-theme="light"] .modern-select option {
+  background-color: #fff;
+  color: #000;
+}
+
 .no-arrow {
   appearance: none;
   -webkit-appearance: none;
@@ -209,7 +267,7 @@ body {
 .palette-grid-jiu {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px; /* Espaço generoso */
+  gap: 15px;
   margin-bottom: 10px;
 }
 
@@ -217,19 +275,18 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: var(--transition);
   position: relative;
 }
 
 .color-sphere:hover {
   transform: scale(1.15);
-  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .color-sphere.active {
-  border: 3px solid #fff;
+  border: 3px solid var(--text-main);
   transform: scale(1.2);
   z-index: 2;
 }
@@ -251,8 +308,8 @@ body {
 }
 
 .neo-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 12px;
   display: flex;
@@ -264,25 +321,24 @@ body {
 }
 
 .neo-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--success-green);
+  border-color: var(--primary);
   transform: translateY(-2px);
 }
 
 .btn-label { text-align: left; }
-.btn-label span { display: block; font-size: 10px; font-weight: 800; color: #fff; }
+.btn-label span { display: block; font-size: 10px; font-weight: 800; color: var(--text-main); }
 .btn-label small { font-size: 8px; color: var(--text-muted); }
 
-/* Terminal Style Editor */
+/* Editor de Código (Sempre Escuro para Estilo Terminal) */
 .code-editor-container {
-  background: #000;
+  background: #08080a; /* Fundo fixo escuro estilo IDE */
   border-radius: 14px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
 }
 
 .editor-toolbar {
-  background: #1a1a1c;
+  background: #151518;
   padding: 8px 15px;
   display: flex;
   justify-content: space-between;
@@ -300,7 +356,7 @@ body {
   width: 100%;
   min-height: 300px;
   background: transparent;
-  color: #a5d6ff;
+  color: #a5d6ff; /* Cor de código padrão */
   font-family: 'Fira Code', monospace;
   font-size: 11px;
   padding: 15px;
@@ -314,46 +370,49 @@ body {
 
 .preview-area-expanded {
   flex-grow: 1;
-  background-color: #050505;
+  background-color: var(--preview-bg);
   background-image: 
-    radial-gradient(circle at 50% 50%, #111 0%, #000 100%),
-    radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    radial-gradient(circle at 50% 50%, transparent 0%, var(--preview-bg) 100%),
+    radial-gradient(var(--border-color) 1px, transparent 1px);
   background-size: 100% 100%, 30px 30px;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 30px;
+  transition: background-color 0.3s ease;
 }
 
 .viewport-container-full {
   width: 100%;
   height: 100%;
-  max-width: 1000px; /* Limite para não esticar demais em ultrawide */
+  max-width: 1000px;
   display: flex;
   flex-direction: column;
 }
 
 .canvas-header {
-  background: #151517;
+  background: var(--bg-sidebar);
   padding: 10px 20px;
   border-radius: 12px 12px 0 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
   border-bottom: none;
 }
 
 .badge-live {
   font-size: 9px;
   font-weight: 900;
-  color: var(--success-green);
+  color: var(--primary);
   letter-spacing: 1px;
 }
 
 .canvas-dots { display: flex; gap: 6px; }
 .canvas-dots .dot {
-  width: 8px; height: 8px; border-radius: 50%; background: #444;
+  width: 8px; height: 8px; 
+  border-radius: 50%; 
+  background: var(--dots-color);
 }
 
 .iframe-shadow-box {
@@ -362,6 +421,7 @@ body {
   border-radius: 0 0 4px 4px;
   overflow: hidden;
   position: relative;
+  box-shadow: 0 30px 60px var(--shadow-color);
 }
 
 .cv-iframe-full {
@@ -379,9 +439,9 @@ body {
   width: 100%;
   padding: 18px;
   background: transparent;
-  border: 1px solid var(--success-green);
+  border: 1px solid var(--primary);
   border-radius: 14px;
-  color: var(--success-green);
+  color: var(--primary);
   font-weight: 800;
   font-size: 0.9rem;
   letter-spacing: 1px;
@@ -392,16 +452,18 @@ body {
 }
 
 .btn-neon-export:hover:not(:disabled) {
-  background: var(--success-green);
-  color: #000;
-  box-shadow: 0 0 40px var(--success-glow);
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 0 40px var(--primary-glow);
   transform: translateY(-2px);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .btn-neon-export:disabled {
-  border-color: #333;
-  color: #555;
+  border-color: var(--text-muted);
+  color: var(--text-muted);
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .section-spacer { height: 40px; }
@@ -440,10 +502,10 @@ body {
     min-width: 100%;
     height: auto;
     border-right: none;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid var(--border-color);
     box-shadow: none;
   }
   .preview-area-expanded {
-    height: 100vh; /* Mantém o preview grande no mobile */
+    height: 100vh;
   }
 }

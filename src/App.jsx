@@ -5,59 +5,72 @@ import { injectDataToIframe } from './utils/cvInjector';
 import { exportToPDF } from './utils/exportHandler';
 import { validateAndFormat } from './utils/dataHandlers';
 import { PALETTES } from './config/constants';
-import structureBase from './data/structure.json';
+import structureBase from './assets/structure.json';
 import './App.css';
 
-/* --- TÍTULOS BONITOS: JIUKURRICULO CORE ENGINE - SECURE EDITION --- */
+/* --- JIUKURRICULO ENGINE: SECURE & THEMED EDITION --- */
 
 // Helper seguro para localStorage (evita crash em modo anônimo)
 const safeStorage = {
   get: (key, fallback) => {
     try {
       const item = localStorage.getItem(key);
-      return item ? item : JSON.stringify(fallback, null, 2);
+      return item ? item : (typeof fallback === 'object' ? JSON.stringify(fallback) : fallback);
     } catch (e) {
       console.warn('Storage inacessível, usando fallback.');
-      return JSON.stringify(fallback, null, 2);
+      return (typeof fallback === 'object' ? JSON.stringify(fallback) : fallback);
     }
   },
   set: (key, value) => {
     try {
       localStorage.setItem(key, value);
     } catch (e) {
-      // Falha silenciosa se quota excedida ou bloqueado
+      // Falha silenciosa
     }
   }
 };
 
 function App() {
-  // Estado de Visual
+  // --- ESTADOS ---
+  
   const [config, setConfig] = useState({ 
     model: 'model1.html', 
     palette: 'graphite', 
     font: "'Inter', sans-serif" 
   });
   
-  // Estado de Dados (Inicialização Segura)
-  const [jsonInput, setJsonInput] = useState(() => 
-    safeStorage.get('cv_generation_cache', structureBase)
-  );
+  // Estado do Tema (Dark padrão)
+  const [theme, setTheme] = useState(() => safeStorage.get('jiu_theme', 'dark'));
 
-  // Estados de Controle e UI
+  // Estado de Dados
+  const [jsonInput, setJsonInput] = useState(() => {
+    const saved = safeStorage.get('cv_generation_cache', null);
+    return saved || JSON.stringify(structureBase, null, 2);
+  });
+
+  // Estados de Controle
   const [error, setError] = useState(null);
   const [isIframeReady, setIsIframeReady] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false); // Feedback visual de processamento
+  const [isSyncing, setIsSyncing] = useState(false);
   const iframeRef = useRef(null);
 
-  /* --- TÍTULOS BONITOS: VALIDAÇÃO E MEMORIZAÇÃO --- */
-  
-  const validatedData = useMemo(() => {
-    // Inicia feedback de processamento
-    setIsSyncing(true);
+  // --- EFEITOS E LÓGICA ---
 
+  // 1. Aplica o tema ao CSS Root
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    safeStorage.set('jiu_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
+  // 2. Validação e Memorização dos Dados
+  const validatedData = useMemo(() => {
+    setIsSyncing(true);
     const result = validateAndFormat(jsonInput);
     
-    // Tratamento de Erro de Sintaxe
     if (!result && jsonInput.trim() !== "") {
       setError("Sintaxe JSON inválida. Verifique vírgulas e chaves.");
       setIsSyncing(false);
@@ -67,56 +80,59 @@ function App() {
     setError(null);
     safeStorage.set('cv_generation_cache', jsonInput);
     
-    // Finaliza processamento brevemente após validação
+    // Pequeno delay para feedback visual
     setTimeout(() => setIsSyncing(false), 300);
     return result;
   }, [jsonInput]);
 
-  /* --- TÍTULOS BONITOS: MOTOR DE INJEÇÃO SEGURO --- */
-
+  // 3. Motor de Injeção no Iframe
   const syncPreview = useCallback(() => {
     const iframe = iframeRef.current;
     if (!iframe?.contentWindow || !isIframeReady) return;
 
     try {
       const doc = iframe.contentWindow.document;
-      
-      // Injeção de dados
       injectDataToIframe(doc, validatedData, config, PALETTES);
-      
     } catch (err) {
-      // Captura erros críticos de segurança ou acesso DOM
       if (err.name === 'SecurityError') {
         console.error("Bloqueio de segurança do navegador detectado.");
-      } else {
-        console.warn("Sincronização pendente...", err);
       }
     }
   }, [validatedData, config, isIframeReady]);
 
-  // Debounce para otimização de performance
   useEffect(() => {
     const timeout = setTimeout(syncPreview, 150);
     return () => clearTimeout(timeout);
   }, [syncPreview]);
 
-  // Handler de carregamento do Iframe
   const handleIframeLoad = () => {
     setIsIframeReady(true);
-    // Força uma sincronização imediata assim que carrega
     syncPreview();
   };
+
+  // --- RENDERIZAÇÃO ---
 
   return (
     <div className="app-container glass-bg">
       {/* Sidebar de Controles */}
       <aside className="sidebar-controls glass-sidebar">
         <header className="brand-header-neon">
-          <h1 className="brand-title-jiu">JIU<span>KURRILO</span></h1>
+          {/* Top Row com Título e Botão de Tema */}
+          <div className="header-top-row">
+            <h1 className="brand-title-jiu">JIU<span>KURRICULO</span></h1>
+            
+            <button 
+              onClick={toggleTheme} 
+              className="theme-toggle-btn" 
+              title={theme === 'dark' ? "Mudar para Modo Claro" : "Mudar para Modo Escuro"}
+            >
+              {theme === 'dark' ? '🌙' : '☀️'}
+            </button>
+          </div>
+
           <div className="status-line">
-            {/* O ponto pulsa mais rápido se estiver sincronizando */}
             <span className="pulse-dot" style={{ animationDuration: isSyncing ? '0.5s' : '2s' }}></span> 
-            {isSyncing ? 'PROCESSING...' : 'SYSTEM ACTIVE'}
+            {isSyncing ? 'PROCESSANDO...' : 'SYSTEM ACTIVE'}
           </div>
         </header>
         
@@ -143,7 +159,7 @@ function App() {
           >
             <div className="btn-glow"></div>
             <span className="btn-content">
-              <i>💾</i> {isSyncing ? 'PROCESSANDO...' : 'EXPORTAR CURRÍCULO'}
+              <i>💾</i> {isSyncing ? 'AGUARDE...' : 'EXPORTAR PDF'}
             </span>
           </button>
         </div>
@@ -167,13 +183,6 @@ function App() {
               src={`./models/${config.model}`} 
               className="cv-iframe-full"
               title="Jiukurriculo Canvas"
-              /**
-               * NOTA DE SEGURANÇA:
-               * 'allow-same-origin': Necessário para injetar dados via DOM.
-               * 'allow-scripts': Necessário para renderizar fontes e estilos dinâmicos.
-               * 'allow-modals': Necessário para window.print().
-               * 'allow-popups' e outros foram removidos para máxima segurança.
-               */
               sandbox="allow-scripts allow-modals allow-same-origin"
             />
           </div>
