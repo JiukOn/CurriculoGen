@@ -1,26 +1,27 @@
-/* --- TÍTULOS BONITOS: GEMINI NEURAL BRIDGE (ANTI-FREEZE EDITION) --- */
+/* --- TÍTULOS BONITOS: GEMINI NEURAL BRIDGE (LITE-FIRST STRATEGY) --- */
 
 /**
- * LISTA DE MODELOS (FALLBACK STRATEGY):
- * Ordem: Tenta os mais novos (3.0/2.5). Se der erro, cai para os estáveis (2.0/1.5).
+ * LISTA DE MODELOS (ORDEM DE DISPONIBILIDADE):
+ * Estratégia "Lite-First": Tenta os modelos mais leves e com maior cota gratuita primeiro.
+ * Ordem: Lite -> Flash -> Pro (para cada versão).
  */
 const MODELS_TO_TRY = [
-  // --- TIER 1: GEMINI 3.0 (Bleeding Edge) ---
-  //"gemini-3.0-pro-preview",
-  //"gemini-3.0-flash-preview",
+  // --- TIER 1: GEMINI 3.0 (Novidade) ---
+  "gemini-3.0-flash-preview", // Mais chance de estar livre que o Pro
+  "gemini-3.0-pro-preview",
 
-  // --- TIER 2: GEMINI 2.5 (High Performance) ---
-  //"gemini-2.5-pro",
+  // --- TIER 2: GEMINI 2.5 (Performance) ---
+  "gemini-2.5-flash-lite",    // O mais leve de todos (Prioridade Máxima)
   "gemini-2.5-flash",
-  "gemini-2.5-flash-lite",
+  "gemini-2.5-pro",           // Deixa o Pro pro final (Cota baixa)
 
-  // --- TIER 3: GEMINI 2.0 (Stable Modern) ---
-  "gemini-2.0-flash",
+  // --- TIER 3: GEMINI 2.0 (Estável) ---
   "gemini-2.0-flash-lite",
+  "gemini-2.0-flash",
 
-  // --- TIER 4: LEGACY FALLBACK (Safety Net) ---
-  "gemini-1.5-pro",
-  "gemini-1.5-flash"
+  // --- TIER 4: FALLBACK SEGURO (Legado) ---
+  "gemini-1.5-flash",         // O "Tanque de Guerra" da Google (Quase nunca falha)
+  "gemini-1.5-pro"
 ];
 
 // Utilitário de Delay (Pausa não-bloqueante)
@@ -64,16 +65,14 @@ export const optimizeResumeWithGemini = async (apiKey, currentJson, jobData) => 
     
     // Pausa estratégica APENAS se estiver indo para a segunda rodada
     if (attempt === 2) {
-      console.log("⚠️ 1ª Rodada falhou (Todos ocupados/404). Aguardando 2s para tentativa final...");
+      console.log("⚠️ 1ª Rodada falhou (Todos ocupados). Aguardando 2s para tentativa final...");
       await delay(2000); 
     }
 
     // Loop interno pelos modelos
     for (const modelName of MODELS_TO_TRY) {
       try {
-        // console.log(`[Neural Engine] Rodada ${attempt} | Tentando: ${modelName}...`);
-        
-        // Timeout de 10s para não travar o site
+        // Timeout curto (10s) para garantir fluidez na UI
         const response = await callGeminiAPI(modelName, apiKey, prompt, 10000);
         
         console.log(`[Neural Engine] ✅ SUCESSO na Rodada ${attempt} com: ${modelName}`);
@@ -83,16 +82,16 @@ export const optimizeResumeWithGemini = async (apiKey, currentJson, jobData) => 
         const msg = error.message.toLowerCase();
         lastError = error;
 
-        // Análise de Erro para o Console
+        // Identificação de Erro para Log
         const isRateLimit = msg.includes("429") || msg.includes("too many requests");
         const isNotFound = msg.includes("404") || msg.includes("not found");
         
         if (isRateLimit) {
-            console.warn(`[Neural Engine] ⏳ ${modelName} está lotado (429). Pulando...`);
+            console.warn(`[Neural Engine] ⏳ ${modelName} lotado (429). Pulando...`);
         } else if (isNotFound) {
-            console.warn(`[Neural Engine] ❌ ${modelName} não disponível (404). Pulando...`);
+            console.warn(`[Neural Engine] ❌ ${modelName} off (404). Pulando...`);
         } else {
-            console.warn(`[Neural Engine] ⚠️ Erro em ${modelName}: ${msg}`);
+            console.warn(`[Neural Engine] ⚠️ Falha em ${modelName}: ${msg}`);
         }
 
         // ERRO FATAL (Chave Inválida) - Para tudo imediatamente
@@ -100,18 +99,19 @@ export const optimizeResumeWithGemini = async (apiKey, currentJson, jobData) => 
           throw new Error("Sua API Key é inválida ou foi rejeitada pelo Google (Erro 400/403).");
         }
 
-        // Se for 429, 404, 500 ou Timeout -> O código continua naturalmente para o próximo item do array
+        // Se for 429, 404, 500 ou Timeout -> O código continua para o próximo modelo instantaneamente
       }
     }
   }
 
-  // Se chegou aqui, falhou nas 2 rodadas completas (aprox. 18 tentativas)
+  // Se chegou aqui, falhou nas 2 rodadas completas (todos os modelos falharam)
   handleFinalError(lastError);
 };
 
 // --- FUNÇÕES AUXILIARES ---
 
 async function callGeminiAPI(model, key, promptText, timeoutMs = 15000) {
+  // Usando endpoint v1beta para máxima compatibilidade com modelos novos
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
   
   const payload = {
@@ -185,9 +185,8 @@ function processAndValidateResponse(text, originalJson) {
 function handleFinalError(error) {
   const msg = error ? error.toString() : "Erro desconhecido";
   
-  // Mensagem final amigável se tudo falhar
   if (msg.includes("429")) {
-    throw new Error("Gemini API sobrecarregada no momento. Tente novamente em 1 minuto.");
+    throw new Error("Servidores do Google ocupados. Tente novamente em 1 minuto.");
   } else if (msg.includes("404")) {
     throw new Error("Nenhum modelo compatível encontrado na sua chave.");
   } else if (msg.includes("Failed to fetch") || msg.includes("network")) {
