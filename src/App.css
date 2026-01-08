@@ -351,3 +351,74 @@ textarea {
   min-height: 400px !important;
   line-height: 1.6 !important;
 }
+
+.brand-title-jiu {
+  font-size: 1.8rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.brand-title-jiu span {
+  color: var(--success-green);
+  text-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+}
+
+.brand-header-neon {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-line {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--success-green);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--success-green);
+  animation: pulse 2s infinite;
+}
+
+/* Botão Neon de Exportação */
+.btn-neon-export {
+  position: relative;
+  width: 100%;
+  padding: 16px;
+  background: transparent;
+  border: 1px solid var(--success-green);
+  border-radius: 12px;
+  color: var(--success-green);
+  font-weight: 800;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-neon-export:hover:not(:disabled) {
+  background: var(--success-green);
+  color: #000;
+  box-shadow: 0 0 25px rgba(46, 204, 113, 0.4);
+}
+
+.btn-neon-export:disabled {
+  border-color: #333;
+  color: #555;
+  cursor: not-allowed;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}

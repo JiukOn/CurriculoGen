@@ -1,7 +1,7 @@
 import React from 'react';
 import { PALETTES, FONTS, MODELS } from '../config/constants';
 
-/* --- TÍTULOS BONITOS: DESIGN ENGINE - IDENTIDADE VISUAL --- */
+/* --- TÍTULOS BONITOS: DESIGN ENGINE - SELEÇÃO VISUAL LIMPA --- */
 
 const VisualEditor = ({ config, setConfig }) => {
   return (
@@ -12,7 +12,7 @@ const VisualEditor = ({ config, setConfig }) => {
           <h3>Estilização Visual</h3>
         </header>
 
-        {/* Escolha do Template com Preview Textual */}
+        {/* Escolha do Template */}
         <div className="control-group">
           <label className="modern-label">Arquitetura de Layout</label>
           <div className="custom-select-wrapper">
@@ -31,28 +31,26 @@ const VisualEditor = ({ config, setConfig }) => {
           </div>
         </div>
 
-        {/* Definição de Cores - Botões Circulares Estilizados */}
+        {/* Definição de Cores - Apenas as Bolinhas de Cores */}
         <div className="control-group">
           <label className="modern-label">Paleta de Identidade</label>
-          <div className="palette-flex">
+          <div className="palette-grid-minimal">
             {Object.entries(PALETTES).map(([key, value]) => (
-              <div key={key} className="color-wrapper">
-                <button
-                  className={`modern-color-btn ${config.palette === key ? 'active' : ''}`}
-                  style={{ 
-                    backgroundColor: value.primary,
-                    boxShadow: config.palette === key ? `0 0 15px ${value.primary}66` : 'none'
-                  }}
-                  onClick={() => setConfig({...config, palette: key})}
-                  title={value.name}
-                />
-                <span className="color-dot-label">{value.name.split(' ')[0]}</span>
-              </div>
+              <button
+                key={key}
+                className={`color-dot-btn ${config.palette === key ? 'active' : ''}`}
+                style={{ 
+                  backgroundColor: value.primary,
+                  boxShadow: config.palette === key ? `0 0 20px ${value.primary}` : 'none'
+                }}
+                onClick={() => setConfig({...config, palette: key})}
+                title={value.name}
+              />
             ))}
           </div>
         </div>
 
-        {/* Escolha da Tipografia - Preview em tempo real no label */}
+        {/* Escolha da Tipografia */}
         <div className="control-group no-margin">
           <label className="modern-label">Tipografia Profissional</label>
           <div className="custom-select-wrapper">
