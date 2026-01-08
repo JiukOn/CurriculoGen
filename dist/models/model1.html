@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CurriculoGen - Modelo Profissional</title>
+    <style>
+        /* --- CONFIGURAÇÕES DE DESIGN REATIVO --- */
+        :root {
+            --primary-dark: #252523;   
+            --accent-steel: #4a5568;   
+            --highlight: #cbd5e0;      
+            --text-main: #2d3748;
+            --bg-page: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            background-color: #f0f2f5;
+            line-height: 1.5;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* --- TÍTULOS BONITOS: ESTRUTURA DE PÁGINA A4 --- */
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm 20mm;
+            margin: 30px auto;
+            background: var(--bg-page);
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden; /* Evita quebras de linha fantasmas */
+        }
+
+        /* --- TÍTULOS BONITOS: OTIMIZAÇÃO DE IMPRESSÃO --- */
+        @media print {
+            @page {
+                size: A4;
+                margin: 0; /* Remove rodapés (links/datas) */
+            }
+            body { background: none; }
+            .page { 
+                margin: 0; 
+                box-shadow: none; 
+                width: 100%; 
+                height: 100%;
+                page-break-after: always;
+            }
+            .page-break { page-break-before: always; }
+        }
+
+        .page::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 8px; height: 100%;
+            background: linear-gradient(to bottom, var(--primary-dark), var(--accent-steel));
+        }
+
+        header { margin-bottom: 25px; padding-left: 15px; }
+
+        h1 {
+            font-size: 28pt;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .role-badge {
+            display: inline-block;
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 4px 12px;
+            font-size: 13pt;
+            margin-top: 8px;
+            font-weight: 300;
+        }
+
+        .info-bar {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 9pt;
+            border-bottom: 1px solid var(--highlight);
+            padding-bottom: 12px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            margin-top: 25px;
+        }
+
+        .square-deco {
+            width: 10px; height: 10px;
+            background-color: var(--primary-dark);
+            margin-right: 10px;
+        }
+
+        h2 {
+            font-size: 14pt;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .line-deco {
+            height: 1px;
+            background-color: var(--highlight);
+            flex-grow: 1;
+            margin-left: 15px;
+        }
+
+        .content-box {
+            padding-left: 20px;
+            border-left: 1px solid var(--highlight);
+            margin-left: 5px;
+        }
+
+        /* Estilos de Lista e Badges */
+        .skills-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .tag-status {
+            background: #edf2f7;
+            color: var(--accent-steel);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 8pt;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page">
+        <header>
+            <h1 id="nome">JOÃO PEDRO A. LAGEMANN</h1>
+            <div id="cargo" class="role-badge">DESENVOLVEDOR FULL STACK</div>
+            
+            <div class="info-bar">
+                <span id="nascimento"><strong>Nasc:</strong> 01/01/2000</span>
+                <span id="local">Cidade, UF</span>
+                <span id="tel">Telefone</span>
+                <span id="email">E-mail</span>
+                <span id="linkedin">LinkedIn</span>
+            </div>
+        </header>
+
+        <div id="section-resumo">
+            <div class="section-header">
+                <div class="square-deco"></div>
+                <h2>Resumo Profissional</h2>
+                <div class="line-deco"></div>
+            </div>
+            <div class="content-box">
+                <p id="resumo" style="text-align: justify; font-size: 10.5pt;"></p>
+            </div>
+        </div>
+
+        <div id="section-experiencia">
+            <div class="section-header">
+                <div class="square-deco"></div>
+                <h2>Experiência Profissional</h2>
+                <div class="line-deco"></div>
+            </div>
+            <div id="experiencias" class="content-box"></div>
+        </div>
+
+        <div id="section-formacao">
+            <div class="section-header">
+                <div class="square-deco"></div>
+                <h2>Formação Acadêmica</h2>
+                <div class="line-deco"></div>
+            </div>
+            <div id="formacao" class="content-box"></div>
+        </div>
+    </div>
+
+    <div class="page page-break">
+        <div id="section-hard-skills">
+            <div class="section-header">
+                <div class="square-deco"></div>
+                <h2>Competências Técnicas</h2>
+                <div class="line-deco"></div>
+            </div>
+            <div class="content-box">
+                <div id="hard-skills-lista" class="skills-container"></div>
+            </div>
+        </div>
+
+        <div id="section-soft-skills">
+            <div class="section-header">
+                <div class="square-deco"></div>
+                <h2>Habilidades Interpessoais</h2>
+                <div class="line-deco"></div>
+            </div>
+            <div class="content-box">
+                <div id="soft-skills-lista" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+            </div>
+        </div>
+
+        <div id="section-cursos" style="margin-top: 20px;">
+            <div class="section-header">
+                <div class="square-deco"></div>
+                <h2>Cursos & Certificações</h2>
+                <div class="line-deco"></div>
+            </div>
+            <div class="content-box">
+                <ul id="cursos-lista" style="list-style: none;"></ul>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
