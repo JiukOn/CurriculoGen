@@ -8,7 +8,7 @@ import { PALETTES } from './config/constants';
 import structureBase from './data/structure.json';
 import './App.css';
 
-/* --- TÍTULOS BONITOS: JIUKURRILO CORE ENGINE - SECURE EDITION --- */
+/* --- TÍTULOS BONITOS: JIUKURRICULO CORE ENGINE - SECURE EDITION --- */
 
 // Helper seguro para localStorage (evita crash em modo anônimo)
 const safeStorage = {
@@ -166,7 +166,7 @@ function App() {
               onLoad={handleIframeLoad}
               src={`./models/${config.model}`} 
               className="cv-iframe-full"
-              title="Jiukurrilo Canvas"
+              title="Jiukurriculo Canvas"
               /**
                * NOTA DE SEGURANÇA:
                * 'allow-same-origin': Necessário para injetar dados via DOM.

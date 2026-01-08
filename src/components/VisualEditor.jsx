@@ -28,7 +28,7 @@ const VisualEditor = ({ config, setConfig }) => {
           </select>
         </div>
 
-        {/* Seleção de Cores - Grid Jiukurrilo (Esferas Grandes) */}
+        {/* Seleção de Cores - Grid Jiukurrcuilo (Esferas Grandes) */}
         <div className="control-group">
           <label className="modern-label">Paleta de Identidade</label>
           <div className="palette-grid-jiu">

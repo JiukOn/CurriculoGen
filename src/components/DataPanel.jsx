@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { downloadBaseSchema } from '../utils/dataHandlers';
 import structureBase from '../data/structure.json';
 
-/* --- TÍTULOS BONITOS: DATA ENGINE JIUKURRILO --- */
+/* --- TÍTULOS BONITOS: DATA ENGINE JIUKURRICULO --- */
 
 const DataPanel = ({ jsonInput, setJsonInput }) => {
   const fileInputRef = useRef(null);
