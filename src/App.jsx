@@ -5,7 +5,7 @@ import { injectDataToIframe } from './utils/cvInjector';
 import { exportToPDF } from './utils/exportHandler';
 import { validateAndFormat } from './utils/dataHandlers';
 import { PALETTES } from './config/constants';
-import structureBase from './assets/structure.json';
+import structureBase from './data/structure.json';
 import './App.css';
 
 /* --- JIUKURRICULO ENGINE: SECURE & THEMED EDITION --- */
