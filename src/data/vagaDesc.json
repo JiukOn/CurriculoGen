@@ -1,0 +1,17 @@
+{
+  "nome": "Título da Vaga",
+  "requisitos": [
+    "Cargo",
+    "Tempo",
+    "Curso"
+  ],
+  "responsabilidades": [
+    "Como Fazer",
+    "Onde Fazer",
+    "Oque fazer"
+  ],
+  "diferenciais": [
+    "Certificados",
+    "Linguagem"
+  ]
+}
