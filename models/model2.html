@@ -2,11 +2,13 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CurriculoGen - Modelo Geométrico</title>
     <style>
         /* --- DESIGN SYSTEM DO MODELO 2 --- */
         :root {
-            --primary-dark: #252523;   /* Cor padrão alterada pelo JS */
-            --accent-steel: #4a5568;   /* Cor secundária */
+            --primary-dark: #252523;   
+            --accent-steel: #4a5568;   
             --highlight-bg: #f8fafc;
             --font-main: 'Inter', sans-serif;
         }
@@ -16,51 +18,79 @@
         body {
             font-family: var(--font-main);
             color: #2d3748;
-            line-height: 1.6;
-            background: white;
+            line-height: 1.5;
+            background: #f0f2f5;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
+        /* --- TÍTULOS BONITOS: ESTRUTURA E IMPRESSÃO --- */
         .cv-container {
             width: 210mm;
+            min-height: 297mm;
             padding: 20mm;
-            margin: auto;
+            margin: 30px auto;
+            background: white;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 0; /* Remove rodapés automáticos */
+            }
+            body { background: none; }
+            .cv-container { 
+                margin: 0; 
+                box-shadow: none; 
+                width: 100%;
+                height: 100%;
+                page-break-after: always;
+            }
+            .page-break { page-break-before: always; }
         }
 
         /* --- CABEÇALHO COM REQUADRO --- */
         .header-box {
-            border: 2px solid var(--primary-dark);
+            border: 2.5px solid var(--primary-dark);
             padding: 30px;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
             position: relative;
+            background: white;
         }
 
+        /* Efeito de sombra geométrica */
         .header-box::after {
             content: "";
             position: absolute;
-            bottom: -10px;
-            right: -10px;
+            bottom: -8px;
+            right: -8px;
             width: 100%;
             height: 100%;
-            border: 2px solid var(--accent-steel);
+            border: 2.5px solid var(--accent-steel);
             z-index: -1;
         }
 
         h1 {
-            font-size: 26pt;
+            font-size: 24pt;
             color: var(--primary-dark);
             text-transform: uppercase;
             letter-spacing: 2px;
+            line-height: 1.1;
         }
 
         .contact-row {
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
             margin-top: 15px;
-            font-size: 10pt;
-            font-weight: 500;
+            font-size: 9pt;
+            font-weight: 600;
+            color: var(--accent-steel);
         }
 
-        /* --- SEÇÕES COM BLOCOS COLORIDOS --- */
+        /* --- SEÇÕES COM BLOCOS --- */
         .section-title {
             display: flex;
             align-items: center;
@@ -68,22 +98,22 @@
             color: white;
             padding: 8px 15px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 13pt;
-            margin: 30px 0 20px 0;
+            letter-spacing: 1.5px;
+            font-size: 12pt;
+            margin: 25px 0 15px 0;
         }
 
         .section-title .square {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             background: white;
-            margin-right: 15px;
+            margin-right: 12px;
         }
 
-        /* --- EXPERIÊNCIA E FORMAÇÃO --- */
+        /* --- CONTEÚDO --- */
         .entry {
-            margin-bottom: 25px;
-            padding-left: 20px;
+            margin-bottom: 20px;
+            padding-left: 15px;
             border-left: 3px solid var(--highlight-bg);
         }
 
@@ -92,74 +122,30 @@
             justify-content: space-between;
             font-weight: bold;
             color: var(--primary-dark);
-            font-size: 12pt;
-        }
-
-        .entry-sub {
-            color: var(--accent-steel);
-            font-style: italic;
             font-size: 11pt;
-            margin-bottom: 5px;
         }
 
-        .tag-status {
-            display: inline-block;
-            background: var(--highlight-bg);
-            border: 1px solid var(--accent-steel);
-            padding: 2px 8px;
-            font-size: 9pt;
-            text-transform: uppercase;
-            font-weight: bold;
-            margin-left: 10px;
-            border-radius: 4px;
-        }
-
-        /* --- GRID DE COMPETÊNCIAS --- */
         .skills-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
         }
 
         .skill-card {
             background: var(--highlight-bg);
-            padding: 15px;
+            padding: 10px 15px;
             border: 1px solid #e2e8f0;
-            position: relative;
-        }
-
-        .skill-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--accent-steel);
-        }
-
-        /* --- SOFT SKILLS --- */
-        .soft-skills-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
+            border-left: 4px solid var(--accent-steel);
         }
 
         .soft-tag {
-            background: var(--highlight-bg);
-            border: 1px solid var(--accent-steel);
-            padding: 5px 12px;
-            font-size: 10pt;
-            font-weight: 500;
-            border-radius: 2px;
-        }
-
-        /* --- CONTROLE DE PÁGINA --- */
-        .page-break { page-break-before: always; }
-
-        @media print {
-            .cv-container { padding: 0; margin: 0; }
+            background: white;
+            border: 1.5px solid var(--primary-dark);
+            color: var(--primary-dark);
+            padding: 4px 10px;
+            font-size: 9pt;
+            font-weight: 700;
+            border-radius: 0; /* Design geométrico usa bordas retas */
         }
     </style>
 </head>
@@ -168,8 +154,9 @@
     <div class="cv-container">
         <div class="header-box">
             <h1 id="nome">NOME DO CANDIDATO</h1>
-            <p id="cargo" style="font-size: 14pt; color: var(--accent-steel);">TÍTULO PROFISSIONAL</p>
-            <div id="contato" class="contact-row">
+            <p id="cargo" style="font-size: 13pt; color: var(--accent-steel); font-weight: 300; margin-top: 5px;">TÍTULO PROFISSIONAL</p>
+            <div class="contact-row">
+                <span id="nascimento">Nasc: --/--/----</span>
                 <span id="local">Localização</span>
                 <span id="tel">Telefone</span>
                 <span id="email">E-mail</span>
@@ -179,39 +166,34 @@
 
         <div id="section-resumo">
             <div class="section-title"><div class="square"></div>Resumo Profissional</div>
-            <p id="resumo" style="text-align: justify;">Breve descrição sobre sua trajetória.</p>
+            <p id="resumo" style="text-align: justify; font-size: 10.5pt;"></p>
         </div>
 
         <div id="section-experiencia">
             <div class="section-title"><div class="square"></div>Experiência Profissional</div>
-            <div id="experiencias">
-                </div>
+            <div id="experiencias"></div>
         </div>
 
         <div id="section-formacao">
-            <div class="section-title"><div class="square"></div>Formação e Transições</div>
-            <div id="formacao">
-                </div>
+            <div class="section-title"><div class="square"></div>Formação Acadêmica</div>
+            <div id="formacao"></div>
         </div>
 
         <div class="page-break"></div> 
 
         <div id="section-hard-skills">
             <div class="section-title"><div class="square"></div>Competências Técnicas</div>
-            <div id="hard-skills-lista" class="skills-grid">
-                </div>
+            <div id="hard-skills-lista" class="skills-grid"></div>
         </div>
 
         <div id="section-soft-skills">
             <div class="section-title"><div class="square"></div>Habilidades Interpessoais</div>
-            <div id="soft-skills-lista" class="soft-skills-container">
-                </div>
+            <div id="soft-skills-lista" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
         </div>
 
         <div id="section-cursos">
             <div class="section-title"><div class="square"></div>Cursos e Especializações</div>
-            <div id="cursos-lista" class="skills-grid">
-                </div>
+            <div id="cursos-lista" class="skills-grid"></div>
         </div>
     </div>
 

@@ -2,12 +2,14 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CurriculoGen - Modelo Grid</title>
     <style>
         /* --- DESIGN SYSTEM DO MODELO 4: GRID MODERNIST --- */
         :root {
-            --primary-dark: #2d3748;   /* Grafite */
-            --accent-steel: #718096;   /* Cinza Médio */
-            --highlight-bg: #edf2f7;   /* Fundo Suave */
+            --primary-dark: #2d3748;   
+            --accent-steel: #718096;   
+            --highlight-bg: #edf2f7;   
             --font-main: 'Inter', sans-serif;
         }
 
@@ -16,107 +18,98 @@
         body {
             font-family: var(--font-main);
             color: #1a202c;
-            background: white;
-            line-height: 1.5;
+            background: #f0f2f5;
+            line-height: 1.4;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
+        /* --- TÍTULOS BONITOS: ESTRUTURA DE IMPRESSÃO --- */
         .cv-grid {
             width: 210mm;
             min-height: 297mm;
             display: grid;
-            grid-template-columns: 70mm 1fr; /* Coluna lateral e principal */
-            margin: auto;
-            border: 1px solid #e2e8f0;
+            grid-template-columns: 70mm 1fr;
+            margin: 30px auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            body { background: none; }
+            .cv-grid { 
+                margin: 0; 
+                box-shadow: none; 
+                width: 100%;
+                height: 100%;
+                page-break-after: always;
+            }
+            .page-break { page-break-before: always; }
         }
 
         /* --- COLUNA LATERAL (DARK) --- */
         .sidebar {
             background-color: var(--primary-dark);
             color: white;
-            padding: 40px 25px;
+            padding: 35px 25px;
         }
 
         .sidebar h1 {
-            font-size: 22pt;
+            font-size: 20pt;
             text-transform: uppercase;
             line-height: 1.1;
             margin-bottom: 10px;
             border-bottom: 4px solid var(--accent-steel);
             padding-bottom: 15px;
+            font-weight: 900;
         }
 
-        .sidebar-section { margin-bottom: 40px; }
+        .sidebar-section { margin-bottom: 30px; }
         .sidebar-title {
-            font-size: 11pt;
+            font-size: 10pt;
             text-transform: uppercase;
             letter-spacing: 2px;
             color: var(--accent-steel);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             font-weight: 800;
         }
 
         .sidebar-item {
-            font-size: 9pt;
-            margin-bottom: 10px;
+            font-size: 8.5pt;
+            margin-bottom: 8px;
             word-wrap: break-word;
+            opacity: 0.9;
         }
 
         /* --- COLUNA PRINCIPAL --- */
         .main-content {
-            padding: 40px;
+            padding: 35px;
             background: white;
         }
 
         .section-header {
             display: flex;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .rect-marker {
-            width: 40px;
-            height: 12px;
+            width: 35px;
+            height: 10px;
             background: var(--primary-dark);
             margin-right: 15px;
         }
 
         h2 {
-            font-size: 14pt;
+            font-size: 13pt;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--primary-dark);
-        }
-
-        /* BLOCOS DE CONTEÚDO */
-        .exp-item {
-            margin-bottom: 30px;
-            position: relative;
-        }
-
-        .exp-header {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 700;
-            color: var(--primary-dark);
-            font-size: 11pt;
-        }
-
-        .exp-sub {
-            color: var(--accent-steel);
-            font-size: 10pt;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .badge-status {
-            background: var(--highlight-bg);
-            color: var(--primary-dark);
-            padding: 2px 8px;
-            font-size: 8pt;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-left: 10px;
-            border-radius: 4px;
+            font-weight: 800;
         }
 
         .description {
@@ -124,33 +117,20 @@
             text-align: justify;
         }
 
-        /* SKILLS COM BARRAS */
-        .skill-bar-container {
-            margin-bottom: 15px;
-        }
-
-        .skill-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 9pt;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
+        /* --- SKILLS COM BARRAS --- */
+        .skill-bar-container { margin-bottom: 12px; }
         .bar-bg {
             height: 6px;
             background: var(--highlight-bg);
             width: 100%;
             border-radius: 3px;
+            overflow: hidden;
         }
-
         .bar-fill {
             height: 100%;
             background: var(--primary-dark);
-            border-radius: 3px;
+            transition: width 0.5s ease;
         }
-
-        .page-break { page-break-before: always; }
     </style>
 </head>
 <body>
@@ -159,8 +139,9 @@
         <aside class="sidebar">
             <h1 id="nome">NOME<br>SOBRENOME</h1>
             
-            <div id="section-contato" class="sidebar-section">
+            <div class="sidebar-section">
                 <div class="sidebar-title">Contato</div>
+                <div class="sidebar-item" id="nascimento" style="font-weight: bold; color: white;">Nasc: --/--/----</div>
                 <div class="sidebar-item" id="local">Localização</div>
                 <div class="sidebar-item" id="tel">Telefone</div>
                 <div class="sidebar-item" id="email">E-mail</div>
@@ -168,15 +149,13 @@
             </div>
 
             <div id="section-expertise" class="sidebar-section">
-                <div class="sidebar-title">Expertise Principal</div>
-                <div id="expertise-lista">
-                    </div>
+                <div class="sidebar-title">Idiomas</div>
+                <div id="idiomas-lista" class="sidebar-item"></div>
             </div>
 
-            <div id="section-idiomas" class="sidebar-section">
-                <div class="sidebar-title">Idiomas</div>
-                <div id="idiomas-lista">
-                    </div>
+            <div id="section-certificacoes" class="sidebar-section">
+                <div class="sidebar-title">Certificações</div>
+                <div id="cursos-sidebar" class="sidebar-item"></div>
             </div>
         </aside>
 
@@ -186,7 +165,7 @@
                     <div class="rect-marker"></div>
                     <h2>Resumo Profissional</h2>
                 </div>
-                <p class="description" id="resumo" style="margin-bottom: 40px;">Texto de perfil profissional.</p>
+                <p class="description" id="resumo" style="margin-bottom: 30px;"></p>
             </div>
 
             <div id="section-experiencia">
@@ -194,8 +173,7 @@
                     <div class="rect-marker"></div>
                     <h2>Experiência de Carreira</h2>
                 </div>
-                <div id="experiencias">
-                    </div>
+                <div id="experiencias"></div>
             </div>
 
             <div id="section-formacao">
@@ -203,19 +181,16 @@
                     <div class="rect-marker"></div>
                     <h2>Formação Acadêmica</h2>
                 </div>
-                <div id="formacao">
-                    </div>
+                <div id="formacao"></div>
             </div>
         </main>
     </div>
 
     <div class="cv-grid page-break">
-        <aside class="sidebar">
-            <div id="section-certificacoes" class="sidebar-section">
-                <div class="sidebar-title">Certificações</div>
-                <div id="cursos-sidebar">
-                    </div>
-            </div>
+        <aside class="sidebar" style="padding-top: 50px;">
+            <div class="sidebar-title">Diferenciais</div>
+            <div class="sidebar-item">Foco em Resultados</div>
+            <div class="sidebar-item">Metodologias Ágeis</div>
         </aside>
 
         <main class="main-content">
@@ -224,26 +199,23 @@
                     <div class="rect-marker"></div>
                     <h2>Hard Skills & Proficiência</h2>
                 </div>
-                <div id="hard-skills-lista">
-                    </div>
+                <div id="hard-skills-lista"></div>
             </div>
 
-            <div id="section-soft-skills" style="margin-top: 40px;">
+            <div id="section-soft-skills" style="margin-top: 35px;">
                 <div class="section-header">
                     <div class="rect-marker"></div>
                     <h2>Soft Skills</h2>
                 </div>
-                <div id="soft-skills-lista">
-                    </div>
+                <div id="soft-skills-lista" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
             </div>
 
-            <div id="section-qualificacoes" style="margin-top: 40px;">
+            <div id="section-qualificacoes" style="margin-top: 35px;">
                 <div class="section-header">
                     <div class="rect-marker"></div>
-                    <h2>Outras Qualificações</h2>
+                    <h2>Cursos Complementares</h2>
                 </div>
-                <ul id="qualificacoes-lista" style="font-size: 10pt; list-style: square; padding-left: 20px;">
-                    </ul>
+                <ul id="cursos-lista" style="font-size: 10pt; list-style: square; padding-left: 20px;"></ul>
             </div>
         </main>
     </div>
