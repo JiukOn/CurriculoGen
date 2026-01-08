@@ -2,223 +2,231 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CurriculoGen - Modelo Grid</title>
+    <title>Modelo 4 - Modern Sidebar</title>
     <style>
-        /* --- DESIGN SYSTEM DO MODELO 4: GRID MODERNIST --- */
+        /* --- VARIÁVEIS BASE (Serão sobrescritas pelo React) --- */
         :root {
-            --primary-dark: #2d3748;   
-            --accent-steel: #718096;   
-            --highlight-bg: #edf2f7;   
-            --font-main: 'Inter', sans-serif;
+            --primary-dark: #2c3e50;
+            --accent-steel: #7f8c8d;
+            --bg-sidebar: #f4f6f7;
+            --text-main: #333;
+            --text-light: #666;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
-            font-family: var(--font-main);
-            color: #1a202c;
-            background: #f0f2f5;
-            line-height: 1.4;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-
-        /* --- TÍTULOS BONITOS: ESTRUTURA DE IMPRESSÃO --- */
-        .cv-grid {
-            width: 210mm;
-            min-height: 297mm;
-            display: grid;
-            grid-template-columns: 70mm 1fr;
-            margin: 30px auto;
+            font-family: 'Inter', sans-serif;
             background: white;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            font-size: 10pt; /* Tamanho base otimizado para A4 */
         }
 
-        @media print {
-            @page {
-                size: A4;
-                margin: 0;
-            }
-            body { background: none; }
-            .cv-grid { 
-                margin: 0; 
-                box-shadow: none; 
-                width: 100%;
-                height: 100%;
-                page-break-after: always;
-            }
-            .page-break { page-break-before: always; }
-        }
-
-        /* --- COLUNA LATERAL (DARK) --- */
+        /* --- LAYOUT ESQUERDA (SIDEBAR) --- */
         .sidebar {
-            background-color: var(--primary-dark);
-            color: white;
-            padding: 35px 25px;
+            width: 32%;
+            background-color: var(--bg-sidebar);
+            padding: 30px 20px;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
         }
 
-        .sidebar h1 {
-            font-size: 20pt;
+        /* --- LAYOUT DIREITA (MAIN) --- */
+        .main-content {
+            width: 68%;
+            padding: 40px 30px;
+        }
+
+        /* --- HEADER (DENTRO DO MAIN) --- */
+        header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--primary-dark);
+            padding-bottom: 20px;
+        }
+
+        h1#nome {
+            font-size: 24pt;
+            font-weight: 800;
             text-transform: uppercase;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
             line-height: 1.1;
-            margin-bottom: 10px;
-            border-bottom: 4px solid var(--accent-steel);
-            padding-bottom: 15px;
-            font-weight: 900;
         }
 
-        .sidebar-section { margin-bottom: 30px; }
-        .sidebar-title {
-            font-size: 10pt;
+        h2#cargo {
+            font-size: 12pt;
+            font-weight: 500;
+            color: var(--accent-steel);
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: var(--accent-steel);
-            margin-bottom: 12px;
-            font-weight: 800;
         }
 
-        .sidebar-item {
-            font-size: 8.5pt;
-            margin-bottom: 8px;
-            word-wrap: break-word;
-            opacity: 0.9;
+        /* --- TITULOS DE SEÇÃO --- */
+        h3.section-title {
+            font-size: 11pt;
+            text-transform: uppercase;
+            color: var(--primary-dark);
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
         }
 
-        /* --- COLUNA PRINCIPAL --- */
-        .main-content {
-            padding: 35px;
-            background: white;
+        /* Títulos na sidebar têm estilo ligeiramente diferente */
+        .sidebar h3.section-title {
+            border-color: #d0d0d0;
         }
 
-        .section-header {
+        /* --- CONTATOS (SIDEBAR) --- */
+        ul.contact-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        ul.contact-list li {
+            font-size: 9pt;
+            color: var(--text-main);
             display: flex;
             align-items: center;
+            word-break: break-word;
+        }
+
+        ul.contact-list li::before {
+            content: ''; 
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: var(--primary-dark);
+            border-radius: 50%;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        /* --- RESUMO --- */
+        #resumo {
+            line-height: 1.6;
+            color: var(--text-light);
+            text-align: justify;
+            margin-bottom: 25px;
+        }
+
+        /* --- SKILLS (SIDEBAR) --- */
+        #hard-skills-lista {
             margin-bottom: 20px;
         }
-
-        .rect-marker {
-            width: 35px;
-            height: 10px;
-            background: var(--primary-dark);
-            margin-right: 15px;
+        
+        /* Ajuste para as barras de progresso injetadas */
+        .skill-bar-container {
+            margin-bottom: 8px !important;
         }
 
-        h2 {
-            font-size: 13pt;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        #soft-skills-lista {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        /* --- EXPERIÊNCIA E FORMAÇÃO (CONTAINERS) --- */
+        /* O cvInjector cria div.entry-item, vamos estilizá-los aqui */
+        .entry-item {
+            margin-bottom: 20px !important; /* Força espaçamento */
+            position: relative;
+        }
+
+        .entry-item h4 {
             color: var(--primary-dark);
-            font-weight: 800;
         }
 
-        .description {
-            font-size: 10pt;
-            text-align: justify;
+        /* --- CURSOS --- */
+        ul#cursos-lista {
+            padding-left: 15px;
         }
 
-        /* --- SKILLS COM BARRAS --- */
-        .skill-bar-container { margin-bottom: 12px; }
-        .bar-bg {
-            height: 6px;
-            background: var(--highlight-bg);
-            width: 100%;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-        .bar-fill {
-            height: 100%;
-            background: var(--primary-dark);
-            transition: width 0.5s ease;
+        /* --- MODO IMPRESSÃO --- */
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .sidebar {
+                background-color: #f4f6f7 !important; /* Garante fundo cinza na impressão */
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="cv-grid">
-        <aside class="sidebar">
-            <h1 id="nome">NOME DO CANDIDATO<br>SOBRENOME DO CANDIDATO</h1>
-            
-            <div class="sidebar-section">
-                <div class="sidebar-title">Contato</div>
-                <div class="sidebar-item" id="nascimento" style="font-weight: bold; color: white;">Nasc: --/--/----</div>
-                <div class="sidebar-item" id="local">Localização</div>
-                <div class="sidebar-item" id="tel">Telefone</div>
-                <div class="sidebar-item" id="email">E-mail</div>
-                <div class="sidebar-item" id="linkedin">LinkedIn</div>
-            </div>
+    <aside class="sidebar">
+        
+        <div id="section-contato">
+            <h3 class="section-title">Contato</h3>
+            <ul class="contact-list">
+                <li id="email">email@exemplo.com</li>
+                <li id="tel">(00) 0000-0000</li>
+                <li id="local">Cidade, UF</li>
+                <li id="linkedin">linkedin.com/in/perfil</li>
+                <li id="nascimento"></li> 
+            </ul>
+        </div>
 
-            <div id="section-expertise" class="sidebar-section">
-                <div class="sidebar-title">Idiomas</div>
-                <div id="idiomas-lista" class="sidebar-item"></div>
-            </div>
-
-            <div id="section-certificacoes" class="sidebar-section">
-                <div class="sidebar-title">Certificações</div>
-                <div id="cursos-sidebar" class="sidebar-item"></div>
-            </div>
-        </aside>
-
-        <main class="main-content">
-            <div id="section-resumo">
-                <div class="section-header">
-                    <div class="rect-marker"></div>
-                    <h2>Resumo Profissional</h2>
+        <div id="section-hard-skills" style="margin-top: 20px;">
+            <h3 class="section-title">Competências</h3>
+            <div id="hard-skills-lista">
                 </div>
-                <p class="description" id="resumo" style="margin-bottom: 30px;"></p>
-            </div>
+        </div>
 
-            <div id="section-experiencia">
-                <div class="section-header">
-                    <div class="rect-marker"></div>
-                    <h2>Experiência de Carreira</h2>
+        <div id="section-soft-skills">
+            <h3 class="section-title">Soft Skills</h3>
+            <div id="soft-skills-lista">
                 </div>
-                <div id="experiencias"></div>
-            </div>
+        </div>
 
-            <div id="section-formacao">
-                <div class="section-header">
-                    <div class="rect-marker"></div>
-                    <h2>Formação Acadêmica</h2>
+        <div id="section-cursos">
+            <h3 class="section-title" style="margin-top: 20px;">Cursos & Cert.</h3>
+            <ul id="cursos-lista">
+                </ul>
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+        
+        <header>
+            <h1 id="nome">NOME DO CANDIDATO</h1>
+            <h2 id="cargo">CARGO PRETENDIDO</h2>
+        </header>
+
+        <div id="section-resumo">
+            <h3 class="section-title">Perfil Profissional</h3>
+            <p id="resumo">
+                Resumo profissional vai aqui...
+            </p>
+        </div>
+
+        <div id="section-experiencia">
+            <h3 class="section-title">Experiência Profissional</h3>
+            <div id="experiencias">
                 </div>
-                <div id="formacao"></div>
-            </div>
-        </main>
-    </div>
+        </div>
 
-    <div class="cv-grid page-break">
-        <aside class="sidebar" style="padding-top: 50px;">
-            <div class="sidebar-title">Diferenciais</div>
-            <div class="sidebar-item">Diferenciais 1</div>
-            <div class="sidebar-item">MDiferenciais 2</div>
-        </aside>
-
-        <main class="main-content">
-            <div id="section-hard-skills">
-                <div class="section-header">
-                    <div class="rect-marker"></div>
-                    <h2>Hard Skills & Proficiência</h2>
+        <div id="section-formacao" style="margin-top: 20px;">
+            <h3 class="section-title">Formação Acadêmica</h3>
+            <div id="formacao">
                 </div>
-                <div id="hard-skills-lista"></div>
-            </div>
+        </div>
 
-            <div id="section-soft-skills" style="margin-top: 35px;">
-                <div class="section-header">
-                    <div class="rect-marker"></div>
-                    <h2>Soft Skills</h2>
-                </div>
-                <div id="soft-skills-lista" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
-            </div>
-
-            <div id="section-qualificacoes" style="margin-top: 35px;">
-                <div class="section-header">
-                    <div class="rect-marker"></div>
-                    <h2>Cursos Complementares</h2>
-                </div>
-                <ul id="cursos-lista" style="font-size: 10pt; list-style: square; padding-left: 20px;"></ul>
-            </div>
-        </main>
-    </div>
+    </main>
 
 </body>
 </html>

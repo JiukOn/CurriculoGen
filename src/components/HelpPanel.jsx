@@ -1,10 +1,8 @@
 import React from 'react';
-// Importamos a estrutura base para permitir que o usuário baixe o "Reset" se precisar
 import structureBase from '../data/structure.json'; 
 
 const HelpPanel = ({ onClose }) => {
 
-  // Função utilitária para gerar e baixar arquivos JSON
   const downloadJSON = (filename, data) => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
     const anchor = document.createElement('a');
@@ -15,60 +13,61 @@ const HelpPanel = ({ onClose }) => {
     anchor.remove();
   };
 
-  // Gera o template de Vaga na hora
   const downloadVagaTemplate = () => {
     const template = {
       nome: "Título da Vaga (Ex: Desenvolvedor C#)",
-      requisitos: ["Requisito 1", "Requisito 2"],
-      responsabilidades: ["Responsabilidade 1", "Responsabilidade 2"],
-      diferenciais: ["Diferencial 1"]
+      requisitos: ["Experiência com React", ".NET Core 8", "Azure DevOps"],
+      responsabilidades: ["Desenvolver APIs", "Manter sistemas legados"],
+      diferenciais: ["Inglês Avançado", "Docker"]
     };
-    downloadJSON("vagaDesc.json", template);
+    downloadJSON("vaga_exemplo.json", template);
   };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content glass-card" onClick={e => e.stopPropagation()}>
         
-        {/* Botão de Fechar */}
         <button className="close-btn" onClick={onClose} title="Fechar Ajuda">&times;</button>
         
         <header className="help-header">
           <h2 className="help-title">Guia de Bordo <span>JIUKURRICULO</span></h2>
-          <p className="help-subtitle">Domine a arte de criar currículos otimizados para IA.</p>
+          <p className="help-subtitle">Crie currículos de alto nível otimizados para IA.</p>
         </header>
 
         <div className="help-scroll-area">
           
-          {/* --- SEÇÃO 01: VISUAL --- */}
           <section className="help-section">
-            <h3>🎨 01. Editor Visual</h3>
+            <h3>🎨 01. Estilo & Visual</h3>
             <p>
-              Comece definindo a "cara" do seu currículo. No painel superior esquerdo:
+              O primeiro painel à esquerda controla a aparência.
             </p>
             <ul className="step-list">
-              <li><strong>Modelo:</strong> Escolha entre layouts diferentes (ex: Model 1, Model 2).</li>
-              <li><strong>Paleta:</strong> Altere as cores de destaque (Cyberpunk, Graphite, Ocean, etc).</li>
-              <li><strong>Preview:</strong> Tudo é atualizado em tempo real na direita.</li>
+              <li><strong>Modelo:</strong> Escolha entre layouts diferentes (Clássico, Moderno, Minimalista).</li>
+              <li><strong>Paleta:</strong> Defina as cores principais (clique nos círculos coloridos).</li>
+              <li><strong>Live Preview:</strong> Tudo o que você edita aparece instantaneamente na direita.</li>
             </ul>
           </section>
 
           <hr className="divider"/>
 
-          {/* --- SEÇÃO 02: DADOS --- */}
           <section className="help-section">
-            <h3>📝 02. Seus Dados (JSON)</h3>
+            <h3>📝 02. Preenchendo seus Dados</h3>
             <p>
-              O coração do sistema. Edite seus dados diretamente no formato <strong>JSON</strong>. 
-              Isso garante que a IA consiga ler e estruturar tudo perfeitamente.
+              Agora temos duas formas de inserir suas informações. Escolha a que preferir:
             </p>
             
             <div className="info-box">
-              <strong>Dica de Ouro:</strong> Mantenha a estrutura das chaves (ex: <code>"experiencias"</code>, <code>"contato"</code>). Se quebrar o formato, um aviso aparecerá.
+              <strong>✨ MODO FÁCIL (Recomendado):</strong><br/>
+              Clique no botão <strong>"Abrir Formulário de Dados"</strong>. Uma janela grande se abrirá onde você pode preencher campos (Nome, Experiência, etc.) visualmente, sem mexer em código.
             </div>
 
-            <div className="action-row">
-              <span>Precisa restaurar o modelo original ou começar do zero?</span>
+            <div style={{marginTop: '10px', fontSize: '0.9rem', color: 'var(--text-muted)'}}>
+              <strong>💻 MODO AVANÇADO (JSON):</strong><br/>
+              Para usuários técnicos. Edite o código bruto. Útil para copiar e colar dados de outros lugares.
+            </div>
+
+            <div className="action-row" style={{marginTop: '15px'}}>
+              <span>Quer começar do zero ou restaurar o padrão?</span>
               <button 
                 className="neo-btn small-btn" 
                 onClick={() => downloadJSON("meu-curriculo-base.json", structureBase)}
@@ -81,11 +80,10 @@ const HelpPanel = ({ onClose }) => {
 
           <hr className="divider"/>
 
-          {/* --- SEÇÃO 03: IA NEURAL (CORE) --- */}
           <section className="help-section">
-            <h3>🧠 03. Neural Optimizer (IA)</h3>
+            <h3>🧠 03. Otimização com IA (Gemini)</h3>
             <p>
-              A ferramenta mais poderosa. Ela reescreve seu currículo para passar nos filtros de RH (ATS) baseado na vaga.
+              A IA reescreve seu currículo para passar nos filtros de RH (ATS), usando as palavras-chave exatas da vaga que você deseja.
             </p>
             
             <div className="tutorial-steps">
@@ -93,7 +91,7 @@ const HelpPanel = ({ onClose }) => {
                 <span className="step-num">1</span>
                 <div className="step-content">
                   <strong>Obtenha sua Chave (API Key):</strong>
-                  <p>O serviço usa o Google Gemini. É gratuito para uso pessoal.</p>
+                  <p>O sistema usa a IA do Google. É gratuito e rápido.</p>
                   <a 
                     href="https://aistudio.google.com/app/apikey" 
                     target="_blank" 
@@ -109,11 +107,11 @@ const HelpPanel = ({ onClose }) => {
                 <span className="step-num">2</span>
                 <div className="step-content">
                   <strong>Descreva a Vaga:</strong>
-                  <p>Você pode colar o texto da vaga ou importar um JSON organizado.</p>
+                  <p>Cole a descrição da vaga (LinkedIn, Gupy, etc) ou importe um JSON.</p>
                   <button 
                     className="neo-btn small-btn" 
                     onClick={downloadVagaTemplate}
-                    style={{borderColor: '#9b59b6', color: '#9b59b6', marginTop: '5px'}}
+                    style={{borderColor: '#9b59b6', color: '#9b59b6', marginTop: '5px', padding: '6px'}}
                   >
                     📥 Baixar Modelo de Vaga (.json)
                   </button>
@@ -124,7 +122,7 @@ const HelpPanel = ({ onClose }) => {
                 <span className="step-num">3</span>
                 <div className="step-content">
                   <strong>Otimizar:</strong>
-                  <p>Clique em "Otimizar Currículo". O sistema tentará vários modelos de IA até conseguir o melhor resultado.</p>
+                  <p>Clique em "Otimizar Currículo". A IA vai analisar e reescrever seus textos mantendo a verdade, mas focando na vaga.</p>
                 </div>
               </div>
             </div>
@@ -132,18 +130,19 @@ const HelpPanel = ({ onClose }) => {
 
           <hr className="divider"/>
 
-          {/* --- SEÇÃO 04: EXPORTAÇÃO --- */}
           <section className="help-section">
-            <h3>💾 04. Exportar PDF</h3>
+            <h3>💾 04. Exportar PDF (Importante!)</h3>
             <p>
-              Para gerar o arquivo final:
+              Para salvar o arquivo final corretamente:
             </p>
             <ol className="step-list" style={{listStyle: 'decimal', marginLeft: '20px'}}>
-              <li>Clique no botão grande <strong>EXPORTAR PDF</strong>.</li>
+              <li>Clique no botão <strong>EXPORTAR PDF</strong> na barra lateral.</li>
               <li>A janela de impressão do navegador abrirá.</li>
               <li>Defina o Destino como <strong>"Salvar como PDF"</strong>.</li>
-              <li>Em "Mais Definições", marque <strong>"Gráficos de Segundo Plano"</strong>.</li>
-              <li>Defina Margens como <strong>"Nenhuma"</strong> (Isso é crucial!).</li>
+              <li>
+                <span style={{color: '#e74c3c'}}>⚠️ Atenção:</span> Em "Mais Definições", marque a opção <strong>"Gráficos de Segundo Plano"</strong> (Background Graphics).
+              </li>
+              <li>Defina as Margens como <strong>"Nenhuma"</strong>.</li>
             </ol>
           </section>
 

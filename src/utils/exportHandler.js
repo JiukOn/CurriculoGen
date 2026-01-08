@@ -1,6 +1,3 @@
-/**
- * @param {React.RefObject} iframeRef - Referência para o Iframe do currículo.
- */
 export const exportToPDF = (iframeRef) => {
   if (!iframeRef || !iframeRef.current) {
     console.error("Erro: Iframe não encontrado para exportação.");
@@ -11,7 +8,6 @@ export const exportToPDF = (iframeRef) => {
   const iframeDoc = iframeRef.current.contentDocument || iframeWindow.document;
 
   if (iframeWindow && iframeDoc) {
-    // 1. INJEÇÃO DE CSS DE IMPRESSÃO
     const oldStyle = iframeDoc.getElementById('print-fix-style');
     if (oldStyle) oldStyle.remove();
 
@@ -42,14 +38,12 @@ export const exportToPDF = (iframeRef) => {
     `;
     iframeDoc.head.appendChild(style);
 
-    // 2. Define o nome do arquivo (Nome do Candidato)
     const nameElement = iframeDoc.getElementById('nome');
     const fileName = nameElement?.innerText || "Curriculo_Profissional";
     
     const originalTitle = iframeDoc.title;
     iframeDoc.title = `CV_${fileName.trim().replace(/\s+/g, '_')}`;
 
-    // 3. Foco e Impressão
     iframeWindow.focus();
 
     try {

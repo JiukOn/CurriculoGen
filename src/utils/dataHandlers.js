@@ -1,69 +1,92 @@
-/* --- TÍTULOS BONITOS: EXPORTAÇÃO DE SCHEMA E GERENCIAMENTO DE ARQUIVOS --- */
-
-/**
- * Faz o download do schema base em formato JSON.
- * @param {Object} baseData - Os dados importados do structure.json
- */
-export const downloadBaseSchema = (baseData) => {
-  if (!baseData) {
-    console.error("Erro: Dados base para o schema não encontrados.");
+export const downloadBaseSchema = (data, prefix = "backup_curriculo") => {
+  if (!data) {
+    console.error("Erro: Nenhum dado fornecido para download.");
     return;
   }
 
   try {
-    // Transforma o objeto em string formatada
-    const dataStr = JSON.stringify(baseData, null, 2);
+    const dateStr = new Date().toISOString().split('T')[0];
+    const fileName = `${prefix}_${dateStr}.json`;
+
+    const dataStr = JSON.stringify(data, null, 2);
     
-    // Cria um Blob (Binary Large Object) para garantir compatibilidade com navegadores modernos
-    const blob = new Blob([dataStr], { type: "application/json" });
+    const blob = new Blob([dataStr], { type: "application/json;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     
-    // Cria um elemento de link temporário para disparar o download
     const link = document.createElement('a');
     link.href = url;
-    link.download = "meu_curriculo_base.json";
+    link.download = fileName;
     
     document.body.appendChild(link);
     link.click();
     
-    // Limpeza de memória e remoção do elemento
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+
   } catch (err) {
-    console.error("Falha ao gerar o arquivo de download:", err);
+    console.error("Falha crítica ao gerar arquivo de download:", err);
+    alert("Erro ao baixar o arquivo. Verifique o console.");
   }
 };
 
-/* --- TÍTULOS BONITOS: VALIDAÇÃO TÉCNICA E FORMATAÇÃO DE DADOS --- */
+const sanitizeRecursive = (item) => {
+  if (typeof item === 'string') {
+    return item
+      .replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gim, "") 
+      .replace(/on\w+="[^"]*"/g, "") 
+      .replace(/javascript:/gi, ""); 
+  }
+  
+  if (Array.isArray(item)) {
+    return item.map(sanitizeRecursive);
+  }
+  
+  if (item !== null && typeof item === 'object') {
+    const cleanObj = {};
+    Object.keys(item).forEach(key => {
+      cleanObj[key] = sanitizeRecursive(item[key]);
+    });
+    return cleanObj;
+  }
 
-/**
- * Valida o JSON inserido e formata campos críticos como as badges de transição.
- * @param {string} rawData - String bruta vinda do textarea
- * @returns {Object|null} Dados formatados ou null se houver erro
- */
+  return item;
+};
+
 export const validateAndFormat = (rawData) => {
-  if (!rawData || rawData.trim() === "") return null;
+  // 1. Validação Básica de Entrada
+  if (!rawData || typeof rawData !== 'string' || rawData.trim() === "") {
+    return null;
+  }
 
   try {
-    const data = JSON.parse(rawData);
-    
-    // Tratamento de Formação: Garante destaque para transições (Ex: Engenharia para ADS)
-    if (data.formacao && Array.isArray(data.formacao)) {
-      data.formacao = data.formacao.map(item => ({
-        ...item,
-        // Converte o status para caixa alta para padronização visual nas badges
-        status: item.status ? item.status.toString().toUpperCase() : null
-      }));
-    }
+    const parsedData = JSON.parse(rawData);
 
-    // Tratamento de Experiências: Garante que existam arrays para o motor de injeção
-    data.experiencias = Array.isArray(data.experiencias) ? data.experiencias : [];
-    data.hard_skills = Array.isArray(data.hard_skills) ? data.hard_skills : [];
-    data.soft_skills = Array.isArray(data.soft_skills) ? data.soft_skills : [];
+    const safeData = sanitizeRecursive(parsedData);
 
-    return data;
+    const formattedData = {
+      ...safeData,
+      contato: safeData.contato || {}, 
+      experiencias: Array.isArray(safeData.experiencias) ? safeData.experiencias : [],
+      formacao: Array.isArray(safeData.formacao) ? safeData.formacao : [],
+      hard_skills: Array.isArray(safeData.hard_skills) ? safeData.hard_skills : [],
+      soft_skills: Array.isArray(safeData.soft_skills) ? safeData.soft_skills : [],
+      cursos: Array.isArray(safeData.cursos) ? safeData.cursos : []
+    };
+
+    formattedData.formacao = formattedData.formacao.map(item => ({
+      ...item,
+      status: item.status ? String(item.status).toUpperCase() : null
+    }));
+
+    formattedData.hard_skills = formattedData.hard_skills.map(skill => ({
+      ...skill,
+      nivel: Math.min(Math.max(Number(skill.nivel) || 0, 0), 100)
+    }));
+
+    return formattedData;
+
   } catch (e) {
-    console.warn("Aviso: Entrada de dados JSON inválida.");
+    console.warn("Validação falhou: JSON mal formatado.", e.message);
     return null;
   }
 };
