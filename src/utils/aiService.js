@@ -6,11 +6,11 @@
  */
 const MODELS_TO_TRY = [
   // --- TIER 1: GEMINI 3.0 (Bleeding Edge) ---
-  "gemini-3.0-pro-preview",
-  "gemini-3.0-flash-preview",
+  //"gemini-3.0-pro-preview",
+  //"gemini-3.0-flash-preview",
 
   // --- TIER 2: GEMINI 2.5 (High Performance) ---
-  "gemini-2.5-pro",
+  //"gemini-2.5-pro",
   "gemini-2.5-flash",
   "gemini-2.5-flash-lite",
 
