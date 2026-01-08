@@ -3,6 +3,7 @@
   "cargo": "EX: DESENVOLVEDOR FULL STACK / ENGENHEIRO DE SOFTWARE",
   "resumo": "Escreva aqui um resumo profissional impactante de 3 a 5 linhas. Destaque suas principais especialidades e conquistas. Caso este campo seja removido ou deixado vazio, a seção não aparecerá no currículo.",
   "contato": {
+    "nascimento":"--/--/----",
     "tel": "+55 (00) 00000-0000",
     "email": "seu.email@exemplo.com",
     "local": "Cidade - Estado",
