@@ -1,14 +1,20 @@
-/* --- TÍTULOS BONITOS: GEMINI NEURAL BRIDGE (NATIVE REST EDITION) --- */
-
-/**
- * LISTA DE MODELOS (FALLBACK STRATEGY):
- * Usaremos chamadas HTTP diretas para evitar bugs de versão do SDK.
- */
 const MODELS_TO_TRY = [
-  "gemini-1.5-flash", // Rápido e Eficiente
-  "gemini-1.5-pro",   // Inteligência Máxima
-  "gemini-pro",       // Estável (Legado)
-  "gemini-1.0-pro"    // Compatibilidade Máxima
+  // --- TIER 1: GEMINI 3.0 (Bleeding Edge) ---
+  "gemini-3.0-pro-preview",
+  "gemini-3.0-flash-preview",
+
+  // --- TIER 2: GEMINI 2.5 (High Performance) ---
+  "gemini-2.5-pro",
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-lite",
+
+  // --- TIER 3: GEMINI 2.0 (Stable Modern) ---
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-lite",
+
+  // --- TIER 4: LEGACY FALLBACK (Safety Net) ---
+  "gemini-1.5-pro",
+  "gemini-1.5-flash"
 ];
 
 /**
@@ -50,7 +56,7 @@ export const optimizeResumeWithGemini = async (apiKey, currentJson, jobData) => 
       
       const response = await callGeminiAPI(modelName, apiKey, prompt);
       
-      // Se chegou aqui, funcionou. Vamos processar.
+      // Se chegou aqui, funcionou.
       console.log(`[Neural Engine] Conexão bem-sucedida: ${modelName}`);
       return processAndValidateResponse(response, currentJson);
 
@@ -61,10 +67,10 @@ export const optimizeResumeWithGemini = async (apiKey, currentJson, jobData) => 
 
       // Se for erro de Chave (400 ou 403), para tudo.
       if (msg.includes("400") || msg.includes("403") || msg.includes("invalid arg")) {
-        throw new Error("API Key inválida ou rejeitada pelo Google.");
+        throw new Error("API Key inválida ou rejeitada pelo Google (Erro 400/403).");
       }
       
-      // Se for 404 ou 500, tenta o próximo modelo...
+      // 404 (Not Found) ou 500 (Server Error) -> Tenta o próximo modelo
     }
   }
 
@@ -73,10 +79,8 @@ export const optimizeResumeWithGemini = async (apiKey, currentJson, jobData) => 
 
 // --- FUNÇÕES AUXILIARES DE CONEXÃO E PARSE ---
 
-/**
- * Faz a chamada HTTP pura para a API do Google.
- */
 async function callGeminiAPI(model, key, promptText) {
+  // ATENÇÃO: Usando endpoint v1beta que geralmente suporta modelos preview/novos
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
   
   const payload = {
@@ -100,8 +104,6 @@ async function callGeminiAPI(model, key, promptText) {
   }
 
   const data = await response.json();
-  
-  // Extrai o texto da resposta complexa do Google
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
   
   if (!text) throw new Error("A API retornou uma resposta vazia.");
@@ -110,12 +112,7 @@ async function callGeminiAPI(model, key, promptText) {
 }
 
 function processAndValidateResponse(text, originalJson) {
-  // Limpeza de Markdown
-  let cleanedText = text
-    .replace(/```json/g, '')
-    .replace(/```/g, '')
-    .trim();
-
+  let cleanedText = text.replace(/```json/g, '').replace(/```/g, '').trim();
   const firstBrace = cleanedText.indexOf('{');
   const lastBrace = cleanedText.lastIndexOf('}');
 
@@ -131,7 +128,6 @@ function processAndValidateResponse(text, originalJson) {
     throw new Error("Formato inválido recebido da IA.");
   }
 
-  // Validação de Integridade
   const criticalKeys = ['nome', 'experiencias', 'contato'];
   const newKeys = Object.keys(optimizedJson);
   
@@ -146,7 +142,7 @@ function handleFinalError(error) {
   const msg = error ? error.toString() : "Erro desconhecido";
   
   if (msg.includes("404")) {
-    throw new Error("Nenhum modelo disponível para sua chave (Erro 404).");
+    throw new Error("Nenhum modelo disponível (Erro 404). Verifique se a API está ativada no seu projeto Google Cloud.");
   } else if (msg.includes("429")) {
     throw new Error("Muitas requisições. Aguarde um momento.");
   } else if (msg.includes("Failed to fetch")) {

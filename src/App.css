@@ -1,14 +1,10 @@
-/* --- TÍTULOS BONITOS: JIUKURRICULO DESIGN SYSTEM 2026 (THEMED) --- */
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
 
 :root {
-  /* --- DIMENSÕES & ESTRUTURA --- */
   --sidebar-width: 420px;
   --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   
-  /* --- PALETA DE CORES (MODO ESCURO - PADRÃO) --- */
   --bg-app: #0a0a0c;
   --bg-sidebar: rgba(15, 15, 18, 0.95);
   --bg-input: rgba(255, 255, 255, 0.05);
@@ -22,14 +18,12 @@
   --preview-bg: #050505;
   --dots-color: #444;
 
-  /* --- CORES DE DESTAQUE (NEON) --- */
   --primary: #2ecc71;
   --primary-glow: rgba(46, 204, 113, 0.4);
   --error-red: #e74c3c;
   --accent-blue: #3498db;
 }
 
-/* --- MODO CLARO (OVERRIDE) --- */
 [data-theme="light"] {
   --bg-app: #eef2f5;
   --bg-sidebar: rgba(255, 255, 255, 0.85);
@@ -44,7 +38,7 @@
   --preview-bg: #dce1e6;
   --dots-color: #bbb;
 
-  --primary: #27ae60; /* Verde mais escuro para contraste no branco */
+  --primary: #27ae60;
   --primary-glow: rgba(39, 174, 96, 0.3);
 }
 
@@ -60,11 +54,9 @@ body {
   color: var(--text-main);
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
-  /* Transição suave ao trocar de tema */
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* --- TÍTULOS BONITOS: LAYOUT GLOBAL --- */
 
 .app-container {
   display: flex;
@@ -74,7 +66,6 @@ body {
   transition: background-color 0.3s ease;
 }
 
-/* --- TÍTULOS BONITOS: SIDEBAR JIUKURRICULO --- */
 
 .sidebar-controls {
   width: var(--sidebar-width);
@@ -97,7 +88,6 @@ body {
   padding-right: 10px;
 }
 
-/* Scrollbar Minimalista */
 .control-sections-scroll::-webkit-scrollbar { width: 4px; }
 .control-sections-scroll::-webkit-scrollbar-track { background: transparent; }
 .control-sections-scroll::-webkit-scrollbar-thumb {
@@ -108,7 +98,6 @@ body {
   background: var(--text-muted);
 }
 
-/* --- TÍTULOS BONITOS: BRANDING & HEADER --- */
 
 .brand-header-neon {
   margin-bottom: 30px;
@@ -135,7 +124,6 @@ body {
   text-shadow: 0 0 25px var(--primary-glow);
 }
 
-/* Botão de Trocar Tema */
 .theme-toggle-btn {
   background: transparent;
   border: 1px solid var(--border-color);
@@ -176,7 +164,6 @@ body {
   animation: pulse 2s infinite;
 }
 
-/* --- TÍTULOS BONITOS: COMPONENTES GLASS --- */
 
 .glass-card {
   background: var(--bg-card);
@@ -199,7 +186,7 @@ body {
 
 .step-indicator {
   background: var(--primary);
-  color: #fff; /* Texto sempre branco no indicador para contraste */
+  color: #fff;
   font-weight: 900;
   width: 28px;
   height: 28px;
@@ -221,7 +208,6 @@ body {
   letter-spacing: 1.5px;
 }
 
-/* --- TÍTULOS BONITOS: INPUTS & SELECTS (CORRIGIDOS) --- */
 
 .custom-select-wrapper { position: relative; }
 
@@ -242,14 +228,12 @@ body {
   border-color: var(--primary);
 }
 
-/* CORREÇÃO CRÍTICA PARA LEGIBILIDADE DAS OPÇÕES */
 .modern-select option {
-  background-color: #1a1a1c; /* Fundo escuro por padrão */
+  background-color: #1a1a1c;
   color: #fff;
   padding: 10px;
 }
 
-/* No modo claro, as opções ficam claras */
 [data-theme="light"] .modern-select option {
   background-color: #fff;
   color: #000;
@@ -262,7 +246,6 @@ body {
   text-align: center;
 }
 
-/* --- TÍTULOS BONITOS: VISUAL EDITOR - CORES NEON --- */
 
 .palette-grid-jiu {
   display: flex;
@@ -291,7 +274,6 @@ body {
   z-index: 2;
 }
 
-/* --- TÍTULOS BONITOS: DATA ENGINE --- */
 
 .description-text {
   font-size: 0.8rem;
@@ -329,9 +311,8 @@ body {
 .btn-label span { display: block; font-size: 10px; font-weight: 800; color: var(--text-main); }
 .btn-label small { font-size: 8px; color: var(--text-muted); }
 
-/* Editor de Código (Sempre Escuro para Estilo Terminal) */
 .code-editor-container {
-  background: #08080a; /* Fundo fixo escuro estilo IDE */
+  background: #08080a;
   border-radius: 14px;
   overflow: hidden;
   border: 1px solid var(--border-color);
@@ -356,7 +337,7 @@ body {
   width: 100%;
   min-height: 300px;
   background: transparent;
-  color: #a5d6ff; /* Cor de código padrão */
+  color: #a5d6ff;
   font-family: 'Fira Code', monospace;
   font-size: 11px;
   padding: 15px;
@@ -366,7 +347,6 @@ body {
   outline: none;
 }
 
-/* --- TÍTULOS BONITOS: PREVIEW AREA --- */
 
 .preview-area-expanded {
   flex-grow: 1;
@@ -431,8 +411,6 @@ body {
   background: white;
 }
 
-/* --- TÍTULOS BONITOS: BOTÃO EXPORTAR & UTILITÁRIOS --- */
-
 .export-section-glass { padding-top: 10px; }
 
 .btn-neon-export {
@@ -480,15 +458,11 @@ body {
   margin-bottom: 20px;
 }
 
-/* --- TÍTULOS BONITOS: ANIMAÇÕES --- */
-
 @keyframes pulse {
   0% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.3); opacity: 0.5; }
   100% { transform: scale(1); opacity: 1; }
 }
-
-/* --- TÍTULOS BONITOS: RESPONSIVIDADE EVOLUÍDA --- */
 
 @media (max-width: 1200px) {
   :root { --sidebar-width: 350px; }

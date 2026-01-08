@@ -107,7 +107,7 @@ const AiPanel = ({ jsonInput, setJsonInput }) => {
         </header>
 
         <p className="description-text">
-          Utilize o <strong>Gemini Pro</strong> para alinhar seu currículo à vaga.
+          Utilize o <strong>Gemini</strong> para alinhar seu currículo à vaga.
           <br/><small style={{opacity: 0.7}}>(Seus dados não são armazenados).</small>
         </p>
 
@@ -140,7 +140,7 @@ const AiPanel = ({ jsonInput, setJsonInput }) => {
 
         {/* --- JOB DESCRIPTION SECTION --- */}
         <div className="control-group">
-          <label className="modern-label ai-label" style={{ color: '#9b59b6' }}>Dados da Vaga (JD)</label>
+          <label className="modern-label ai-label" style={{ color: '#9b59b6' }}>Dados da Vaga</label>
           
           {/* GRID DE BOTÕES GRANDES GLASSMORPHISM */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>

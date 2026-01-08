@@ -1,8 +1,4 @@
-/* --- TÍTULOS BONITOS: MOTOR DE EXPORTAÇÃO PDF BLINDADO --- */
-
 /**
- * Aciona o driver de impressão com injeção de CSS para remover cabeçalhos/rodapés
- * e evitar páginas em branco extras.
  * @param {React.RefObject} iframeRef - Referência para o Iframe do currículo.
  */
 export const exportToPDF = (iframeRef) => {
@@ -15,8 +11,7 @@ export const exportToPDF = (iframeRef) => {
   const iframeDoc = iframeRef.current.contentDocument || iframeWindow.document;
 
   if (iframeWindow && iframeDoc) {
-    // 1. INJEÇÃO DE CSS DE IMPRESSÃO (A MÁGICA ACONTECE AQUI)
-    // Removemos qualquer estilo de impressão anterior para evitar duplicidade
+    // 1. INJEÇÃO DE CSS DE IMPRESSÃO
     const oldStyle = iframeDoc.getElementById('print-fix-style');
     if (oldStyle) oldStyle.remove();
 
@@ -51,7 +46,6 @@ export const exportToPDF = (iframeRef) => {
     const nameElement = iframeDoc.getElementById('nome');
     const fileName = nameElement?.innerText || "Curriculo_Profissional";
     
-    // Altera o título temporariamente (Isso define o nome do arquivo PDF sugerido)
     const originalTitle = iframeDoc.title;
     iframeDoc.title = `CV_${fileName.trim().replace(/\s+/g, '_')}`;
 
@@ -59,10 +53,8 @@ export const exportToPDF = (iframeRef) => {
     iframeWindow.focus();
 
     try {
-      // Pequeno delay para garantir que o CSS foi aplicado
       setTimeout(() => {
         iframeWindow.print();
-        // Restaura o título original após a janela de impressão abrir
         iframeDoc.title = originalTitle;
       }, 100);
       
