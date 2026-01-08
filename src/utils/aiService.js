@@ -1,14 +1,11 @@
-/* --- TÍTULOS BONITOS: GEMINI NEURAL BRIDGE (DOUBLE LOOP & RATE LIMIT HANDLER) --- */
+/* --- TÍTULOS BONITOS: GEMINI NEURAL BRIDGE (ANTI-FREEZE EDITION) --- */
 
 /**
  * LISTA DE MODELOS (FALLBACK STRATEGY):
- * Baseada nas prints fornecidas do AI Studio.
- * Ordem: 3.0 -> 2.5 -> 2.0 -> 1.5.
+ * Ordem: Tenta os mais novos (3.0/2.5). Se der erro, cai para os estáveis (2.0/1.5).
  */
 const MODELS_TO_TRY = [
   // --- TIER 1: GEMINI 3.0 (Bleeding Edge) ---
-  "gemini-3.0-pro",
-  "gemini-3.0-flash",
   "gemini-3.0-pro-preview",
   "gemini-3.0-flash-preview",
 
@@ -26,12 +23,12 @@ const MODELS_TO_TRY = [
   "gemini-1.5-flash"
 ];
 
-// Utilitário de Delay
+// Utilitário de Delay (Pausa não-bloqueante)
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
  * Conecta ao Google Gemini via HTTP Fetch (Sem SDK).
- * Implementa estratégia de "Double Loop" para contornar Rate Limits.
+ * Sistema anti-travamento com timeout e redundância dupla.
  */
 export const optimizeResumeWithGemini = async (apiKey, currentJson, jobData) => {
   // 1. Validação de Entrada
@@ -63,74 +60,99 @@ export const optimizeResumeWithGemini = async (apiKey, currentJson, jobData) => 
   let lastError = null;
 
   // --- ESTRATÉGIA DOUBLE LOOP (2 RODADAS) ---
-  // Rodada 1: Tenta todos. Se der 429, pula pro próximo.
-  // Rodada 2: Se tudo falhou, espera um pouco e tenta tudo de novo.
-  
   for (let attempt = 1; attempt <= 2; attempt++) {
+    
+    // Pausa estratégica APENAS se estiver indo para a segunda rodada
     if (attempt === 2) {
-      console.log("⚠️ Primeira rodada falhou. Aguardando 2s para rodada final...");
-      await delay(2000); // Cool-down antes da segunda tentativa geral
+      console.log("⚠️ 1ª Rodada falhou (Todos ocupados/404). Aguardando 2s para tentativa final...");
+      await delay(2000); 
     }
 
     // Loop interno pelos modelos
     for (const modelName of MODELS_TO_TRY) {
       try {
-        // console.log(`[Neural Engine] Rodada ${attempt} - Testando: ${modelName}...`);
+        // console.log(`[Neural Engine] Rodada ${attempt} | Tentando: ${modelName}...`);
         
-        const response = await callGeminiAPI(modelName, apiKey, prompt);
+        // Timeout de 10s para não travar o site
+        const response = await callGeminiAPI(modelName, apiKey, prompt, 10000);
         
-        console.log(`[Neural Engine] SUCESSO na Rodada ${attempt} com: ${modelName}`);
+        console.log(`[Neural Engine] ✅ SUCESSO na Rodada ${attempt} com: ${modelName}`);
         return processAndValidateResponse(response, currentJson);
 
       } catch (error) {
         const msg = error.message.toLowerCase();
-        const isRateLimit = msg.includes("429") || msg.includes("too many requests");
-        
-        console.warn(`[Neural Engine] Falha ${modelName} (R${attempt}):`, msg);
         lastError = error;
 
-        // ERRO FATAL DE AUTENTICAÇÃO (Para tudo imediatamente)
-        if (msg.includes("400") || msg.includes("403") || msg.includes("invalid arg") || msg.includes("api key")) {
-          throw new Error("Sua API Key é inválida ou foi rejeitada pelo Google.");
+        // Análise de Erro para o Console
+        const isRateLimit = msg.includes("429") || msg.includes("too many requests");
+        const isNotFound = msg.includes("404") || msg.includes("not found");
+        
+        if (isRateLimit) {
+            console.warn(`[Neural Engine] ⏳ ${modelName} está lotado (429). Pulando...`);
+        } else if (isNotFound) {
+            console.warn(`[Neural Engine] ❌ ${modelName} não disponível (404). Pulando...`);
+        } else {
+            console.warn(`[Neural Engine] ⚠️ Erro em ${modelName}: ${msg}`);
         }
 
-        // Se for 404 (Não existe) ou 429 (Limite), apenas continua o loop para o próximo modelo.
-        // O código não faz nada aqui, apenas deixa o loop 'for' seguir.
+        // ERRO FATAL (Chave Inválida) - Para tudo imediatamente
+        if (msg.includes("400") || msg.includes("403") || msg.includes("invalid arg") || msg.includes("api key")) {
+          throw new Error("Sua API Key é inválida ou foi rejeitada pelo Google (Erro 400/403).");
+        }
+
+        // Se for 429, 404, 500 ou Timeout -> O código continua naturalmente para o próximo item do array
       }
     }
   }
 
-  // Se saiu dos 2 loops principais, falhou em ~20 tentativas.
+  // Se chegou aqui, falhou nas 2 rodadas completas (aprox. 18 tentativas)
   handleFinalError(lastError);
 };
 
 // --- FUNÇÕES AUXILIARES ---
 
-async function callGeminiAPI(model, key, promptText) {
+async function callGeminiAPI(model, key, promptText, timeoutMs = 15000) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
   
   const payload = {
     contents: [{ parts: [{ text: promptText }] }]
   };
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+  // Controller para cancelar a requisição se demorar muito (Anti-travamento)
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    const errorMessage = errorData.error?.message || response.statusText;
-    throw new Error(`${response.status} ${errorMessage}`);
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal // Liga o timeout ao fetch
+    });
+
+    clearTimeout(timeoutId); // Limpa o timer se respondeu a tempo
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error?.message || response.statusText;
+        throw new Error(`${response.status} ${errorMessage}`);
+    }
+
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    if (!text) throw new Error("Resposta vazia da IA.");
+    
+    return text;
+
+  } catch (error) {
+    clearTimeout(timeoutId);
+    // Transforma erro de Abort em mensagem legível
+    if (error.name === 'AbortError') {
+        throw new Error(`Timeout: O modelo ${model} demorou mais de ${timeoutMs/1000}s.`);
+    }
+    throw error;
   }
-
-  const data = await response.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-  
-  if (!text) throw new Error("A API retornou uma resposta vazia.");
-  
-  return text;
 }
 
 function processAndValidateResponse(text, originalJson) {
@@ -154,7 +176,7 @@ function processAndValidateResponse(text, originalJson) {
   const newKeys = Object.keys(optimizedJson);
   
   if (!criticalKeys.every(k => newKeys.includes(k))) {
-    throw new Error("IA corrompeu a estrutura do currículo (removeu campos essenciais).");
+    throw new Error("IA corrompeu a estrutura do currículo.");
   }
 
   return optimizedJson;
@@ -163,13 +185,14 @@ function processAndValidateResponse(text, originalJson) {
 function handleFinalError(error) {
   const msg = error ? error.toString() : "Erro desconhecido";
   
+  // Mensagem final amigável se tudo falhar
   if (msg.includes("429")) {
-    throw new Error("Gemini API sobrecarregada (Muitos usos). Aguarde 1 minuto e tente novamente.");
+    throw new Error("Gemini API sobrecarregada no momento. Tente novamente em 1 minuto.");
   } else if (msg.includes("404")) {
-    throw new Error("Nenhum modelo compatível encontrado na sua conta Google Cloud (Erro 404).");
-  } else if (msg.includes("Failed to fetch")) {
+    throw new Error("Nenhum modelo compatível encontrado na sua chave.");
+  } else if (msg.includes("Failed to fetch") || msg.includes("network")) {
     throw new Error("Erro de conexão com a internet.");
   } else {
-    throw new Error(`Falha crítica na IA: ${msg}`);
+    throw new Error(`Não foi possível otimizar: ${msg}`);
   }
 }
