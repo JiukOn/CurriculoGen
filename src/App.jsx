@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import VisualEditor from './components/VisualEditor';
 import DataPanel from './components/DataPanel';
-import AiPanel from './components/AiPanel'; // Neural Engine (Passo 3)
+import AiPanel from './components/AiPanel';
+import HelpPanel from './components/HelpPanel'; // <--- IMPORT NOVO
 import { injectDataToIframe } from './utils/cvInjector';
 import { exportToPDF } from './utils/exportHandler';
 import { validateAndFormat } from './utils/dataHandlers';
 import { PALETTES } from './config/constants';
-import structureBase from './data/structure.json';
+import structureBase from './data/structure.json'; // Certifique-se que o caminho está certo
 import './App.css';
 
 /* --- JIUKURRICULO ENGINE: STABLE & DYNAMIC EDITION --- */
@@ -45,8 +46,12 @@ function App() {
   // --- ESTADOS DE CONTROLE E UI ---
   const [error, setError] = useState(null);
   const [isIframeReady, setIsIframeReady] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false); // Sincronização de dados
-  const [isExporting, setIsExporting] = useState(false); // Geração de PDF
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  
+  // NOVO: Estado para o Modal de Ajuda
+  const [showHelp, setShowHelp] = useState(false);
+
   const iframeRef = useRef(null);
 
   // --- EFEITOS E LÓGICA DE NEGÓCIO ---
@@ -75,7 +80,6 @@ function App() {
     setError(null);
     safeStorage.set('cv_generation_cache', jsonInput);
     
-    // Delay para suavizar a animação de "Processando..."
     setTimeout(() => setIsSyncing(false), 400);
     return result;
   }, [jsonInput]);
@@ -87,19 +91,16 @@ function App() {
 
     try {
       const doc = iframe.contentWindow.document;
-      // Injeta apenas se os dados forem válidos
       if (validatedData) {
         injectDataToIframe(doc, validatedData, config, PALETTES);
       }
     } catch (err) {
-      // Ignora erros de SecurityError durante hot-reload, mas loga outros
       if (err.name !== 'SecurityError') {
         console.warn("Sync pendente:", err);
       }
     }
   }, [validatedData, config, isIframeReady]);
 
-  // Debounce na sincronização
   useEffect(() => {
     const timeout = setTimeout(syncPreview, 150);
     return () => clearTimeout(timeout);
@@ -110,20 +111,18 @@ function App() {
     syncPreview();
   };
 
-  // 4. Wrapper de Exportação com Feedback
+  // 4. Wrapper de Exportação
   const handleExport = async () => {
     if (isExporting || error) return;
     
     setIsExporting(true);
     try {
-      // Pequeno delay para garantir renderização final
       await new Promise(resolve => setTimeout(resolve, 500));
       exportToPDF(iframeRef);
     } catch (e) {
       setError("Falha ao iniciar driver de impressão.");
       console.error(e);
     } finally {
-      // Mantém o estado de "Gerando" um pouco mais para UX
       setTimeout(() => setIsExporting(false), 1500);
     }
   };
@@ -132,19 +131,35 @@ function App() {
 
   return (
     <div className="app-container glass-bg">
+      
+      {/* RENDERIZAÇÃO DO MODAL DE AJUDA */}
+      {showHelp && <HelpPanel onClose={() => setShowHelp(false)} />}
+
       <aside className="sidebar-controls glass-sidebar">
         
         {/* HEADER */}
         <header className="brand-header-neon">
           <div className="header-top-row">
             <h1 className="brand-title-jiu">JIU<span>KURRICULO</span></h1>
-            <button 
-              onClick={toggleTheme} 
-              className="theme-toggle-btn" 
-              title={theme === 'dark' ? "Modo Claro" : "Modo Escuro"}
-            >
-              {theme === 'dark' ? '🌙' : '☀️'}
-            </button>
+            
+            {/* CONTROLES DE CABEÇALHO (TEMA + AJUDA) */}
+            <div className="header-controls">
+              <button 
+                onClick={() => setShowHelp(true)} 
+                className="help-toggle-btn"
+                title="Guia de Uso e Tutoriais"
+              >
+                ?
+              </button>
+              
+              <button 
+                onClick={toggleTheme} 
+                className="theme-toggle-btn" 
+                title={theme === 'dark' ? "Modo Claro" : "Modo Escuro"}
+              >
+                {theme === 'dark' ? '🌙' : '☀️'}
+              </button>
+            </div>
           </div>
 
           <div className="status-line">
@@ -152,7 +167,7 @@ function App() {
               className="pulse-dot" 
               style={{ 
                 animationDuration: (isSyncing || isExporting) ? '0.5s' : '2s',
-                backgroundColor: isExporting ? '#3498db' : '#2ecc71', // Azul se exportando, Verde se ativo
+                backgroundColor: isExporting ? '#3498db' : '#2ecc71',
                 boxShadow: isExporting ? '0 0 10px #3498db' : '0 0 10px #2ecc71'
               }}
             ></span> 
@@ -168,7 +183,7 @@ function App() {
           
           <div className="section-spacer"></div>
 
-          {/* PASSO 02: Dados Manuais (DataPanel) */}
+          {/* PASSO 02: Dados Manuais */}
           <DataPanel 
             jsonInput={jsonInput} 
             setJsonInput={setJsonInput} 
@@ -176,7 +191,7 @@ function App() {
 
           <div className="section-spacer"></div>
 
-          {/* PASSO 03: Neural Engine (IA Gemini) - AGORA EMBAIXO */}
+          {/* PASSO 03: Neural Engine */}
           <AiPanel jsonInput={jsonInput} setJsonInput={setJsonInput} />
           
           <div className="section-spacer"></div>

@@ -9,6 +9,7 @@
   --bg-sidebar: rgba(15, 15, 18, 0.95);
   --bg-input: rgba(255, 255, 255, 0.05);
   --bg-card: rgba(255, 255, 255, 0.03);
+  --bg-panel: #1a1a1d; /* Para modais */
   
   --text-main: #f5f5f7;
   --text-muted: #86868b;
@@ -22,13 +23,15 @@
   --primary-glow: rgba(46, 204, 113, 0.4);
   --error-red: #e74c3c;
   --accent-blue: #3498db;
+  --ai-purple: #9b59b6;
 }
 
 [data-theme="light"] {
   --bg-app: #eef2f5;
-  --bg-sidebar: rgba(255, 255, 255, 0.85);
+  --bg-sidebar: rgba(255, 255, 255, 0.95);
   --bg-input: rgba(0, 0, 0, 0.05);
   --bg-card: rgba(255, 255, 255, 0.6);
+  --bg-panel: #ffffff;
 
   --text-main: #1a1a1c;
   --text-muted: #555;
@@ -57,6 +60,7 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* --- LAYOUT PRINCIPAL --- */
 
 .app-container {
   display: flex;
@@ -65,7 +69,6 @@ body {
   background: var(--bg-app);
   transition: background-color 0.3s ease;
 }
-
 
 .sidebar-controls {
   width: var(--sidebar-width);
@@ -98,6 +101,7 @@ body {
   background: var(--text-muted);
 }
 
+/* --- HEADER & BRANDING --- */
 
 .brand-header-neon {
   margin-bottom: 30px;
@@ -124,7 +128,14 @@ body {
   text-shadow: 0 0 25px var(--primary-glow);
 }
 
-.theme-toggle-btn {
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Botões de Tema e Ajuda */
+.theme-toggle-btn, .help-toggle-btn {
   background: transparent;
   border: 1px solid var(--border-color);
   width: 32px;
@@ -135,6 +146,7 @@ body {
   justify-content: center;
   cursor: pointer;
   font-size: 1.1rem;
+  color: var(--text-muted);
   transition: var(--transition);
 }
 
@@ -142,6 +154,20 @@ body {
   background: var(--bg-input);
   transform: rotate(15deg);
   border-color: var(--primary);
+  color: var(--primary);
+}
+
+.help-toggle-btn {
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.help-toggle-btn:hover {
+  background: var(--bg-input);
+  transform: scale(1.1);
+  border-color: var(--ai-purple);
+  color: var(--ai-purple);
+  box-shadow: 0 0 10px rgba(155, 89, 182, 0.3);
 }
 
 .status-line {
@@ -162,8 +188,10 @@ body {
   border-radius: 50%;
   box-shadow: 0 0 10px var(--primary);
   animation: pulse 2s infinite;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* --- UI COMPONENTS --- */
 
 .glass-card {
   background: var(--bg-card);
@@ -175,6 +203,11 @@ body {
 
 .glass-card:hover {
   border-color: var(--primary);
+}
+
+/* Estilo específico para o card de IA */
+.glass-card.ai-panel-border:hover {
+  border-color: var(--ai-purple);
 }
 
 .panel-header {
@@ -198,6 +231,7 @@ body {
   text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
+/* Inputs e Labels Modernos */
 .modern-label {
   display: block;
   font-size: 10px;
@@ -207,7 +241,6 @@ body {
   margin-bottom: 12px;
   letter-spacing: 1.5px;
 }
-
 
 .custom-select-wrapper { position: relative; }
 
@@ -224,7 +257,7 @@ body {
   transition: var(--transition);
 }
 
-.modern-select:hover {
+.modern-select:hover, .modern-select:focus {
   border-color: var(--primary);
 }
 
@@ -239,14 +272,7 @@ body {
   color: #000;
 }
 
-.no-arrow {
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: none;
-  text-align: center;
-}
-
-
+/* --- PALETAS DE CORES --- */
 .palette-grid-jiu {
   display: flex;
   flex-wrap: wrap;
@@ -264,6 +290,10 @@ body {
   position: relative;
 }
 
+[data-theme="light"] .color-sphere {
+  border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
 .color-sphere:hover {
   transform: scale(1.15);
 }
@@ -272,21 +302,15 @@ body {
   border: 3px solid var(--text-main);
   transform: scale(1.2);
   z-index: 2;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
 }
 
-
+/* --- BOTÕES E AÇÕES --- */
 .description-text {
   font-size: 0.8rem;
   color: var(--text-muted);
   line-height: 1.6;
   margin-bottom: 20px;
-}
-
-.action-button-group {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin-bottom: 25px;
 }
 
 .neo-btn {
@@ -300,22 +324,30 @@ body {
   gap: 10px;
   cursor: pointer;
   transition: var(--transition);
+  color: var(--text-main);
 }
 
 .neo-btn:hover {
   border-color: var(--primary);
   transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.btn-label { text-align: left; }
-.btn-label span { display: block; font-size: 10px; font-weight: 800; color: var(--text-main); }
-.btn-label small { font-size: 8px; color: var(--text-muted); }
+.small-btn {
+  font-size: 0.8rem;
+  padding: 8px 12px;
+}
 
+/* --- EDITOR DE CÓDIGO (DataPanel) --- */
 .code-editor-container {
   background: #08080a;
   border-radius: 14px;
   overflow: hidden;
   border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .code-editor-container {
+  background: #fdfdfd;
 }
 
 .editor-toolbar {
@@ -325,6 +357,11 @@ body {
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="light"] .editor-toolbar {
+  background: #eaeaea;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .traffic-lights { display: flex; gap: 6px; }
@@ -347,7 +384,11 @@ body {
   outline: none;
 }
 
+[data-theme="light"] .modern-textarea {
+  color: #2c3e50;
+}
 
+/* --- PREVIEW AREA (IFRAME) --- */
 .preview-area-expanded {
   flex-grow: 1;
   background-color: var(--preview-bg);
@@ -365,7 +406,7 @@ body {
 .viewport-container-full {
   width: 100%;
   height: 100%;
-  max-width: 1000px;
+  max-width: 1000px; /* Largura A4 aprox */
   display: flex;
   flex-direction: column;
 }
@@ -411,6 +452,7 @@ body {
   background: white;
 }
 
+/* --- BOTÕES DE EXPORTAÇÃO E IA --- */
 .export-section-glass { padding-top: 10px; }
 
 .btn-neon-export {
@@ -442,11 +484,19 @@ body {
   color: var(--text-muted);
   cursor: not-allowed;
   box-shadow: none;
+  opacity: 0.5;
+}
+
+.ai-btn {
+  /* Estilos específicos para botões de IA */
+  padding: 14px;
+  font-size: 0.85rem;
 }
 
 .section-spacer { height: 40px; }
 .section-spacer-large { height: 60px; }
 
+/* --- MENSAGENS E FEEDBACK --- */
 .error-toast-neon {
   background: rgba(231, 76, 60, 0.1);
   border: 1px solid var(--error-red);
@@ -458,11 +508,196 @@ body {
   margin-bottom: 20px;
 }
 
+/* --- MODAL DE AJUDA (HELP PANEL) --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  background: var(--bg-panel); /* Usa a variável correta para claro/escuro */
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 30px;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.help-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.help-title {
+  margin: 0;
+  color: var(--text-main);
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+.help-title span { color: var(--ai-purple); }
+
+.help-subtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.help-scroll-area {
+  overflow-y: auto;
+  padding-right: 15px;
+  flex: 1;
+}
+
+/* Scrollbar do Modal */
+.help-scroll-area::-webkit-scrollbar { width: 6px; }
+.help-scroll-area::-webkit-scrollbar-track { background: transparent; }
+.help-scroll-area::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
+}
+
+.help-section h3 {
+  color: var(--ai-purple);
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.help-section p, .help-section li {
+  color: var(--text-main);
+  opacity: 0.9;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.step-list {
+  padding-left: 20px;
+  margin-top: 10px;
+}
+.step-list li { margin-bottom: 8px; }
+
+.info-box {
+  background: rgba(46, 204, 113, 0.1);
+  border-left: 3px solid var(--primary);
+  padding: 10px 15px;
+  margin: 15px 0;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: var(--text-main);
+}
+
+.action-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+  background: var(--bg-input);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+
+.action-row span {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* Passos do Tutorial de IA */
+.tutorial-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.step-item {
+  display: flex;
+  gap: 15px;
+}
+
+.step-num {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  background: var(--ai-purple);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-top: 2px;
+}
+
+.step-content strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-main);
+}
+
+.external-link-btn {
+  display: inline-block;
+  margin-top: 5px;
+  color: var(--ai-purple);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-bottom: 1px dashed var(--ai-purple);
+}
+.external-link-btn:hover { border-bottom-style: solid; }
+
+.divider {
+  border: 0;
+  border-top: 1px solid var(--border-color);
+  margin: 25px 0;
+  opacity: 0.5;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 28px;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.close-btn:hover { color: var(--error-red); }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 @keyframes pulse {
   0% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.3); opacity: 0.5; }
   100% { transform: scale(1); opacity: 1; }
 }
+
+/* --- RESPONSIVIDADE --- */
 
 @media (max-width: 1200px) {
   :root { --sidebar-width: 350px; }
@@ -471,6 +706,7 @@ body {
 
 @media (max-width: 900px) {
   .app-container { flex-direction: column; overflow: auto; }
+  
   .sidebar-controls {
     width: 100%;
     min-width: 100%;
@@ -478,8 +714,19 @@ body {
     border-right: none;
     border-bottom: 1px solid var(--border-color);
     box-shadow: none;
+    padding: 20px;
   }
+
   .preview-area-expanded {
-    height: 100vh;
+    height: 100vh; /* Ocupa tela toda em mobile */
+    padding: 10px;
+  }
+  
+  .viewport-container-full { max-width: 100%; }
+  
+  .modal-content {
+    width: 95%;
+    max-height: 90vh;
+    padding: 20px;
   }
 }
