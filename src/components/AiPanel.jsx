@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { optimizeResumeWithGemini } from '../utils/aiService';
 
-/* --- JIUKURRICULO: NEURAL ENGINE (VAGA JSON SUPPORT) --- */
+/* --- JIUKURRICULO: NEURAL ENGINE (UI ENHANCED) --- */
 
 const AiPanel = ({ jsonInput, setJsonInput }) => {
   // Estados
@@ -12,7 +12,6 @@ const AiPanel = ({ jsonInput, setJsonInput }) => {
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState({ type: null, msg: '' });
   
-  // Referência para o input de arquivo oculto
   const fileInputRef = useRef(null);
 
   // Persistência da Key
@@ -20,7 +19,7 @@ const AiPanel = ({ jsonInput, setJsonInput }) => {
     try { localStorage.setItem('gemini_api_key', apiKey); } catch (e) {}
   }, [apiKey]);
 
-  // --- FUNÇÕES DE ARQUIVO (NOVO) ---
+  // --- FUNÇÕES DE ARQUIVO ---
 
   const handleDownloadTemplate = () => {
     const template = {
@@ -51,17 +50,14 @@ const AiPanel = ({ jsonInput, setJsonInput }) => {
     reader.onload = (e) => {
       try {
         const jsonContent = JSON.parse(e.target.result);
-        
-        // Formata o JSON para string e joga no textarea
-        // Isso permite que a IA leia tanto texto puro quanto JSON
         setJobDesc(JSON.stringify(jsonContent, null, 2));
-        setFeedback({ type: 'success', msg: 'Vaga importada com sucesso! Clique em Otimizar.' });
+        setFeedback({ type: 'success', msg: 'Vaga importada! Clique em Otimizar.' });
       } catch (err) {
-        setFeedback({ type: 'error', msg: 'Arquivo inválido. Certifique-se que é um JSON.' });
+        setFeedback({ type: 'error', msg: 'Arquivo inválido. Use um JSON.' });
       }
     };
     reader.readAsText(file);
-    event.target.value = ''; // Reset para permitir re-upload
+    event.target.value = ''; 
   };
 
   // --- OTIMIZAÇÃO NEURAL ---
@@ -74,7 +70,7 @@ const AiPanel = ({ jsonInput, setJsonInput }) => {
       return;
     }
     if (!jobDesc.trim() || jobDesc.length < 10) {
-      setFeedback({ type: 'error', msg: 'Cole ou importe uma descrição de vaga válida.' });
+      setFeedback({ type: 'error', msg: 'Descrição da vaga insuficiente.' });
       return;
     }
 
@@ -85,18 +81,17 @@ const AiPanel = ({ jsonInput, setJsonInput }) => {
       try {
         currentData = JSON.parse(jsonInput);
       } catch (e) {
-        throw new Error("O JSON atual do currículo é inválido.");
+        throw new Error("JSON do currículo inválido.");
       }
 
-      // Chama o serviço atualizado que aceita tanto texto quanto JSON na vaga
       const optimizedData = await optimizeResumeWithGemini(apiKey, currentData, jobDesc);
       
       setJsonInput(JSON.stringify(optimizedData, null, 2));
-      setFeedback({ type: 'success', msg: 'Currículo reescrito para a vaga! Verifique as alterações.' });
+      setFeedback({ type: 'success', msg: 'Currículo otimizado com sucesso!' });
       
     } catch (error) {
       console.error(error);
-      setFeedback({ type: 'error', msg: error.message || 'Erro desconhecido na otimização.' });
+      setFeedback({ type: 'error', msg: error.message || 'Erro na otimização.' });
     } finally {
       setLoading(false);
     }
@@ -113,10 +108,10 @@ const AiPanel = ({ jsonInput, setJsonInput }) => {
 
         <p className="description-text">
           Utilize o <strong>Gemini Pro</strong> para alinhar seu currículo à vaga.
-          <br/><small style={{opacity: 0.7}}>(BYOK: Seus dados não são armazenados por nós).</small>
+          <br/><small style={{opacity: 0.7}}>(Seus dados não são armazenados).</small>
         </p>
 
-        {/* Input API Key */}
+        {/* --- API KEY SECTION --- */}
         <div className="control-group">
           <label className="modern-label ai-label" style={{ color: '#9b59b6' }}>Gemini API Key</label>
           <div className="custom-select-wrapper">
@@ -130,39 +125,69 @@ const AiPanel = ({ jsonInput, setJsonInput }) => {
               autoComplete="off"
             />
           </div>
+          {/* Link de Ajuda */}
+          <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: '5px'}}>
+            <a 
+              href="https://aistudio.google.com/app/apikey" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{ fontSize: '10px', color: '#9b59b6', textDecoration: 'none', fontWeight: 'bold' }}
+            >
+              Obter Chave Grátis ↗
+            </a>
+          </div>
         </div>
 
-        {/* Área da Vaga com Botões de Arquivo */}
+        {/* --- JOB DESCRIPTION SECTION --- */}
         <div className="control-group">
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px'}}>
-            <label className="modern-label ai-label" style={{ color: '#9b59b6', margin: 0 }}>Dados da Vaga (JD)</label>
+          <label className="modern-label ai-label" style={{ color: '#9b59b6' }}>Dados da Vaga (JD)</label>
+          
+          {/* GRID DE BOTÕES GRANDES GLASSMORPHISM */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
             
-            {/* Botões de Ação de Arquivo */}
-            <div style={{display: 'flex', gap: '8px'}}>
-              <button 
-                onClick={handleDownloadTemplate}
-                className="neo-btn"
-                style={{padding: '4px 8px', fontSize: '10px', height: 'auto', background: 'transparent'}}
-                title="Baixar Modelo JSON"
-              >
-                📥 Modelo
-              </button>
-              <button 
-                onClick={handleImportClick}
-                className="neo-btn"
-                style={{padding: '4px 8px', fontSize: '10px', height: 'auto', borderColor: '#9b59b6', color: '#9b59b6', background: 'transparent'}}
-                title="Importar vagaDesc.json"
-              >
-                📂 Importar
-              </button>
-              <input 
-                type="file" 
-                ref={fileInputRef}
-                onChange={handleFileUpload} 
-                accept=".json" 
-                style={{display: 'none'}} 
-              />
-            </div>
+            {/* Botão Baixar Modelo */}
+            <button 
+              onClick={handleDownloadTemplate}
+              className="neo-btn"
+              style={{
+                borderColor: 'rgba(155, 89, 182, 0.3)',
+                background: 'rgba(155, 89, 182, 0.05)',
+                color: '#e0e0e0',
+                justifyContent: 'center',
+                padding: '12px',
+                height: 'auto'
+              }}
+              title="Baixar Modelo JSON"
+            >
+              <span style={{ fontSize: '16px', marginRight: '5px' }}>📥</span>
+              <span style={{ fontSize: '11px', fontWeight: '700' }}>BAIXAR MODELO</span>
+            </button>
+
+            {/* Botão Importar */}
+            <button 
+              onClick={handleImportClick}
+              className="neo-btn"
+              style={{
+                borderColor: '#9b59b6',
+                background: 'rgba(155, 89, 182, 0.15)',
+                color: '#d4acfc', // Tom lilás claro
+                justifyContent: 'center',
+                padding: '12px',
+                height: 'auto'
+              }}
+              title="Importar vagaDesc.json"
+            >
+              <span style={{ fontSize: '16px', marginRight: '5px' }}>📂</span>
+              <span style={{ fontSize: '11px', fontWeight: '700' }}>IMPORTAR JSON</span>
+            </button>
+            
+            <input 
+              type="file" 
+              ref={fileInputRef}
+              onChange={handleFileUpload} 
+              accept=".json" 
+              style={{display: 'none'}} 
+            />
           </div>
 
           <textarea 
@@ -174,27 +199,28 @@ const AiPanel = ({ jsonInput, setJsonInput }) => {
           />
         </div>
 
-        {/* Feedback Area */}
+        {/* --- FEEDBACK AREA --- */}
         {feedback.msg && (
           <div 
             className={`feedback-box ${feedback.type}`}
             style={{ 
-              padding: '10px', 
+              padding: '12px', 
               borderRadius: '8px', 
               marginBottom: '15px',
               fontSize: '11px',
               fontWeight: 'bold',
               background: feedback.type === 'error' ? 'rgba(231, 76, 60, 0.1)' : 'rgba(46, 204, 113, 0.1)',
               color: feedback.type === 'error' ? '#e74c3c' : '#2ecc71',
-              border: `1px solid ${feedback.type === 'error' ? '#e74c3c' : '#2ecc71'}`
+              border: `1px solid ${feedback.type === 'error' ? '#e74c3c' : '#2ecc71'}`,
+              display: 'flex', alignItems: 'center', gap: '8px'
             }}
           >
-            {feedback.type === 'error' ? '⚠️ ' : '✨ '}
+            <span style={{ fontSize: '14px' }}>{feedback.type === 'error' ? '⚠️' : '✨'}</span>
             {feedback.msg}
           </div>
         )}
 
-        {/* Botão de Ação */}
+        {/* --- MAIN ACTION BUTTON --- */}
         <div className="action-button-group" style={{ display: 'flex', marginTop: '10px' }}>
           <button 
             type="button"
@@ -205,16 +231,17 @@ const AiPanel = ({ jsonInput, setJsonInput }) => {
               borderColor: '#9b59b6', 
               color: loading ? '#666' : '#9b59b6',
               position: 'relative',
-              width: '100%'
+              width: '100%',
+              background: loading ? 'transparent' : 'rgba(155, 89, 182, 0.05)'
             }}
           >
             <div className="btn-glow" style={{ background: 'rgba(155, 89, 182, 0.4)' }}></div>
-            <span className="btn-content">
+            <span className="btn-content" style={{ fontSize: '12px' }}>
               {loading ? (
                 <span className="pulsing-text">PROCESSANDO...</span>
               ) : (
                 <>
-                  <i style={{ marginRight: '8px' }}>⚡</i> OTIMIZAR CURRÍCULO
+                  <i style={{ marginRight: '8px', fontSize: '14px' }}>⚡</i> OTIMIZAR CURRÍCULO
                 </>
               )}
             </span>
