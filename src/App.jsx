@@ -1,38 +1,33 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import VisualEditor from './components/VisualEditor';
 import DataPanel from './components/DataPanel';
-import AiPanel from './components/AiPanel'; // Novo Painel Neural
+import AiPanel from './components/AiPanel'; // Neural Engine (Passo 3)
 import { injectDataToIframe } from './utils/cvInjector';
 import { exportToPDF } from './utils/exportHandler';
 import { validateAndFormat } from './utils/dataHandlers';
 import { PALETTES } from './config/constants';
-import structureBase from './data/structure.json';
+import structureBase from './assets/structure.json';
 import './App.css';
 
-/* --- JIUKURRICULO ENGINE: NEURAL & SECURE EDITION --- */
+/* --- JIUKURRICULO ENGINE: STABLE & DYNAMIC EDITION --- */
 
-// Helper seguro para localStorage (evita crash em modo anônimo)
+// Helper seguro para localStorage
 const safeStorage = {
   get: (key, fallback) => {
     try {
       const item = localStorage.getItem(key);
       return item ? item : (typeof fallback === 'object' ? JSON.stringify(fallback) : fallback);
     } catch (e) {
-      console.warn('Storage inacessível, usando fallback.');
       return (typeof fallback === 'object' ? JSON.stringify(fallback) : fallback);
     }
   },
   set: (key, value) => {
-    try {
-      localStorage.setItem(key, value);
-    } catch (e) {
-      // Falha silenciosa
-    }
+    try { localStorage.setItem(key, value); } catch (e) {}
   }
 };
 
 function App() {
-  // --- ESTADOS ---
+  // --- ESTADOS GLOBAIS ---
   
   const [config, setConfig] = useState({ 
     model: 'model1.html', 
@@ -40,24 +35,23 @@ function App() {
     font: "'Inter', sans-serif" 
   });
   
-  // Estado do Tema (Dark padrão)
   const [theme, setTheme] = useState(() => safeStorage.get('jiu_theme', 'dark'));
 
-  // Estado de Dados
   const [jsonInput, setJsonInput] = useState(() => {
     const saved = safeStorage.get('cv_generation_cache', null);
     return saved || JSON.stringify(structureBase, null, 2);
   });
 
-  // Estados de Controle
+  // --- ESTADOS DE CONTROLE E UI ---
   const [error, setError] = useState(null);
   const [isIframeReady, setIsIframeReady] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false); // Sincronização de dados
+  const [isExporting, setIsExporting] = useState(false); // Geração de PDF
   const iframeRef = useRef(null);
 
-  // --- EFEITOS E LÓGICA ---
+  // --- EFEITOS E LÓGICA DE NEGÓCIO ---
 
-  // 1. Aplica o tema ao HTML/CSS Root
+  // 1. Aplicação de Tema
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     safeStorage.set('jiu_theme', theme);
@@ -67,13 +61,13 @@ function App() {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
 
-  // 2. Validação e Memorização dos Dados (Central de Verdade)
+  // 2. Validação de Dados (Core)
   const validatedData = useMemo(() => {
     setIsSyncing(true);
     const result = validateAndFormat(jsonInput);
     
     if (!result && jsonInput.trim() !== "") {
-      setError("Sintaxe JSON inválida. Verifique vírgulas e chaves.");
+      setError("Estrutura JSON inválida. Verifique a sintaxe no Painel de Dados.");
       setIsSyncing(false);
       return null;
     }
@@ -81,27 +75,31 @@ function App() {
     setError(null);
     safeStorage.set('cv_generation_cache', jsonInput);
     
-    // Pequeno delay para feedback visual de processamento
-    setTimeout(() => setIsSyncing(false), 300);
+    // Delay para suavizar a animação de "Processando..."
+    setTimeout(() => setIsSyncing(false), 400);
     return result;
   }, [jsonInput]);
 
-  // 3. Motor de Injeção no Iframe (Sincronização Visual)
+  // 3. Sincronização com Iframe
   const syncPreview = useCallback(() => {
     const iframe = iframeRef.current;
     if (!iframe?.contentWindow || !isIframeReady) return;
 
     try {
       const doc = iframe.contentWindow.document;
-      injectDataToIframe(doc, validatedData, config, PALETTES);
+      // Injeta apenas se os dados forem válidos
+      if (validatedData) {
+        injectDataToIframe(doc, validatedData, config, PALETTES);
+      }
     } catch (err) {
-      if (err.name === 'SecurityError') {
-        console.error("Bloqueio de segurança do navegador detectado.");
+      // Ignora erros de SecurityError durante hot-reload, mas loga outros
+      if (err.name !== 'SecurityError') {
+        console.warn("Sync pendente:", err);
       }
     }
   }, [validatedData, config, isIframeReady]);
 
-  // Debounce para evitar renderizações excessivas
+  // Debounce na sincronização
   useEffect(() => {
     const timeout = setTimeout(syncPreview, 150);
     return () => clearTimeout(timeout);
@@ -112,71 +110,100 @@ function App() {
     syncPreview();
   };
 
+  // 4. Wrapper de Exportação com Feedback
+  const handleExport = async () => {
+    if (isExporting || error) return;
+    
+    setIsExporting(true);
+    try {
+      // Pequeno delay para garantir renderização final
+      await new Promise(resolve => setTimeout(resolve, 500));
+      exportToPDF(iframeRef);
+    } catch (e) {
+      setError("Falha ao iniciar driver de impressão.");
+      console.error(e);
+    } finally {
+      // Mantém o estado de "Gerando" um pouco mais para UX
+      setTimeout(() => setIsExporting(false), 1500);
+    }
+  };
+
   // --- RENDERIZAÇÃO ---
 
   return (
     <div className="app-container glass-bg">
-      {/* Sidebar de Controles */}
       <aside className="sidebar-controls glass-sidebar">
+        
+        {/* HEADER */}
         <header className="brand-header-neon">
-          {/* Top Row com Título e Botão de Tema */}
           <div className="header-top-row">
             <h1 className="brand-title-jiu">JIU<span>KURRICULO</span></h1>
-            
             <button 
               onClick={toggleTheme} 
               className="theme-toggle-btn" 
-              title={theme === 'dark' ? "Mudar para Modo Claro" : "Mudar para Modo Escuro"}
+              title={theme === 'dark' ? "Modo Claro" : "Modo Escuro"}
             >
               {theme === 'dark' ? '🌙' : '☀️'}
             </button>
           </div>
 
           <div className="status-line">
-            <span className="pulse-dot" style={{ animationDuration: isSyncing ? '0.5s' : '2s' }}></span> 
-            {isSyncing ? 'PROCESSANDO...' : 'SYSTEM ACTIVE'}
+            <span 
+              className="pulse-dot" 
+              style={{ 
+                animationDuration: (isSyncing || isExporting) ? '0.5s' : '2s',
+                backgroundColor: isExporting ? '#3498db' : '#2ecc71', // Azul se exportando, Verde se ativo
+                boxShadow: isExporting ? '0 0 10px #3498db' : '0 0 10px #2ecc71'
+              }}
+            ></span> 
+            {isExporting ? 'GERANDO PDF...' : (isSyncing ? 'PROCESSANDO...' : 'SYSTEM ACTIVE')}
           </div>
         </header>
         
+        {/* SCROLLABLE AREA */}
         <div className="control-sections-scroll">
-          {/* 1. Visual Engine */}
+          
+          {/* PASSO 01: Visual */}
           <VisualEditor config={config} setConfig={setConfig} />
           
           <div className="section-spacer"></div>
 
-          {/* 2. Neural Engine (IA Gemini) */}
-          <AiPanel jsonInput={jsonInput} setJsonInput={setJsonInput} />
-
-          <div className="section-spacer"></div>
-          
-          {/* Exibição de Erros Globais */}
-          {error && <div className="error-toast-neon">⚠️ {error}</div>}
-
-          {/* 3. Data Engine (Editor Manual) */}
+          {/* PASSO 02: Dados Manuais (DataPanel) */}
           <DataPanel 
             jsonInput={jsonInput} 
             setJsonInput={setJsonInput} 
           />
+
+          <div className="section-spacer"></div>
+
+          {/* PASSO 03: Neural Engine (IA Gemini) - AGORA EMBAIXO */}
+          <AiPanel jsonInput={jsonInput} setJsonInput={setJsonInput} />
+          
+          <div className="section-spacer"></div>
+          
+          {/* Toast de Erro Global */}
+          {error && <div className="error-toast-neon">⚠️ {error}</div>}
+
         </div>
 
         <div className="section-spacer-large"></div>
 
-        {/* Botão de Exportação */}
+        {/* FOOTER ACTIONS */}
         <div className="export-section-glass">
           <button 
             className="btn-neon-export" 
-            disabled={!!error || !jsonInput || isSyncing}
-            onClick={() => exportToPDF(iframeRef)}
+            disabled={!!error || !jsonInput || isSyncing || isExporting}
+            onClick={handleExport}
           >
             <div className="btn-glow"></div>
             <span className="btn-content">
-              <i>💾</i> {isSyncing ? 'AGUARDE...' : 'EXPORTAR PDF'}
+              <i>💾</i> {isExporting ? 'PREPARANDO ARQUIVO...' : 'EXPORTAR PDF'}
             </span>
           </button>
         </div>
       </aside>
 
-      {/* Área de Preview Full-Screen */}
+      {/* PREVIEW AREA */}
       <main className="preview-area-expanded">
         <div className="viewport-container-full">
           <div className="canvas-header">
