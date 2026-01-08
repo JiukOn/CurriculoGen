@@ -1,33 +1,35 @@
-/* --- TÍTULOS BONITOS: GEMINI NEURAL BRIDGE (SMART FALLBACK & ATS V3) --- */
+/* --- TÍTULOS BONITOS: GEMINI NEURAL BRIDGE (ULTIMATE FALLBACK) --- */
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 /**
- * Lista de modelos para tentativa de conexão (Ordem de preferência: Velocidade -> Estabilidade -> Potência).
- * Isso garante funcionamento gratuito mesmo se um modelo específico estiver fora do ar na região.
+ * LISTA DE MODELOS (FALLBACK STRATEGY):
+ * O sistema tentará conectar nesta ordem exata.
+ * Incluímos o 'gemini-1.0-pro' pois ele é o mais estável para chaves gratuitas antigas.
  */
-const MODELS_TO_TRY = ["gemini-1.5-flash", "gemini-pro", "gemini-1.5-pro"];
+const MODELS_TO_TRY = [
+  "gemini-1.5-flash", // Mais rápido
+  "gemini-1.5-pro",   // Mais inteligente
+  "gemini-pro",       // Alias padrão
+  "gemini-1.0-pro"    // Legado estável (Resolve o erro 404 na maioria dos casos)
+];
 
 /**
  * Conecta ao Google Gemini com sistema de redundância para otimizar o currículo.
- * * @param {string} apiKey - Chave da API (BYOK).
- * @param {object} currentJson - Objeto JSON atual do currículo (A VERDADE).
- * @param {string|object} jobData - Texto ou JSON da descrição da vaga (O ALVO).
- * @returns {Promise<object>} - Novo JSON otimizado.
  */
 export const optimizeResumeWithGemini = async (apiKey, currentJson, jobData) => {
-  // 1. Validação de Entrada Rigorosa
+  // 1. Validação de Entrada
   if (!apiKey || apiKey.trim() === "") {
-    throw new Error("API Key inválida ou não fornecida.");
+    throw new Error("API Key inválida. Por favor, insira sua chave.");
   }
   if (!currentJson || typeof currentJson !== 'object') {
-    throw new Error("O currículo atual não é um objeto JSON válido.");
+    throw new Error("Dados do currículo inválidos.");
   }
 
   // Normalização da Vaga
   const jobContext = typeof jobData === 'string' ? jobData : JSON.stringify(jobData, null, 2);
-  if (!jobContext || jobContext.length < 10) {
-    throw new Error("A descrição da vaga é muito curta para análise ATS.");
+  if (!jobContext || jobContext.length < 5) {
+    throw new Error("Descrição da vaga muito curta.");
   }
 
   // 2. Inicialização do Cliente
@@ -35,32 +37,26 @@ export const optimizeResumeWithGemini = async (apiKey, currentJson, jobData) => 
 
   // 3. Prompt de Engenharia (ATS & SEO Strict Mode)
   const prompt = `
-    ATUE COMO: Auditor Sênior de Carreira e Especialista em Algoritmos ATS (Applicant Tracking Systems).
-    OBJETIVO: Realizar uma cirurgia de SEO no currículo para maximizar o 'match rate' com a vaga, respeitando a integridade dos fatos.
+    ATUE COMO: Auditor Sênior de Carreira e Especialista em Algoritmos ATS.
+    OBJETIVO: Reescrever o currículo para maximizar o 'match rate' com a vaga, mantendo a verdade.
 
     ---
-    ALVO (VAGA):
+    VAGA ALVO:
     ${jobContext}
 
-    FONTE (CANDIDATO):
+    CURRÍCULO ORIGINAL:
     ${JSON.stringify(currentJson)}
     ---
 
-    REGRAS DE OURO (INTEGRIDADE):
-    1. PROIBIDO ALUCINAR: JAMAIS adicione cargos, empresas, datas ou hard-skills que não existam na FONTE. Se o candidato não tem "Java", não invente.
-    2. TRADUÇÃO DE SEO: Se a vaga pede "Controle de Versão" e o candidato tem "Git", reescreva como "Controle de Versão com Git". Use a terminologia exata da vaga para descrever o que ele JÁ TEM.
+    REGRAS DE INTEGRIDADE:
+    1. NÃO ALUCINAR: Não invente cargos, empresas ou skills que não existem no original.
+    2. VOCABULÁRIO ATS: Use a terminologia da vaga. Ex: Se vaga pede "VCS" e usuário tem "Git", escreva "Controle de versão (Git)".
 
-    INSTRUÇÕES DE OTIMIZAÇÃO:
-    1. RESUMO: Reescreva como um "Elevator Pitch" agressivo, usando as palavras-chave principais da vaga (ex: tecnologias, metodologias).
-    2. EXPERIÊNCIAS:
-       - Inicie cada bullet point com VERBOS DE AÇÃO fortes (ex: Arquitetou, Liderou, Otimizou, Implementou).
-       - Foque em RESULTADOS. Se houver métricas na fonte, destaque-as.
-       - Alinhe a descrição das tarefas com as "Responsabilidades" da vaga.
-    3. COMPETÊNCIAS: Reordene as listas de skills para colocar no topo as que dão "Match" com a vaga.
-    4. ESTRUTURA: Mantenha ESTRITAMENTE a estrutura JSON original (não remova campos de contato).
-
-    SAÍDA:
-    Apenas o JSON válido puro. Sem markdown. Sem explicações.
+    INSTRUÇÕES:
+    1. RESUMO: Reescreva focado nos requisitos da vaga.
+    2. EXPERIÊNCIAS: Use verbos de ação e destaque resultados.
+    3. ESTRUTURA: Mantenha a estrutura JSON exata.
+    4. SAÍDA: Apenas JSON válido.
   `;
 
   // 4. Loop de Tentativa Inteligente (Smart Retry)
@@ -77,38 +73,38 @@ export const optimizeResumeWithGemini = async (apiKey, currentJson, jobData) => 
 
       if (!text) throw new Error("Resposta vazia da IA.");
 
-      // Se chegou aqui, sucesso! Vamos processar e retornar.
+      // Se chegou aqui, funcionou!
+      console.log(`[Neural Engine] Sucesso com modelo: ${modelName}`);
       return processAndValidateResponse(text, currentJson);
 
     } catch (error) {
       console.warn(`[Neural Engine] Falha no modelo ${modelName}:`, error.message);
       lastError = error;
       
-      // Se o erro for de API Key inválida, não adianta tentar outros modelos
-      if (error.message.includes("API key") || error.message.includes("403")) {
-        throw new Error("Sua API Key é inválida. Verifique no Google AI Studio.");
+      const msg = error.message.toLowerCase();
+
+      // Se a chave for inválida, não adianta tentar outros modelos
+      if (msg.includes("api key") || msg.includes("403") || msg.includes("permission")) {
+        throw new Error("Sua API Key é inválida ou não tem permissão. Crie uma nova no Google AI Studio.");
       }
       
-      // Se for erro de filtro de segurança (Candidate safety), para imediatamente
-      if (error.message.includes("candidate") || error.message.includes("safety")) {
+      // Se for bloqueio de segurança, para também
+      if (msg.includes("candidate") || msg.includes("safety")) {
         throw new Error("O conteúdo foi bloqueado pelos filtros de segurança da IA.");
       }
 
-      // Para outros erros (404, 503, Overloaded), o loop continua para o próximo modelo...
+      // Se for 404 ou 503, o loop continua para o próximo modelo da lista...
     }
   }
 
-  // Se saiu do loop, todos os modelos falharam
+  // Se saiu do loop, todos falharam
   handleFinalError(lastError);
 };
 
-// --- FUNÇÕES AUXILIARES (HELPER FUNCTIONS) ---
+// --- FUNÇÕES AUXILIARES ---
 
-/**
- * Limpa, faz o parse e valida a integridade do JSON retornado pela IA.
- */
 function processAndValidateResponse(text, originalJson) {
-  // Limpeza Cirúrgica de Markdown
+  // Limpeza de Markdown
   let cleanedText = text
     .replace(/```json/g, '')
     .replace(/```/g, '')
@@ -126,37 +122,31 @@ function processAndValidateResponse(text, originalJson) {
     optimizedJson = JSON.parse(cleanedText);
   } catch (parseError) {
     console.error("Erro de Parse JSON IA:", cleanedText);
-    throw new Error("A IA gerou um formato inválido. Tente clicar em Otimizar novamente.");
+    throw new Error("A IA gerou um formato inválido. Tente novamente.");
   }
 
-  // Validação de Integridade (Anti-Corrupção)
+  // Validação de Integridade
   const newKeys = Object.keys(optimizedJson);
-  const criticalKeys = ['nome', 'experiencias', 'contato', 'formacao'];
-  
-  // Verifica se as chaves críticas ainda existem
+  const criticalKeys = ['nome', 'experiencias', 'contato'];
   const hasCriticalKeys = criticalKeys.every(k => newKeys.includes(k));
 
   if (!hasCriticalKeys) {
-    throw new Error("A IA corrompeu a estrutura do currículo. Tente novamente.");
+    throw new Error("A IA corrompeu a estrutura do currículo (removeu campos essenciais).");
   }
 
   return optimizedJson;
 }
 
-/**
- * Gera mensagens de erro amigáveis para o usuário final.
- */
 function handleFinalError(error) {
-  const msg = error.toString().toLowerCase();
+  const msg = error ? error.toString().toLowerCase() : "erro desconhecido";
 
   if (msg.includes("quota") || msg.includes("429")) {
-    throw new Error("Cota de uso da API excedida temporariamente. Aguarde 1 minuto.");
+    throw new Error("Cota da API excedida. Aguarde alguns instantes.");
+  } else if (msg.includes("not found") || msg.includes("404")) {
+    throw new Error("Nenhum modelo compatível encontrado. Tente criar uma NOVA API Key no Google AI Studio.");
   } else if (msg.includes("fetch") || msg.includes("network")) {
     throw new Error("Erro de conexão. Verifique sua internet.");
-  } else if (msg.includes("not found") || msg.includes("404")) {
-    throw new Error("Nenhum modelo de IA disponível na sua região ou chave.");
   } else {
-    // Erro genérico com detalhe técnico
-    throw new Error(`Falha na IA: ${error.message || "Erro desconhecido"}`);
+    throw new Error(`Falha na IA: ${error.message}`);
   }
 }
