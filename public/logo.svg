@@ -1,0 +1,18 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="paint0_linear" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2ECC71"/>
+      <stop offset="1" stop-color="#27AE60"/>
+    </linearGradient>
+  </defs>
+
+  <path d="M30 20H70V30H30V20Z" fill="url(#paint0_linear)"/>
+  <path d="M30 40H70V50H30V40Z" fill="url(#paint0_linear)" fill-opacity="0.8"/>
+  <path d="M30 60H55V70H30V60Z" fill="url(#paint0_linear)" fill-opacity="0.6"/>
+  
+  <path d="M70 20V70C70 81.0457 61.0457 90 50 90H45V80H50C55.5228 80 60 75.5228 60 70V20H70Z" fill="url(#paint0_linear)"/>
+  
+  <circle cx="35" cy="85" r="5" fill="#2ECC71">
+    <animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite" />
+  </circle>
+</svg>

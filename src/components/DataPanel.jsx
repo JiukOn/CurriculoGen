@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { downloadBaseSchema } from '../utils/dataHandlers';
 import structureBase from '../data/structure.json';
 
-/* --- TÍTULOS BONITOS: CURRICULO GENERATION - DATA ENGINE --- */
+/* --- TÍTULOS BONITOS: DATA ENGINE JIUKURRILO --- */
 
 const DataPanel = ({ jsonInput, setJsonInput }) => {
   const fileInputRef = useRef(null);
@@ -31,32 +31,32 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
         </header>
 
         <p className="description-text">
-          Personalize sua trajetória. Importe seu arquivo <strong>JSON</strong> ou utilize nosso modelo base para começar.
+          Sincronize sua trajetória. Importe um arquivo <strong>JSON</strong> ou utilize nosso template para começar a gerar.
         </p>
         
         <div className="action-button-group">
+          {/* Botão Neon para Download */}
           <button 
             type="button" 
             className="neo-btn download-variant" 
             onClick={handleDownload}
-            title="Baixar Estrutura Base"
           >
             <span className="btn-icon">📦</span>
             <div className="btn-label">
-              <span>Baixar</span>
-              <small>Modelo JSON</small>
+              <span>MODELO</span>
+              <small>Exportar Base</small>
             </div>
           </button>
 
+          {/* Botão Neon para Upload */}
           <button 
             type="button" 
             className="neo-btn upload-variant" 
             onClick={() => fileInputRef.current.click()}
-            title="Carregar Arquivo Local"
           >
             <span className="btn-icon">🚀</span>
             <div className="btn-label">
-              <span>Importar</span>
+              <span>IMPORTAR</span>
               <small>Subir Arquivo</small>
             </div>
           </button>
@@ -73,7 +73,9 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
         <div className="code-editor-container">
           <div className="editor-toolbar">
             <div className="traffic-lights">
-              <span></span><span></span><span></span>
+              <span className="red"></span>
+              <span className="yellow"></span>
+              <span className="green"></span>
             </div>
             <div className="editor-title">engine_config.json</div>
           </div>
@@ -81,7 +83,8 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
             className="modern-textarea"
             value={jsonInput}
             onChange={(e) => setJsonInput(e.target.value)}
-            placeholder='{"nome": "Prepare sua revolução profissional...", "experiencias": []}'
+            spellCheck="false"
+            placeholder='{"nome": "Insira seus dados aqui..."}'
           />
         </div>
       </div>

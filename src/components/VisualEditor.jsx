@@ -1,12 +1,12 @@
 import React from 'react';
 import { PALETTES, FONTS, MODELS } from '../config/constants';
 
-/* --- TÍTULOS BONITOS: DESIGN ENGINE - SELEÇÃO VISUAL JIUKURRILO --- */
+/* --- TÍTULOS BONITOS: DESIGN ENGINE - VISUAL CORE JIUKURRILO --- */
 
 const VisualEditor = ({ config, setConfig }) => {
   return (
     <div className="visual-editor-container">
-      <div className="glass-card mb-20">
+      <div className="glass-card">
         <header className="panel-header">
           <div className="step-indicator">01</div>
           <h3>Estilização Visual</h3>
@@ -31,7 +31,7 @@ const VisualEditor = ({ config, setConfig }) => {
           </div>
         </div>
 
-        {/* Definição de Cores - Bolinhas Coloridas Fixas */}
+        {/* Seleção de Cores - Bolinhas Neon */}
         <div className="control-group">
           <label className="modern-label">Paleta de Identidade</label>
           <div className="palette-grid-minimal">
@@ -46,9 +46,10 @@ const VisualEditor = ({ config, setConfig }) => {
                   className={`color-dot-btn ${isActive ? 'active' : ''}`}
                   onClick={() => setConfig({ ...config, palette: key })}
                   title={colorData.name}
+                  /* Injeção forçada de cor para evitar fallback para preto */
                   style={{ 
-                    background: colorData.primary, // Força a cor aqui
                     backgroundColor: colorData.primary,
+                    borderColor: isActive ? '#ffffff' : 'rgba(255,255,255,0.1)',
                     boxShadow: isActive ? `0 0 15px ${colorData.primary}` : 'none'
                   }}
                 >

@@ -8,7 +8,7 @@ import { PALETTES } from './config/constants';
 import structureBase from './data/structure.json';
 import './App.css';
 
-/* --- TÍTULOS BONITOS: JIUKURRILO - CORE ENGINE GLASS & EXPANDED PREVIEW --- */
+/* --- TÍTULOS BONITOS: JIUKURRILO CORE ENGINE - FINAL STABLE --- */
 
 function App() {
   const [config, setConfig] = useState({ 
@@ -20,6 +20,7 @@ function App() {
   const [jsonInput, setJsonInput] = useState(() => {
     try {
       const saved = localStorage.getItem('cv_generation_cache');
+      // Tenta carregar do cache ou usa o arquivo de assets padrão
       return saved || JSON.stringify(structureBase, null, 2);
     } catch (e) {
       return JSON.stringify(structureBase, null, 2);
@@ -30,7 +31,7 @@ function App() {
   const [isIframeReady, setIsIframeReady] = useState(false);
   const iframeRef = useRef(null);
 
-  /* --- TÍTULOS BONITOS: LÓGICA DE PROCESSAMENTO E CACHE --- */
+  /* --- TÍTULOS BONITOS: LÓGICA DE SINCRONIZAÇÃO MEMORIZADA --- */
   
   const validatedData = useMemo(() => {
     const result = validateAndFormat(jsonInput);
@@ -46,10 +47,14 @@ function App() {
   const syncPreview = useCallback(() => {
     const iframe = iframeRef.current;
     if (!iframe?.contentWindow || !isIframeReady) return;
-    const doc = iframe.contentWindow.document;
-    
-    // Injeta os dados e sincroniza cores e fontes
-    injectDataToIframe(doc, validatedData, config, PALETTES);
+
+    try {
+      const doc = iframe.contentWindow.document;
+      // Injeta os dados, cores e fontes no preview
+      injectDataToIframe(doc, validatedData, config, PALETTES);
+    } catch (err) {
+      console.warn("Aguardando permissões do Iframe...");
+    }
   }, [validatedData, config, isIframeReady]);
 
   useEffect(() => {
@@ -64,7 +69,7 @@ function App() {
 
   return (
     <div className="app-container glass-bg">
-      {/* Sidebar com largura fixa e estilo Glassmorphism */}
+      {/* Sidebar: Painel de Controle Glassmorphism */}
       <aside className="sidebar-controls glass-sidebar">
         <header className="brand-header-neon">
           <h1 className="brand-title-jiu">JIU<span>KURRILO</span></h1>
@@ -74,25 +79,23 @@ function App() {
         </header>
         
         <div className="control-sections-scroll">
-          {/* Passo 1: Design Engine */}
+          {/* Passo 1: Edição Visual */}
           <VisualEditor config={config} setConfig={setConfig} />
           
-          {/* Espaçamento entre estilo e gestão de dados */}
           <div className="section-spacer"></div>
           
           {error && <div className="error-toast-neon">{error}</div>}
 
-          {/* Passo 2: Data Engine */}
+          {/* Passo 2: Gestão de Dados */}
           <DataPanel 
             jsonInput={jsonInput} 
             setJsonInput={setJsonInput} 
           />
         </div>
 
-        {/* Espaço maior antes do botão de exportação */}
         <div className="section-spacer-large"></div>
 
-        {/* Passo 3: Finalização e Exportação */}
+        {/* Passo 3: Exportação Profissional */}
         <div className="export-section-glass">
           <button 
             className="btn-neon-export" 
@@ -107,12 +110,16 @@ function App() {
         </div>
       </aside>
 
-      {/* Área de Preview Expandida para ocupar todo o resto da tela */}
+      {/* Main: Área de Preview Expandida (Canvas A4) */}
       <main className="preview-area-expanded">
         <div className="viewport-container-full">
           <div className="canvas-header">
             <span className="badge-live">LIVE PREVIEW</span>
-            <div className="canvas-dots"><span></span><span></span><span></span></div>
+            <div className="canvas-dots">
+              <span className="dot"></span>
+              <span className="dot"></span>
+              <span className="dot"></span>
+            </div>
           </div>
           <div className="iframe-shadow-box">
             <iframe 
@@ -121,8 +128,8 @@ function App() {
               src={`./models/${config.model}`} 
               className="cv-iframe-full"
               title="Jiukurrilo Canvas"
-              /* Segurança corrigida: removido same-origin para silenciar o log de escape */
-              sandbox="allow-scripts allow-modals"
+              /* allow-same-origin é obrigatório para o JS injetar dados no HTML local */
+              sandbox="allow-scripts allow-modals allow-same-origin"
             />
           </div>
         </div>
