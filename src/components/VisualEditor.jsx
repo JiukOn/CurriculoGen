@@ -1,7 +1,7 @@
 import React from 'react';
 import { PALETTES, FONTS, MODELS } from '../config/constants';
 
-/* --- TÍTULOS BONITOS: DESIGN ENGINE - SELEÇÃO VISUAL LIMPA --- */
+/* --- TÍTULOS BONITOS: DESIGN ENGINE - SELEÇÃO VISUAL JIUKURRILO --- */
 
 const VisualEditor = ({ config, setConfig }) => {
   return (
@@ -19,7 +19,7 @@ const VisualEditor = ({ config, setConfig }) => {
             <select 
               className="modern-select"
               value={config.model} 
-              onChange={(e) => setConfig({...config, model: e.target.value})}
+              onChange={(e) => setConfig({ ...config, model: e.target.value })}
             >
               {MODELS.map(m => (
                 <option key={m.id} value={m.id}>
@@ -31,22 +31,31 @@ const VisualEditor = ({ config, setConfig }) => {
           </div>
         </div>
 
-        {/* Definição de Cores - Apenas as Bolinhas de Cores */}
+        {/* Definição de Cores - Bolinhas Coloridas Fixas */}
         <div className="control-group">
           <label className="modern-label">Paleta de Identidade</label>
           <div className="palette-grid-minimal">
-            {Object.entries(PALETTES).map(([key, value]) => (
-              <button
-                key={key}
-                className={`color-dot-btn ${config.palette === key ? 'active' : ''}`}
-                style={{ 
-                  backgroundColor: value.primary,
-                  boxShadow: config.palette === key ? `0 0 20px ${value.primary}` : 'none'
-                }}
-                onClick={() => setConfig({...config, palette: key})}
-                title={value.name}
-              />
-            ))}
+            {Object.keys(PALETTES).map((key) => {
+              const colorData = PALETTES[key];
+              const isActive = config.palette === key;
+              
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  className={`color-dot-btn ${isActive ? 'active' : ''}`}
+                  onClick={() => setConfig({ ...config, palette: key })}
+                  title={colorData.name}
+                  style={{ 
+                    background: colorData.primary, // Força a cor aqui
+                    backgroundColor: colorData.primary,
+                    boxShadow: isActive ? `0 0 15px ${colorData.primary}` : 'none'
+                  }}
+                >
+                  {isActive && <span className="active-check">✓</span>}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -58,7 +67,7 @@ const VisualEditor = ({ config, setConfig }) => {
               className="modern-select"
               style={{ fontFamily: config.font }}
               value={config.font} 
-              onChange={(e) => setConfig({...config, font: e.target.value})}
+              onChange={(e) => setConfig({ ...config, font: e.target.value })}
             >
               {FONTS.map(f => (
                 <option key={f.id} value={f.family} style={{ fontFamily: f.family }}>

@@ -8,7 +8,7 @@ import { PALETTES } from './config/constants';
 import structureBase from './data/structure.json';
 import './App.css';
 
-/* --- TÍTULOS BONITOS: JIUKURRILO - CORE ENGINE GLASS --- */
+/* --- TÍTULOS BONITOS: JIUKURRILO - CORE ENGINE GLASS & EXPANDED PREVIEW --- */
 
 function App() {
   const [config, setConfig] = useState({ 
@@ -30,7 +30,7 @@ function App() {
   const [isIframeReady, setIsIframeReady] = useState(false);
   const iframeRef = useRef(null);
 
-  /* --- TÍTULOS BONITOS: LÓGICA DE PROCESSAMENTO --- */
+  /* --- TÍTULOS BONITOS: LÓGICA DE PROCESSAMENTO E CACHE --- */
   
   const validatedData = useMemo(() => {
     const result = validateAndFormat(jsonInput);
@@ -47,6 +47,8 @@ function App() {
     const iframe = iframeRef.current;
     if (!iframe?.contentWindow || !isIframeReady) return;
     const doc = iframe.contentWindow.document;
+    
+    // Injeta os dados e sincroniza cores e fontes
     injectDataToIframe(doc, validatedData, config, PALETTES);
   }, [validatedData, config, isIframeReady]);
 
@@ -62,6 +64,7 @@ function App() {
 
   return (
     <div className="app-container glass-bg">
+      {/* Sidebar com largura fixa e estilo Glassmorphism */}
       <aside className="sidebar-controls glass-sidebar">
         <header className="brand-header-neon">
           <h1 className="brand-title-jiu">JIU<span>KURRILO</span></h1>
@@ -74,6 +77,9 @@ function App() {
           {/* Passo 1: Design Engine */}
           <VisualEditor config={config} setConfig={setConfig} />
           
+          {/* Espaçamento entre estilo e gestão de dados */}
+          <div className="section-spacer"></div>
+          
           {error && <div className="error-toast-neon">{error}</div>}
 
           {/* Passo 2: Data Engine */}
@@ -83,7 +89,10 @@ function App() {
           />
         </div>
 
-        {/* Passo 3: Finalização */}
+        {/* Espaço maior antes do botão de exportação */}
+        <div className="section-spacer-large"></div>
+
+        {/* Passo 3: Finalização e Exportação */}
         <div className="export-section-glass">
           <button 
             className="btn-neon-export" 
@@ -98,8 +107,9 @@ function App() {
         </div>
       </aside>
 
-      <main className="preview-area-jiu">
-        <div className="viewport-container-glass">
+      {/* Área de Preview Expandida para ocupar todo o resto da tela */}
+      <main className="preview-area-expanded">
+        <div className="viewport-container-full">
           <div className="canvas-header">
             <span className="badge-live">LIVE PREVIEW</span>
             <div className="canvas-dots"><span></span><span></span><span></span></div>
@@ -109,9 +119,10 @@ function App() {
               ref={iframeRef} 
               onLoad={handleIframeLoad}
               src={`./models/${config.model}`} 
-              className="cv-iframe-clean"
+              className="cv-iframe-full"
               title="Jiukurrilo Canvas"
-              sandbox="allow-same-origin allow-scripts allow-modals"
+              /* Segurança corrigida: removido same-origin para silenciar o log de escape */
+              sandbox="allow-scripts allow-modals"
             />
           </div>
         </div>
