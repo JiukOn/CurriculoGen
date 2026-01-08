@@ -8,41 +8,71 @@ import { PALETTES } from './config/constants';
 import structureBase from './data/structure.json';
 import './App.css';
 
-/* --- TÍTULOS BONITOS: JIUKURRILO CORE ENGINE - FINAL STABLE --- */
+/* --- TÍTULOS BONITOS: JIUKURRILO CORE ENGINE - SECURE EDITION --- */
+
+// Helper seguro para localStorage (evita crash em modo anônimo)
+const safeStorage = {
+  get: (key, fallback) => {
+    try {
+      const item = localStorage.getItem(key);
+      return item ? item : JSON.stringify(fallback, null, 2);
+    } catch (e) {
+      console.warn('Storage inacessível, usando fallback.');
+      return JSON.stringify(fallback, null, 2);
+    }
+  },
+  set: (key, value) => {
+    try {
+      localStorage.setItem(key, value);
+    } catch (e) {
+      // Falha silenciosa se quota excedida ou bloqueado
+    }
+  }
+};
 
 function App() {
+  // Estado de Visual
   const [config, setConfig] = useState({ 
     model: 'model1.html', 
     palette: 'graphite', 
     font: "'Inter', sans-serif" 
   });
   
-  const [jsonInput, setJsonInput] = useState(() => {
-    try {
-      const saved = localStorage.getItem('cv_generation_cache');
-      // Tenta carregar do cache ou usa o arquivo de assets padrão
-      return saved || JSON.stringify(structureBase, null, 2);
-    } catch (e) {
-      return JSON.stringify(structureBase, null, 2);
-    }
-  });
+  // Estado de Dados (Inicialização Segura)
+  const [jsonInput, setJsonInput] = useState(() => 
+    safeStorage.get('cv_generation_cache', structureBase)
+  );
 
+  // Estados de Controle e UI
   const [error, setError] = useState(null);
   const [isIframeReady, setIsIframeReady] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false); // Feedback visual de processamento
   const iframeRef = useRef(null);
 
-  /* --- TÍTULOS BONITOS: LÓGICA DE SINCRONIZAÇÃO MEMORIZADA --- */
+  /* --- TÍTULOS BONITOS: VALIDAÇÃO E MEMORIZAÇÃO --- */
   
   const validatedData = useMemo(() => {
+    // Inicia feedback de processamento
+    setIsSyncing(true);
+
     const result = validateAndFormat(jsonInput);
+    
+    // Tratamento de Erro de Sintaxe
     if (!result && jsonInput.trim() !== "") {
-      setError("Sintaxe JSON corrompida.");
+      setError("Sintaxe JSON inválida. Verifique vírgulas e chaves.");
+      setIsSyncing(false);
       return null;
     }
+
     setError(null);
-    localStorage.setItem('cv_generation_cache', jsonInput);
+    safeStorage.set('cv_generation_cache', jsonInput);
+    
+    // Finaliza processamento brevemente após validação
+    setTimeout(() => setIsSyncing(false), 300);
     return result;
   }, [jsonInput]);
+
+  /* --- TÍTULOS BONITOS: MOTOR DE INJEÇÃO SEGURO --- */
 
   const syncPreview = useCallback(() => {
     const iframe = iframeRef.current;
@@ -50,43 +80,53 @@ function App() {
 
     try {
       const doc = iframe.contentWindow.document;
-      // Injeta os dados, cores e fontes no preview
+      
+      // Injeção de dados
       injectDataToIframe(doc, validatedData, config, PALETTES);
+      
     } catch (err) {
-      console.warn("Aguardando permissões do Iframe...");
+      // Captura erros críticos de segurança ou acesso DOM
+      if (err.name === 'SecurityError') {
+        console.error("Bloqueio de segurança do navegador detectado.");
+      } else {
+        console.warn("Sincronização pendente...", err);
+      }
     }
   }, [validatedData, config, isIframeReady]);
 
+  // Debounce para otimização de performance
   useEffect(() => {
     const timeout = setTimeout(syncPreview, 150);
     return () => clearTimeout(timeout);
   }, [syncPreview]);
 
+  // Handler de carregamento do Iframe
   const handleIframeLoad = () => {
     setIsIframeReady(true);
+    // Força uma sincronização imediata assim que carrega
     syncPreview();
   };
 
   return (
     <div className="app-container glass-bg">
-      {/* Sidebar: Painel de Controle Glassmorphism */}
+      {/* Sidebar de Controles */}
       <aside className="sidebar-controls glass-sidebar">
         <header className="brand-header-neon">
           <h1 className="brand-title-jiu">JIU<span>KURRILO</span></h1>
           <div className="status-line">
-            <span className="pulse-dot"></span> SYSTEM ACTIVE
+            {/* O ponto pulsa mais rápido se estiver sincronizando */}
+            <span className="pulse-dot" style={{ animationDuration: isSyncing ? '0.5s' : '2s' }}></span> 
+            {isSyncing ? 'PROCESSING...' : 'SYSTEM ACTIVE'}
           </div>
         </header>
         
         <div className="control-sections-scroll">
-          {/* Passo 1: Edição Visual */}
           <VisualEditor config={config} setConfig={setConfig} />
           
           <div className="section-spacer"></div>
           
-          {error && <div className="error-toast-neon">{error}</div>}
+          {error && <div className="error-toast-neon">⚠️ {error}</div>}
 
-          {/* Passo 2: Gestão de Dados */}
           <DataPanel 
             jsonInput={jsonInput} 
             setJsonInput={setJsonInput} 
@@ -95,22 +135,21 @@ function App() {
 
         <div className="section-spacer-large"></div>
 
-        {/* Passo 3: Exportação Profissional */}
         <div className="export-section-glass">
           <button 
             className="btn-neon-export" 
-            disabled={!!error || !jsonInput}
+            disabled={!!error || !jsonInput || isSyncing}
             onClick={() => exportToPDF(iframeRef)}
           >
             <div className="btn-glow"></div>
             <span className="btn-content">
-              <i>💾</i> EXPORTAR CURRÍCULO
+              <i>💾</i> {isSyncing ? 'PROCESSANDO...' : 'EXPORTAR CURRÍCULO'}
             </span>
           </button>
         </div>
       </aside>
 
-      {/* Main: Área de Preview Expandida (Canvas A4) */}
+      {/* Área de Preview Full-Screen */}
       <main className="preview-area-expanded">
         <div className="viewport-container-full">
           <div className="canvas-header">
@@ -128,7 +167,13 @@ function App() {
               src={`./models/${config.model}`} 
               className="cv-iframe-full"
               title="Jiukurrilo Canvas"
-              /* allow-same-origin é obrigatório para o JS injetar dados no HTML local */
+              /**
+               * NOTA DE SEGURANÇA:
+               * 'allow-same-origin': Necessário para injetar dados via DOM.
+               * 'allow-scripts': Necessário para renderizar fontes e estilos dinâmicos.
+               * 'allow-modals': Necessário para window.print().
+               * 'allow-popups' e outros foram removidos para máxima segurança.
+               */
               sandbox="allow-scripts allow-modals allow-same-origin"
             />
           </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { PALETTES, FONTS, MODELS } from '../config/constants';
 
-/* --- TÍTULOS BONITOS: DESIGN ENGINE - VISUAL CORE JIUKURRILO --- */
+/* --- TÍTULOS BONITOS: DESIGN ENGINE - CLEAN INTERFACE --- */
 
 const VisualEditor = ({ config, setConfig }) => {
   return (
@@ -12,29 +12,26 @@ const VisualEditor = ({ config, setConfig }) => {
           <h3>Estilização Visual</h3>
         </header>
 
-        {/* Escolha do Template */}
+        {/* Escolha do Template - Sem setas, visual limpo */}
         <div className="control-group">
           <label className="modern-label">Arquitetura de Layout</label>
-          <div className="custom-select-wrapper">
-            <select 
-              className="modern-select"
-              value={config.model} 
-              onChange={(e) => setConfig({ ...config, model: e.target.value })}
-            >
-              {MODELS.map(m => (
-                <option key={m.id} value={m.id}>
-                  {m.name.toUpperCase()}
-                </option>
-              ))}
-            </select>
-            <span className="select-arrow">▼</span>
-          </div>
+          <select 
+            className="modern-select no-arrow"
+            value={config.model} 
+            onChange={(e) => setConfig({ ...config, model: e.target.value })}
+          >
+            {MODELS.map(m => (
+              <option key={m.id} value={m.id}>
+                {m.name.toUpperCase()}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Seleção de Cores - Bolinhas Neon */}
+        {/* Seleção de Cores - Grid Jiukurrilo (Esferas Grandes) */}
         <div className="control-group">
           <label className="modern-label">Paleta de Identidade</label>
-          <div className="palette-grid-minimal">
+          <div className="palette-grid-jiu">
             {Object.keys(PALETTES).map((key) => {
               const colorData = PALETTES[key];
               const isActive = config.palette === key;
@@ -43,41 +40,36 @@ const VisualEditor = ({ config, setConfig }) => {
                 <button
                   key={key}
                   type="button"
-                  className={`color-dot-btn ${isActive ? 'active' : ''}`}
+                  /* Usa a classe 'color-sphere' definida no novo CSS para ser grande e redonda */
+                  className={`color-sphere ${isActive ? 'active' : ''}`}
                   onClick={() => setConfig({ ...config, palette: key })}
                   title={colorData.name}
-                  /* Injeção forçada de cor para evitar fallback para preto */
                   style={{ 
                     backgroundColor: colorData.primary,
-                    borderColor: isActive ? '#ffffff' : 'rgba(255,255,255,0.1)',
+                    /* O box-shadow cria o efeito neon na cor ativa */
                     boxShadow: isActive ? `0 0 15px ${colorData.primary}` : 'none'
                   }}
-                >
-                  {isActive && <span className="active-check">✓</span>}
-                </button>
+                />
               );
             })}
           </div>
         </div>
 
-        {/* Escolha da Tipografia */}
+        {/* Escolha da Tipografia - Sem setas */}
         <div className="control-group no-margin">
-          <label className="modern-label">Tipografia Profissional</label>
-          <div className="custom-select-wrapper">
-            <select 
-              className="modern-select"
-              style={{ fontFamily: config.font }}
-              value={config.font} 
-              onChange={(e) => setConfig({ ...config, font: e.target.value })}
-            >
-              {FONTS.map(f => (
-                <option key={f.id} value={f.family} style={{ fontFamily: f.family }}>
-                  {f.name}
-                </option>
-              ))}
-            </select>
-            <span className="select-arrow">▼</span>
-          </div>
+          <label className="modern-label">Tipografia</label>
+          <select 
+            className="modern-select no-arrow"
+            style={{ fontFamily: config.font }}
+            value={config.font} 
+            onChange={(e) => setConfig({ ...config, font: e.target.value })}
+          >
+            {FONTS.map(f => (
+              <option key={f.id} value={f.family} style={{ fontFamily: f.family }}>
+                {f.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
     </div>
