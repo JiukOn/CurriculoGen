@@ -1,27 +1,27 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import VisualEditor from './components/VisualEditor';
 import DataPanel from './components/DataPanel';
 import { injectDataToIframe } from './utils/cvInjector';
 import { exportToPDF } from './utils/exportHandler';
 import { validateAndFormat } from './utils/dataHandlers';
 import { PALETTES } from './config/constants';
-import structureBase from './data/structure.json'; // Ajustado para o caminho padrão de assets
+import structureBase from './data/structure.json';
 import './App.css';
 
-/* --- TÍTULOS BONITOS: CORE ENGINE 2026 - ESTÁVEL E SEGURO --- */
+/* --- TÍTULOS BONITOS: CURRICULO GENERATION - CORE ENGINE --- */
 
 function App() {
-  // Estado de Estilização: Reativo para o Passo 1
+  // Estado de Estilização: Configurações visuais do Passo 1
   const [config, setConfig] = useState({ 
     model: 'model1.html', 
     palette: 'graphite', 
     font: "'Inter', sans-serif" 
   });
   
-  // Estado de Dados: Persistência local robusta para o Passo 2
+  // Estado de Dados: Persistência local segura para o Passo 2
   const [jsonInput, setJsonInput] = useState(() => {
     try {
-      const saved = localStorage.getItem('cv_data_cache');
+      const saved = localStorage.getItem('cv_generation_cache');
       return saved || JSON.stringify(structureBase, null, 2);
     } catch (e) {
       return JSON.stringify(structureBase, null, 2);
@@ -32,81 +32,97 @@ function App() {
   const [isIframeReady, setIsIframeReady] = useState(false);
   const iframeRef = useRef(null);
 
-  /* --- TÍTULOS BONITOS: MOTOR DE SINCRONIZAÇÃO EM TEMPO REAL --- */
+  /* --- TÍTULOS BONITOS: PROCESSAMENTO E SEGURANÇA --- */
   
+  // Memoriza os dados validados para evitar processamento excessivo no re-render
+  const validatedData = useMemo(() => {
+    const result = validateAndFormat(jsonInput);
+    if (!result && jsonInput.trim() !== "") {
+      setError("Assinatura JSON inválida. Verifique a sintaxe.");
+      return null;
+    }
+    setError(null);
+    localStorage.setItem('cv_generation_cache', jsonInput);
+    return result;
+  }, [jsonInput]);
+
   const syncPreview = useCallback(() => {
     const iframe = iframeRef.current;
-    if (!iframe || !iframe.contentWindow || !isIframeReady) return;
+    if (!iframe?.contentWindow || !isIframeReady) return;
 
     const doc = iframe.contentWindow.document;
 
-    // Validação, Formatação e Tratamento de Transições
-    const validatedData = validateAndFormat(jsonInput);
-    
-    if (!validatedData && jsonInput.trim() !== "") {
-      setError("Erro de sintaxe no JSON. Verifique vírgulas, aspas e chaves.");
-    } else {
-      setError(null);
-      // Salva progresso automaticamente para evitar perdas
-      localStorage.setItem('cv_data_cache', jsonInput);
-    }
-
-    // Injeção de Dados, Cores e Fontes no Iframe
+    // Injeção segura de dados e estilos reativos
     injectDataToIframe(doc, validatedData, config, PALETTES);
     
-  }, [jsonInput, config, isIframeReady]);
+  }, [validatedData, config, isIframeReady]);
 
-  // Debounce de 200ms para evitar gargalos na digitação
+  /* --- TÍTULOS BONITOS: EFEITOS DE SINCRONIZAÇÃO --- */
+
+  // Debounce inteligente para suavizar a experiência de digitação
   useEffect(() => {
-    const timeout = setTimeout(syncPreview, 200);
+    const timeout = setTimeout(syncPreview, 150);
     return () => clearTimeout(timeout);
   }, [syncPreview]);
 
-  // Garante re-sincronização imediata ao trocar de modelo HTML
-  useEffect(() => {
-    if (isIframeReady) syncPreview();
-  }, [config.model, isIframeReady, syncPreview]);
+  // Força atualização imediata ao carregar um novo modelo
+  const handleIframeLoad = () => {
+    setIsIframeReady(true);
+    syncPreview();
+  };
 
   return (
     <div className="app-container">
       <aside className="sidebar-controls">
-        <h1 className="brand-title">CV ENGINE</h1>
+        <header className="brand-header">
+          <h1 className="brand-title">CURRICULO<span>GENERATION</span></h1>
+          <div className="engine-status">
+            <span className="status-dot"></span> 2026 Engine Ready
+          </div>
+        </header>
         
-        {/* Passo 1: Edição Visual de Cores e Fontes */}
+        {/* Passo 1: Edição Visual Estilizada */}
         <VisualEditor config={config} setConfig={setConfig} />
         
-        {/* Painel de Erros de Sintaxe */}
-        {error && <div className="error-badge">{error}</div>}
+        {/* Toast de Erro Flutuante (Opcional via CSS) */}
+        {error && <div className="error-badge-modern">{error}</div>}
 
-        {/* Passo 2: Gestão de Dados e Upload de JSON */}
+        {/* Passo 2: Gestão de Dados Modernizada */}
         <DataPanel 
           jsonInput={jsonInput} 
           setJsonInput={setJsonInput} 
         />
 
-        {/* Passo 3: Exportação Profissional ATS-Friendly */}
-        <div className="action-area" style={{ marginTop: 'auto', paddingTop: '20px' }}>
+        {/* Passo 3: Exportação Otimizada */}
+        <div className="action-area-fixed">
           <button 
-            className="btn-print" 
+            className="btn-export-main" 
             disabled={!!error || !jsonInput}
             onClick={() => exportToPDF(iframeRef)}
           >
-            💾 EXPORTAR PDF PROFISSIONAL
+            <span className="btn-shine"></span>
+            <i className="icon-save">💾</i> EXPORTAR PDF PROFISSIONAL
           </button>
         </div>
       </aside>
 
-      <main className="preview-area">
-        <div className="iframe-wrapper">
-          <iframe 
-            ref={iframeRef} 
-            onLoad={() => setIsIframeReady(true)}
-            src={`./models/${config.model}`} 
-            className="cv-iframe"
-            title="Preview Real-Time A4"
-            // allow-modals é vital para o funcionamento do exportToPDF
-            sandbox="allow-same-origin allow-scripts allow-modals"
-          />
+      <main className="preview-area-modern">
+        <div className="iframe-viewport">
+          <div className="viewport-header">
+            <span>A4 Preview Canvas</span>
+            <div className="zoom-controls">100%</div>
+          </div>
+          <div className="iframe-wrapper-shadow">
+            <iframe 
+              ref={iframeRef} 
+              onLoad={handleIframeLoad}
+              src={`./models/${config.model}`} 
+              className="cv-iframe"
+              title="Curriculo Generation Canvas"
+              // Segurança máxima: impede acesso a cookies e execução de scripts externos indesejados
+              sandbox="allow-same-origin allow-scripts allow-modals"
+            />
+          </div>
         </div>
       </main>
     </div>
