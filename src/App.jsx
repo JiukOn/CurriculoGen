@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import VisualEditor from './components/VisualEditor';
 import DataPanel from './components/DataPanel';
+import AiPanel from './components/AiPanel'; // Novo Painel Neural
 import { injectDataToIframe } from './utils/cvInjector';
 import { exportToPDF } from './utils/exportHandler';
 import { validateAndFormat } from './utils/dataHandlers';
@@ -8,7 +9,7 @@ import { PALETTES } from './config/constants';
 import structureBase from './data/structure.json';
 import './App.css';
 
-/* --- JIUKURRICULO ENGINE: SECURE & THEMED EDITION --- */
+/* --- JIUKURRICULO ENGINE: NEURAL & SECURE EDITION --- */
 
 // Helper seguro para localStorage (evita crash em modo anônimo)
 const safeStorage = {
@@ -56,7 +57,7 @@ function App() {
 
   // --- EFEITOS E LÓGICA ---
 
-  // 1. Aplica o tema ao CSS Root
+  // 1. Aplica o tema ao HTML/CSS Root
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     safeStorage.set('jiu_theme', theme);
@@ -66,7 +67,7 @@ function App() {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
 
-  // 2. Validação e Memorização dos Dados
+  // 2. Validação e Memorização dos Dados (Central de Verdade)
   const validatedData = useMemo(() => {
     setIsSyncing(true);
     const result = validateAndFormat(jsonInput);
@@ -80,12 +81,12 @@ function App() {
     setError(null);
     safeStorage.set('cv_generation_cache', jsonInput);
     
-    // Pequeno delay para feedback visual
+    // Pequeno delay para feedback visual de processamento
     setTimeout(() => setIsSyncing(false), 300);
     return result;
   }, [jsonInput]);
 
-  // 3. Motor de Injeção no Iframe
+  // 3. Motor de Injeção no Iframe (Sincronização Visual)
   const syncPreview = useCallback(() => {
     const iframe = iframeRef.current;
     if (!iframe?.contentWindow || !isIframeReady) return;
@@ -100,6 +101,7 @@ function App() {
     }
   }, [validatedData, config, isIframeReady]);
 
+  // Debounce para evitar renderizações excessivas
   useEffect(() => {
     const timeout = setTimeout(syncPreview, 150);
     return () => clearTimeout(timeout);
@@ -137,12 +139,20 @@ function App() {
         </header>
         
         <div className="control-sections-scroll">
+          {/* 1. Visual Engine */}
           <VisualEditor config={config} setConfig={setConfig} />
           
           <div className="section-spacer"></div>
+
+          {/* 2. Neural Engine (IA Gemini) */}
+          <AiPanel jsonInput={jsonInput} setJsonInput={setJsonInput} />
+
+          <div className="section-spacer"></div>
           
+          {/* Exibição de Erros Globais */}
           {error && <div className="error-toast-neon">⚠️ {error}</div>}
 
+          {/* 3. Data Engine (Editor Manual) */}
           <DataPanel 
             jsonInput={jsonInput} 
             setJsonInput={setJsonInput} 
@@ -151,6 +161,7 @@ function App() {
 
         <div className="section-spacer-large"></div>
 
+        {/* Botão de Exportação */}
         <div className="export-section-glass">
           <button 
             className="btn-neon-export" 

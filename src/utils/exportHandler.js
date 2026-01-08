@@ -1,8 +1,8 @@
-/* --- TÍTULOS BONITOS: MOTOR DE EXPORTAÇÃO PDF OTIMIZADO --- */
+/* --- TÍTULOS BONITOS: MOTOR DE EXPORTAÇÃO PDF BLINDADO --- */
 
 /**
- * Aciona o driver de impressão do sistema focado no conteúdo do Iframe.
- * Otimizado para leitura por motores ATS e IAs de recrutamento.
+ * Aciona o driver de impressão com injeção de CSS para remover cabeçalhos/rodapés
+ * e evitar páginas em branco extras.
  * @param {React.RefObject} iframeRef - Referência para o Iframe do currículo.
  */
 export const exportToPDF = (iframeRef) => {
@@ -15,33 +15,60 @@ export const exportToPDF = (iframeRef) => {
   const iframeDoc = iframeRef.current.contentDocument || iframeWindow.document;
 
   if (iframeWindow && iframeDoc) {
-    // 1. Define o nome do arquivo dinamicamente para o sistema de arquivos
+    // 1. INJEÇÃO DE CSS DE IMPRESSÃO (A MÁGICA ACONTECE AQUI)
+    // Removemos qualquer estilo de impressão anterior para evitar duplicidade
+    const oldStyle = iframeDoc.getElementById('print-fix-style');
+    if (oldStyle) oldStyle.remove();
+
+    const style = iframeDoc.createElement('style');
+    style.id = 'print-fix-style';
+    style.innerHTML = `
+      @page {
+        size: A4;
+        margin: 0mm !important; /* Remove URL, Data, Título e Números de página */
+      }
+      @media print {
+        html, body {
+          width: 210mm;
+          height: 297mm;
+          margin: 0 !important;
+          padding: 0 !important;
+          overflow: hidden !important; /* Corta pixels extras que geram folha em branco */
+          background-color: white !important;
+          -webkit-print-color-adjust: exact !important; /* Garante cores e backgrounds */
+          print-color-adjust: exact !important;
+        }
+        /* Garante que o container ocupe a página toda */
+        .cv-container, #main, body > div {
+          height: 100% !important;
+          margin: 0 !important;
+        }
+      }
+    `;
+    iframeDoc.head.appendChild(style);
+
+    // 2. Define o nome do arquivo (Nome do Candidato)
     const nameElement = iframeDoc.getElementById('nome');
     const fileName = nameElement?.innerText || "Curriculo_Profissional";
     
-    // Altera o título do documento temporariamente para nomear o PDF
+    // Altera o título temporariamente (Isso define o nome do arquivo PDF sugerido)
     const originalTitle = iframeDoc.title;
     iframeDoc.title = `CV_${fileName.trim().replace(/\s+/g, '_')}`;
 
-    // 2. Garante o foco para evitar que o navegador imprima a página de controles
+    // 3. Foco e Impressão
     iframeWindow.focus();
 
-    // 3. Executa a impressão
-    // DICA: Para resultados profissionais, selecione 'Salvar como PDF' 
-    // e 'Margens: Nenhuma' nas configurações da janela que abrirá.
     try {
-      const isPrinted = iframeWindow.print();
+      // Pequeno delay para garantir que o CSS foi aplicado
+      setTimeout(() => {
+        iframeWindow.print();
+        // Restaura o título original após a janela de impressão abrir
+        iframeDoc.title = originalTitle;
+      }, 100);
       
-      // Alguns navegadores retornam null ou undefined, mas se houver erro cai no catch
-      if (isPrinted === false) {
-        alert("A impressão foi cancelada ou bloqueada pelo navegador.");
-      }
     } catch (err) {
       console.error("Erro ao disparar driver de impressão:", err);
-      alert("Erro ao abrir janela de exportação. Verifique se pop-ups estão permitidos.");
-    } finally {
-      // Restaura o título original após a chamada
-      iframeDoc.title = originalTitle;
+      alert("Erro ao exportar. Verifique se pop-ups estão permitidos.");
     }
   } else {
     console.error("Janela do Iframe inacessível.");
