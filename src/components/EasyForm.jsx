@@ -68,46 +68,48 @@ const TagInput = ({ tags = [], onUpdate, placeholder }) => {
   );
 };
 
-
 const EasyForm = ({ jsonData, onUpdate }) => {
   
+  const data = jsonData || {};
+
+  
   const handleChange = (field, value) => {
-    onUpdate({ ...jsonData, [field]: value });
+    onUpdate({ ...data, [field]: value });
   };
 
   const handleContactChange = (field, value) => {
     onUpdate({
-      ...jsonData,
-      contato: { ...(jsonData.contato || {}), [field]: value }
+      ...data,
+      contato: { ...(data.contato || {}), [field]: value }
     });
   };
 
   const addItem = (arrayName, template) => {
-    const newArray = [...(jsonData[arrayName] || []), template];
-    onUpdate({ ...jsonData, [arrayName]: newArray });
+    const newArray = [...(data[arrayName] || []), template];
+    onUpdate({ ...data, [arrayName]: newArray });
   };
 
   const removeItem = (arrayName, index) => {
-    const newArray = [...(jsonData[arrayName] || [])];
+    const newArray = [...(data[arrayName] || [])];
     newArray.splice(index, 1);
-    onUpdate({ ...jsonData, [arrayName]: newArray });
+    onUpdate({ ...data, [arrayName]: newArray });
   };
 
   const updateItem = (arrayName, index, field, value) => {
-    const newArray = [...(jsonData[arrayName] || [])];
+    const newArray = [...(data[arrayName] || [])];
     newArray[index] = { ...newArray[index], [field]: value };
-    onUpdate({ ...jsonData, [arrayName]: newArray });
+    onUpdate({ ...data, [arrayName]: newArray });
   };
 
   const updateSkill = (index, field, value) => {
-    const newSkills = [...(jsonData.hard_skills || [])];
+    const newSkills = [...(data.hard_skills || [])];
     if (field === 'nivel') {
       let num = parseInt(value);
       if (isNaN(num)) num = 0;
-      value = Math.min(100, Math.max(0, num)); // Clamp 0-100
+      value = Math.min(100, Math.max(0, num));
     }
     newSkills[index] = { ...newSkills[index], [field]: value };
-    onUpdate({ ...jsonData, hard_skills: newSkills });
+    onUpdate({ ...data, hard_skills: newSkills });
   };
 
   return (
@@ -119,7 +121,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
             <label className="form-label">Nome Completo</label>
             <input 
               className="form-input" 
-              value={jsonData.nome || ''} 
+              value={data.nome || ''} 
               onChange={(e) => handleChange('nome', e.target.value)}
               placeholder="Ex: Ana Souza"
             />
@@ -128,7 +130,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
             <label className="form-label">Cargo / Objetivo</label>
             <input 
               className="form-input" 
-              value={jsonData.cargo || ''} 
+              value={data.cargo || ''} 
               onChange={(e) => handleChange('cargo', e.target.value)}
               placeholder="Ex: Desenvolvedora Fullstack"
             />
@@ -138,7 +140,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
           <label className="form-label">Resumo Profissional</label>
           <textarea 
             className="form-input" 
-            value={jsonData.resumo || ''} 
+            value={data.resumo || ''} 
             onChange={(e) => handleChange('resumo', e.target.value)}
             placeholder="Breve resumo das suas qualificações..."
             style={{ minHeight: '100px' }}
@@ -153,7 +155,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
             <input 
               type="email"
               className="form-input" 
-              value={jsonData.contato?.email || ''} 
+              value={data.contato?.email || ''} 
               onChange={(e) => handleContactChange('email', e.target.value)} 
             />
           </div>
@@ -162,7 +164,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
             <input 
               type="tel"
               className="form-input" 
-              value={jsonData.contato?.tel || ''} 
+              value={data.contato?.tel || ''} 
               onChange={(e) => handleContactChange('tel', e.target.value)} 
             />
           </div>
@@ -171,11 +173,11 @@ const EasyForm = ({ jsonData, onUpdate }) => {
         <div className="responsive-grid">
           <div className="form-group">
             <label className="form-label">LinkedIn / Site</label>
-            <input className="form-input" value={jsonData.contato?.linkedin || ''} onChange={(e) => handleContactChange('linkedin', e.target.value)} />
+            <input className="form-input" value={data.contato?.linkedin || ''} onChange={(e) => handleContactChange('linkedin', e.target.value)} />
           </div>
           <div className="form-group">
             <label className="form-label">Localização</label>
-            <input className="form-input" value={jsonData.contato?.local || ''} onChange={(e) => handleContactChange('local', e.target.value)} placeholder="Cidade - UF" />
+            <input className="form-input" value={data.contato?.local || ''} onChange={(e) => handleContactChange('local', e.target.value)} placeholder="Cidade - UF" />
           </div>
         </div>
 
@@ -183,7 +185,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
           <label className="form-label">Data de Nascimento (Opcional)</label>
           <input 
             className="form-input" 
-            value={jsonData.contato?.nascimento || ''} 
+            value={data.contato?.nascimento || ''} 
             onChange={(e) => handleContactChange('nascimento', e.target.value)} 
             placeholder="DD/MM/AAAA" 
           />
@@ -191,7 +193,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
       </Accordion>
 
       <Accordion title="Experiência Profissional" icon="💼">
-        {(jsonData.experiencias || []).map((exp, idx) => (
+        {(data.experiencias || []).map((exp, idx) => (
           <div key={idx} className="array-item-wrapper">
             <div className="responsive-grid">
               <div className="form-group">
@@ -238,7 +240,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
       </Accordion>
 
       <Accordion title="Formação Acadêmica" icon="🎓">
-        {(jsonData.formacao || []).map((form, idx) => (
+        {(data.formacao || []).map((form, idx) => (
           <div key={idx} className="array-item-wrapper">
             <div className="responsive-grid">
               <div className="form-group">
@@ -276,7 +278,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
         <p className="description-text" style={{marginBottom: '10px'}}>
           Defina o nível técnico para gerar barras de progresso.
         </p>
-        {(jsonData.hard_skills || []).map((skill, idx) => (
+        {(data.hard_skills || []).map((skill, idx) => (
           <div key={idx} className="array-item-wrapper" style={{display: 'flex', gap: '10px', alignItems: 'center', paddingBottom: '10px'}}>
             <div style={{flex: 3}}>
                <input 
@@ -315,8 +317,8 @@ const EasyForm = ({ jsonData, onUpdate }) => {
        <Accordion title="Soft Skills (Comportamental)" icon="🤝">
         <p className="description-text">Habilidades interpessoais (Tags).</p>
         <TagInput 
-          tags={jsonData.soft_skills || []} 
-          onUpdate={(newTags) => onUpdate({ ...jsonData, soft_skills: newTags })}
+          tags={data.soft_skills || []} 
+          onUpdate={(newTags) => onUpdate({ ...data, soft_skills: newTags })}
           placeholder="Ex: Liderança, Comunicação..."
         />
       </Accordion>
@@ -324,8 +326,8 @@ const EasyForm = ({ jsonData, onUpdate }) => {
       <Accordion title="Cursos Complementares" icon="📚">
         <p className="description-text">Certificações e workshops extras.</p>
         <TagInput 
-          tags={jsonData.cursos || []} 
-          onUpdate={(newTags) => onUpdate({ ...jsonData, cursos: newTags })}
+          tags={data.cursos || []} 
+          onUpdate={(newTags) => onUpdate({ ...data, cursos: newTags })}
           placeholder="Ex: AWS Cloud Practitioner (2024)..."
         />
       </Accordion>

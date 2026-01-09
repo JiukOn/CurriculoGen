@@ -9,7 +9,6 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
   const [viewMode, setViewMode] = useState('form'); 
   const [parsedData, setParsedData] = useState({});
   const [parseError, setParseError] = useState(null);
-  
   const [isFormOpen, setIsFormOpen] = useState(false);
   
   const fileInputRef = useRef(null);
@@ -20,7 +19,7 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
         setParsedData({});
         return;
       }
-      const parsed = JSON.parse(jsonInput);
+      const parsed = JSON.parse(jsonInput) || {};
       setParsedData(parsed);
       setParseError(null);
     } catch (e) {
@@ -64,6 +63,7 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
       <div className="modal-overlay" onClick={() => setIsFormOpen(false)}>
         <div className="modal-content giant-modal glass-card" onClick={e => e.stopPropagation()}>
           
+          {/* Header do Modal */}
           <div className="giant-modal-header">
             <h2 style={{margin: 0, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '15px', fontSize: '1.5rem'}}>
               <span style={{color: 'var(--primary)'}}>📝</span> Editor Visual de Currículo
@@ -109,7 +109,7 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
             title="Preencher campos visualmente"
           >
             <span style={{fontSize: '1.2em'}}>📝</span> 
-            <span>MODO SIMPLES</span>
+            <span>MODO FÁCIL</span>
           </button>
           <button 
             className={`mode-btn ${viewMode === 'code' ? 'active' : ''}`}
