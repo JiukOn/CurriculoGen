@@ -3,313 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modelo 3 - Executive Tech</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <title>CurriculoGen - Modelo Executive</title>
     <style>
-        /* --- VARIÁVEIS (Serão injetadas pelo React) --- */
+        /* --- DESIGN SYSTEM DO MODELO 3: EXECUTIVE TECH --- */
         :root {
-            --primary-dark: #2c3e50; /* Cor Principal */
-            --accent-steel: #7f8c8d; /* Cor Secundária */
-            --bg-soft: #f0f2f5;
-            --text-main: #333;
-            --text-light: #666;
+            --primary-dark: #2c3e50;
+            --accent-steel: #34495e;
+            --bg-soft: #f4f7f6;
+            --font-main: 'Montserrat', sans-serif;
+            --text-color: #333;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
+            font-family: var(--font-main);
+            color: var(--text-color);
             background: #e0e0e0;
-            font-family: 'Open Sans', sans-serif;
-            color: var(--text-main);
-            font-size: 10pt;
-            line-height: 1.5;
+            line-height: 1.4;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
 
-        /* --- FOLHA A4 --- */
+        /* --- TÍTULOS BONITOS: ESTRUTURA E IMPRESSÃO --- */
         .cv-page {
             width: 210mm;
             min-height: 297mm;
-            background: white;
+            padding: 0;
             margin: 30px auto;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            position: relative;
-            overflow: hidden; /* Garante que nada estoure */
-            padding-bottom: 50px;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
         }
 
-        /* --- CABEÇALHO --- */
+        @media print {
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            body { background: none; }
+            .cv-page { 
+                margin: 0; 
+                box-shadow: none; 
+                width: 100%;
+                height: 100%;
+                page-break-after: always;
+            }
+            .page-break { page-break-before: always; }
+        }
+
+        /* --- CABEÇALHO EXECUTIVO --- */
         header {
             background-color: var(--primary-dark);
             color: white;
-            padding: 40px 50px;
+            padding: 35px 50px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .header-left {
-            max-width: 60%;
-        }
-
-        h1#nome {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 24pt;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            line-height: 1.1;
-            margin-bottom: 5px;
-        }
-
-        h2#cargo {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 11pt;
-            font-weight: 400;
+        .header-left h1 {
+            font-size: 22pt;
             text-transform: uppercase;
             letter-spacing: 3px;
-            opacity: 0.9;
+            margin-bottom: 5px;
+            font-weight: 900;
+        }
+
+        .header-left p {
+            font-size: 11pt;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            opacity: 0.8;
+            font-weight: 300;
         }
 
         .header-right {
             text-align: right;
-            font-size: 9pt;
-            border-left: 1px solid rgba(255,255,255,0.3);
-            padding-left: 20px;
+            font-size: 8.5pt;
             line-height: 1.6;
+            border-left: 1px solid rgba(255,255,255,0.2);
+            padding-left: 20px;
         }
 
-        .header-right div {
-            white-space: nowrap;
+        /* --- CORPO DO CURRÍCULO --- */
+        .main-content {
+            padding: 30px 50px;
         }
 
-        /* --- LAYOUT PRINCIPAL --- */
-        .main-container {
-            padding: 40px 50px;
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
+        .section-wrapper {
+            margin-bottom: 30px;
         }
 
-        /* --- TÍTULOS DE SEÇÃO --- */
-        .section-title {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 12pt;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--primary-dark);
-            border-bottom: 2px solid var(--bg-soft);
-            padding-bottom: 8px;
-            margin-bottom: 20px;
+        .title-container {
             display: flex;
             align-items: center;
+            margin-bottom: 18px;
+            border-bottom: 2px solid var(--bg-soft);
+            padding-bottom: 5px;
         }
 
-        .section-title::before {
-            content: '';
-            display: block;
-            width: 8px;
-            height: 8px;
-            background: var(--primary-dark);
-            margin-right: 10px;
-            transform: rotate(45deg);
+        .rect-deco {
+            width: 25px;
+            height: 12px;
+            background-color: var(--primary-dark);
+            margin-right: 15px;
         }
 
-        /* --- RESUMO --- */
-        #resumo {
-            text-align: justify;
-            color: var(--text-light);
-            margin-bottom: 10px;
-        }
-
-        /* --- ESTILOS DOS ITENS INJETADOS (JS) --- */
-        
-        /* Experiência e Formação */
-        .entry-item {
-            margin-bottom: 20px;
-            page-break-inside: avoid; /* Evita quebrar no meio na impressão */
-        }
-
-        .entry-item div:first-child { /* Título e Data */
-            font-family: 'Montserrat', sans-serif;
+        h2 {
+            font-size: 13pt;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
             font-weight: 700;
-            font-size: 11pt;
-            color: var(--text-main);
-            display: flex;
-            justify-content: space-between;
         }
 
-        .entry-item div:nth-child(2) { /* Subtítulo e Status */
-            font-style: italic;
-            color: var(--accent-steel);
-            font-size: 9.5pt;
-            margin-bottom: 5px;
-        }
-
-        .entry-item p { /* Descrição */
-            font-size: 9.5pt;
-            color: var(--text-light);
+        .description {
+            font-size: 10pt;
             text-align: justify;
         }
 
-        .tag-status {
-            background: var(--bg-soft);
-            color: var(--text-main);
-            padding: 1px 6px;
-            border-radius: 3px;
-            font-size: 8pt;
-            font-style: normal;
-            border: 1px solid #ddd;
-        }
-
-        /* Hard Skills (Barras) */
-        #hard-skills-lista {
+        /* --- GRID DE COMPETÊNCIAS --- */
+        .skills-table {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* Duas colunas */
-            gap: 15px 30px;
-        }
-
-        .skill-bar-container {
-            margin-bottom: 0 !important;
-        }
-
-        /* Ajuste fino para as barras injetadas */
-        .skill-bar-container > div:first-child {
-            font-weight: 600;
-            font-size: 9pt;
-            margin-bottom: 3px;
-        }
-
-        /* Soft Skills (Tags) */
-        #soft-skills-lista {
-            display: flex;
-            flex-wrap: wrap;
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
         }
 
-        #soft-skills-lista span {
-            background-color: var(--bg-soft);
-            color: var(--primary-dark);
-            padding: 5px 12px;
-            border-radius: 4px;
-            font-size: 9pt;
+        .skill-row {
+            display: flex;
+            background: var(--bg-soft);
+            padding: 6px 12px;
+            align-items: center;
+            border-radius: 2px;
+        }
+
+        .skill-square {
+            width: 6px;
+            height: 6px;
+            background: var(--primary-dark);
+            margin-right: 10px;
+        }
+
+        .skill-text {
+            font-size: 8.5pt;
             font-weight: 600;
-            border: 1px solid #e0e0e0;
-        }
-
-        /* Cursos (Lista) */
-        #cursos-lista {
-            list-style: none;
-            padding: 0;
-        }
-
-        #cursos-lista li {
-            position: relative;
-            padding-left: 15px;
-            margin-bottom: 5px;
-            color: var(--text-light);
-        }
-
-        #cursos-lista li::before {
-            content: '•';
-            color: var(--accent-steel);
-            position: absolute;
-            left: 0;
-            font-weight: bold;
-        }
-
-        /* --- IMPRESSÃO --- */
-        @media print {
-            body {
-                background: none;
-                margin: 0;
-            }
-            .cv-page {
-                width: 100%;
-                margin: 0;
-                box-shadow: none;
-                min-height: auto;
-                height: auto; /* Permite crescer infinitamente */
-                overflow: visible;
-            }
-            
-            /* Correção de quebras de página */
-            .section-wrapper, .entry-item {
-                page-break-inside: avoid;
-            }
-
-            /* Garante cores exatas */
-            header {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
         }
     </style>
 </head>
 <body>
 
     <div class="cv-page">
-        
         <header>
             <div class="header-left">
-                <h1 id="nome">NOME COMPLETO</h1>
-                <h2 id="cargo">CARGO PRETENDIDO</h2>
+                <h1 id="nome">NOME DO CANDIDATO</h1>
+                <p id="cargo">TÍTULO PROFISSIONAL</p>
             </div>
-            <div class="header-right">
-                <div id="email">email@exemplo.com</div>
-                <div id="tel">(00) 00000-0000</div>
-                <div id="local">Cidade, UF</div>
-                <div id="linkedin">linkedin.com/in/usuario</div>
-                <div id="nascimento" style="margin-top: 3px; font-weight: 600;"></div>
+            <div id="contato" class="header-right">
+                <div id="nascimento" style="font-weight: bold; margin-bottom: 4px;">Nasc: --/--/----</div>
+                <div id="local">Localização</div>
+                <div id="tel">Telefone</div>
+                <div id="email">E-mail</div>
+                <div id="linkedin">LinkedIn</div>
             </div>
         </header>
 
-        <div class="main-container">
+        <div class="main-content">
+            <div id="section-resumo" class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Perfil Profissional</h2>
+                </div>
+                <p class="description" id="resumo"></p>
+            </div>
+
+            <div id="section-experiencia" class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Trajetória Profissional</h2>
+                </div>
+                <div id="experiencias"></div>
+            </div>
+
+            <div id="section-formacao" class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Formação Acadêmica</h2>
+                </div>
+                <div id="formacao"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cv-page page-break">
+        <div class="main-content" style="padding-top: 40px;">
             
-            <div id="section-resumo">
-                <h3 class="section-title">Perfil Profissional</h3>
-                <p id="resumo">Resumo profissional...</p>
-            </div>
-
-            <div id="section-experiencia">
-                <h3 class="section-title">Experiência Profissional</h3>
-                <div id="experiencias">
-                    </div>
-            </div>
-
-            <div id="section-formacao">
-                <h3 class="section-title">Formação Acadêmica</h3>
-                <div id="formacao">
-                    </div>
-            </div>
-
-            <div style="display: flex; gap: 40px; flex-wrap: wrap;">
-                
-                <div id="section-hard-skills" style="flex: 1; min-width: 250px;">
-                    <h3 class="section-title">Competências Técnicas</h3>
-                    <div id="hard-skills-lista">
-                        </div>
+            <div id="section-hard-skills" class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Competências Técnicas</h2>
                 </div>
+                <div id="hard-skills-lista" class="skills-table"></div>
+            </div>
 
-                <div id="section-soft-skills" style="flex: 1; min-width: 250px;">
-                    <h3 class="section-title">Habilidades</h3>
-                    <div id="soft-skills-lista">
-                        </div>
+            <div id="section-soft-skills" class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Habilidades Interpessoais</h2>
                 </div>
-
+                <div id="soft-skills-lista" class="skills-table"></div>
             </div>
 
-            <div id="section-cursos">
-                <h3 class="section-title">Certificações & Cursos</h3>
-                <ul id="cursos-lista">
-                    </ul>
+            <div id="section-cursos" class="section-wrapper">
+                <div class="title-container">
+                    <div class="rect-deco"></div>
+                    <h2>Certificações Adicionais</h2>
+                </div>
+                <div id="cursos-lista"></div>
             </div>
-
         </div>
     </div>
 

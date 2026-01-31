@@ -1,6 +1,5 @@
 export const exportToPDF = (iframeRef) => {
   if (!iframeRef || !iframeRef.current) {
-    console.error("Erro: Iframe não encontrado para exportação.");
     return;
   }
 
@@ -16,33 +15,60 @@ export const exportToPDF = (iframeRef) => {
     style.innerHTML = `
       @page {
         size: A4;
-        margin: 0mm !important; /* Remove URL, Data, Título e Números de página */
+        margin: 0mm !important;
       }
       @media print {
+        * {
+          box-sizing: border-box !important;
+        }
         html, body {
           width: 210mm;
-          height: 297mm;
+          min-height: 297mm;
+          height: auto !important;
+          max-height: 594mm !important;
+          margin: 0 auto !important;
+          padding: 0 !important;
+          overflow: hidden !important;
+          background-color: white !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          display: block !important;
+          zoom: 0.96;
+        }
+        .cv-page, .main-container, #main, body > div {
+          width: 100% !important;
+          height: auto !important;
           margin: 0 !important;
           padding: 0 !important;
-          overflow: hidden !important; /* Corta pixels extras que geram folha em branco */
-          background-color: white !important;
-          -webkit-print-color-adjust: exact !important; /* Garante cores e backgrounds */
-          print-color-adjust: exact !important;
+          box-shadow: none !important;
+          border: none !important;
+          display: block !important;
+          overflow: visible !important;
         }
-        /* Garante que o container ocupe a página toda */
-        .cv-container, #main, body > div {
-          height: 100% !important;
-          margin: 0 !important;
+        .entry-item, .section-wrapper, li, p {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+        h1, h2, h3, h4, h5, .section-title {
+          page-break-after: avoid;
+          break-after: avoid;
+        }
+        .page-break {
+          page-break-before: always;
+        }
+        ::-webkit-scrollbar {
+          display: none;
         }
       }
     `;
     iframeDoc.head.appendChild(style);
 
     const nameElement = iframeDoc.getElementById('nome');
-    const fileName = nameElement?.innerText || "Curriculo_Profissional";
+    let rawName = nameElement?.innerText || "Curriculo";
+    const safeName = rawName.replace(/[^a-zA-Z0-9-_ ]/g, '').trim().replace(/\s+/g, '_').substring(0, 50);
     
     const originalTitle = iframeDoc.title;
-    iframeDoc.title = `CV_${fileName.trim().replace(/\s+/g, '_')}`;
+    iframeDoc.title = `CV_${safeName}`;
 
     iframeWindow.focus();
 
@@ -50,13 +76,9 @@ export const exportToPDF = (iframeRef) => {
       setTimeout(() => {
         iframeWindow.print();
         iframeDoc.title = originalTitle;
-      }, 100);
-      
+      }, 500);
     } catch (err) {
-      console.error("Erro ao disparar driver de impressão:", err);
-      alert("Erro ao exportar. Verifique se pop-ups estão permitidos.");
+      console.error(err);
     }
-  } else {
-    console.error("Janela do Iframe inacessível.");
   }
 };
