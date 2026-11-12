@@ -28,8 +28,11 @@ export const injectDataToIframe = (doc, data, config, palettes) => {
     const spacingScale = config?.spacing === 'compact' ? '0.85' : (config?.spacing === 'relaxed' ? '1.15' : '1.0');
     doc.documentElement.style.setProperty('--spacing-scale', spacingScale);
 
-    // Ajusta margens e paddings conforme a densidade
+    // Ajusta margens, paddings e zoom conforme a configuração
     if (doc.body) {
+      const zoomFactor = (config?.zoom || 100) / 100;
+      doc.body.style.zoom = zoomFactor;
+
       if (config?.spacing === 'compact') {
         doc.body.style.fontSize = '9pt';
         doc.body.style.lineHeight = '1.3';

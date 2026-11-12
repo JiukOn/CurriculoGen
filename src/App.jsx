@@ -111,14 +111,14 @@ function App() {
     try {
       const doc = iframe.contentWindow.document;
       if (validatedData) {
-        injectDataToIframe(doc, validatedData, config, PALETTES);
+        injectDataToIframe(doc, validatedData, { ...config, zoom: zoomLevel }, PALETTES);
       }
     } catch (err) {
       if (err.name !== 'SecurityError') {
         console.warn("Sync pendente:", err);
       }
     }
-  }, [validatedData, config, isIframeReady]);
+  }, [validatedData, config, zoomLevel, isIframeReady]);
 
   useEffect(() => {
     const timeout = setTimeout(syncPreview, 120);
@@ -347,27 +347,15 @@ function App() {
             </div>
           </div>
 
-          <div className="iframe-shadow-box" style={{ overflow: 'auto' }}>
-            <div 
-              style={{
-                transform: `scale(${zoomLevel / 100})`,
-                transformOrigin: 'top center',
-                transition: 'transform 0.15s ease-out',
-                display: 'flex',
-                justifyContent: 'center',
-                width: '100%',
-                minHeight: '100%'
-              }}
-            >
-              <iframe 
-                ref={iframeRef} 
-                onLoad={handleIframeLoad}
-                src={`./models/${config.model}`} 
-                className="cv-iframe-full"
-                title="Jiukurriculo Canvas"
-                sandbox="allow-scripts allow-modals allow-same-origin"
-              />
-            </div>
+          <div className="iframe-shadow-box">
+            <iframe 
+              ref={iframeRef} 
+              onLoad={handleIframeLoad}
+              src={`./models/${config.model}`} 
+              className="cv-iframe-full"
+              title="Jiukurriculo Canvas"
+              sandbox="allow-scripts allow-modals allow-same-origin"
+            />
           </div>
         </div>
       </main>
