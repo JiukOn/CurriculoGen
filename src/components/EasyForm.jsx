@@ -11,7 +11,7 @@ const Accordion = ({ title, icon, children, isOpenDefault = false }) => {
         tabIndex={0}
       >
         <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-          <span style={{fontSize: '1.2em', opacity: 0.8}}>{icon}</span>
+          {icon && <span style={{fontSize: '1.2em', opacity: 0.8}}>{icon}</span>}
           <span>{title}</span>
         </div>
         <span style={{ 
@@ -115,7 +115,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
   return (
     <div className="easy-form-container">
       
-      <Accordion title="Dados Pessoais" icon="👤" isOpenDefault={true}>
+      <Accordion title="Dados Pessoais" isOpenDefault={true}>
         <div className="responsive-grid">
           <div className="form-group">
             <label className="form-label">Nome Completo</label>
@@ -148,7 +148,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
         </div>
       </Accordion>
 
-      <Accordion title="Contato" icon="📞">
+      <Accordion title="Contato">
         <div className="responsive-grid">
           <div className="form-group">
             <label className="form-label">Email</label>
@@ -192,7 +192,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
         </div>
       </Accordion>
 
-      <Accordion title="Experiência Profissional" icon="💼">
+      <Accordion title="Experiência Profissional">
         {(data.experiencias || []).map((exp, idx) => (
           <div key={idx} className="array-item-wrapper">
             <div className="responsive-grid">
@@ -239,7 +239,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
         </button>
       </Accordion>
 
-      <Accordion title="Formação Acadêmica" icon="🎓">
+      <Accordion title="Formação Acadêmica">
         {(data.formacao || []).map((form, idx) => (
           <div key={idx} className="array-item-wrapper">
             <div className="responsive-grid">
@@ -274,7 +274,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
         </button>
       </Accordion>
 
-      <Accordion title="Hard Skills (Técnicas)" icon="⚡">
+      <Accordion title="Hard Skills (Técnicas)">
         <p className="description-text" style={{marginBottom: '10px'}}>
           Defina o nível técnico para gerar barras de progresso.
         </p>
@@ -314,7 +314,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
         </button>
       </Accordion>
 
-       <Accordion title="Soft Skills (Comportamental)" icon="🤝">
+       <Accordion title="Soft Skills (Comportamental)">
         <p className="description-text">Habilidades interpessoais (Tags).</p>
         <TagInput 
           tags={data.soft_skills || []} 
@@ -323,7 +323,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
         />
       </Accordion>
 
-      <Accordion title="Cursos Complementares" icon="📚">
+      <Accordion title="Cursos Complementares">
         <p className="description-text">Certificações e workshops extras.</p>
         <TagInput 
           tags={data.cursos || []} 
@@ -332,7 +332,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
         />
       </Accordion>
 
-      <Accordion title="Idiomas" icon="🌐">
+      <Accordion title="Idiomas">
         <p className="description-text">Línguas e nível de proficiência.</p>
         {(data.idiomas || []).map((item, idx) => (
           <div key={idx} className="array-item-wrapper" style={{display: 'flex', gap: '10px', alignItems: 'center', paddingBottom: '10px'}}>
@@ -367,7 +367,7 @@ const EasyForm = ({ jsonData, onUpdate }) => {
         </button>
       </Accordion>
 
-      <Accordion title="Projetos & Portfólio" icon="💻">
+      <Accordion title="Projetos & Portfólio">
         <p className="description-text">Projetos em destaque, links e contribuições.</p>
         {(data.projetos || []).map((proj, idx) => (
           <div key={idx} className="array-item-wrapper">

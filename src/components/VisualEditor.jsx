@@ -1,7 +1,7 @@
 import React from 'react';
 import { PALETTES, FONTS, MODELS } from '../config/constants';
 
-/* --- DESIGN ENGINE: CONTROLES VISUAIS & DENSIDADE (SEM NUMERAÇÃO 01) --- */
+/* --- DESIGN ENGINE: ESTILO & PERSONALIZAÇÃO --- */
 
 const VisualEditor = ({ config, setConfig }) => {
   return (
@@ -9,8 +9,7 @@ const VisualEditor = ({ config, setConfig }) => {
       <div className="glass-card">
         <header className="panel-header">
           <div className="section-title-wrapper">
-            <span className="section-icon">🎨</span>
-            <h3 className="section-heading">Estilo & Layout</h3>
+            <h3 className="section-heading">Estilo</h3>
           </div>
         </header>
 
@@ -24,15 +23,15 @@ const VisualEditor = ({ config, setConfig }) => {
           >
             {MODELS.map(m => (
               <option key={m.id} value={m.id}>
-                {m.name.toUpperCase()}
+                {m.name}
               </option>
             ))}
           </select>
         </div>
 
-        {/* Seleção de Cores - Grid Jiukurriculo */}
+        {/* Seleção de Cores */}
         <div className="control-group">
-          <label className="modern-label">Paleta de Identidade</label>
+          <label className="modern-label">Paleta de Cores</label>
           <div className="palette-grid-jiu">
             {Object.keys(PALETTES).map((key) => {
               const colorData = PALETTES[key];
@@ -55,14 +54,14 @@ const VisualEditor = ({ config, setConfig }) => {
           </div>
         </div>
 
-        {/* Densidade e Espaçamento de Página */}
+        {/* Densidade da Página */}
         <div className="control-group">
-          <label className="modern-label">Densidade da Página (Ajuste A4)</label>
+          <label className="modern-label">Densidade da Página</label>
           <div className="spacing-density-selector">
             {[
-              { id: 'compact', label: 'Compacto (1 Pág)', icon: '📐' },
-              { id: 'normal', label: 'Padrão', icon: '📄' },
-              { id: 'relaxed', label: 'Espaçoso (2 Págs)', icon: '📑' }
+              { id: 'compact', label: 'Compacto' },
+              { id: 'normal', label: 'Padrão' },
+              { id: 'relaxed', label: 'Espaçoso' }
             ].map(d => (
               <button
                 key={d.id}
@@ -71,7 +70,7 @@ const VisualEditor = ({ config, setConfig }) => {
                 onClick={() => setConfig({ ...config, spacing: d.id })}
                 title={d.label}
               >
-                <span>{d.icon}</span> {d.label}
+                {d.label}
               </button>
             ))}
           </div>

@@ -238,14 +238,14 @@ function App() {
           className={`mobile-tab-btn ${mobileTab === 'editor' ? 'active' : ''}`}
           onClick={() => setMobileTab('editor')}
         >
-          ⚙️ Editor & Dados
+          Editor & Dados
         </button>
         <button
           type="button"
           className={`mobile-tab-btn ${mobileTab === 'preview' ? 'active' : ''}`}
           onClick={() => setMobileTab('preview')}
         >
-          👁️ Ver Currículo
+          Ver Currículo
         </button>
       </div>
 
@@ -335,7 +335,7 @@ function App() {
             setJsonInput={setJsonInput} 
           />
           
-          {error && <div className="error-toast-neon">⚠️ {error}</div>}
+          {error && <div className="error-toast-neon">{error}</div>}
 
         </div>
 
@@ -393,7 +393,7 @@ function App() {
               <span className="badge-live">LIVE PREVIEW</span>
               {config.spacing && (
                 <span className="badge-density">
-                  {config.spacing === 'compact' ? '📐 COMPACTO' : (config.spacing === 'relaxed' ? '📑 ESPAÇOSO' : '📄 PADRÃO')}
+                  {config.spacing === 'compact' ? 'COMPACTO' : (config.spacing === 'relaxed' ? 'ESPAÇOSO' : 'PADRÃO')}
                 </span>
               )}
             </div>

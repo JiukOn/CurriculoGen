@@ -1,4 +1,4 @@
-/* --- TÍTULOS BONITOS: PALETAS E TIPOGRAFIA --- */
+/* --- PALETAS E TIPOGRAFIA --- */
 
 export const PALETTES = {
   graphite: { primary: '#252523', accent: '#4a5568', name: 'Graphite' },
@@ -10,16 +10,16 @@ export const PALETTES = {
 };
 
 export const FONTS = [
-  { id: 'inter', name: 'Inter (Ideal para Tech)', family: "'Inter', sans-serif" },
-  { id: 'roboto', name: 'Roboto (Moderno)', family: "'Roboto', sans-serif" },
-  { id: 'montserrat', name: 'Montserrat (Destaque)', family: "'Montserrat', sans-serif" },
-  { id: 'georgia', name: 'Georgia (Executivo/Sério)', family: "'Georgia', serif" },
-  { id: 'playfair', name: 'Playfair (Elegante)', family: "'Playfair Display', serif" }
+  { id: 'inter', name: 'Inter', family: "'Inter', sans-serif" },
+  { id: 'roboto', name: 'Roboto', family: "'Roboto', sans-serif" },
+  { id: 'montserrat', name: 'Montserrat', family: "'Montserrat', sans-serif" },
+  { id: 'georgia', name: 'Georgia', family: "'Georgia', serif" },
+  { id: 'playfair', name: 'Playfair Display', family: "'Playfair Display', serif" }
 ];
 
 export const MODELS = [
-  { id: 'model1.html', name: 'Modelo 1: Modern Slate' },
-  { id: 'model2.html', name: 'Modelo 2: Minimalist' },
-  { id: 'model3.html', name: 'Modelo 3: Executive' },
-  { id: 'model4.html', name: 'Modelo 4: Grid Tech' }
+  { id: 'model1.html', name: 'Modern Slate' },
+  { id: 'model2.html', name: 'Minimalist' },
+  { id: 'model3.html', name: 'Executive' },
+  { id: 'model4.html', name: 'Grid Tech' }
 ];

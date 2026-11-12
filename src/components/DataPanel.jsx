@@ -12,7 +12,7 @@ import {
   setActiveProfileId
 } from '../utils/profileManager';
 
-/* --- GESTÃO DE DADOS & PERFIS (SEM NUMERAÇÃO 02) --- */
+/* --- GESTÃO DE PERFIL E DADOS --- */
 
 const DataPanel = ({ jsonInput, setJsonInput }) => {
   const [viewMode, setViewMode] = useState('form'); 
@@ -20,7 +20,6 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
   const [parseError, setParseError] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   
-  // Múltiplos Perfis
   const [profiles, setProfiles] = useState(() => getSavedProfiles(structureBase));
   const [activeProfileId, setActiveIdState] = useState(() => getActiveProfileId() || 'prof_default');
   const [isCreatingProfile, setIsCreatingProfile] = useState(false);
@@ -38,7 +37,7 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
       setParsedData(parsed);
       setParseError(null);
     } catch {
-      setParseError("JSON inválido detectado. Corrija no Modo Código.");
+      setParseError("JSON inválido detectado. Corrija na aba JSON.");
     }
   }, [jsonInput]);
 
@@ -50,7 +49,6 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
     }
   }, [profiles.length, parsedData]);
 
-  // --- HANDLERS ---
   const handleFormUpdate = (newData) => {
     setParsedData(newData);
     const jsonStr = JSON.stringify(newData, null, 2);
@@ -138,8 +136,8 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
       <div className="modal-overlay" onClick={() => setIsFormOpen(false)}>
         <div className="modal-content giant-modal glass-card" onClick={e => e.stopPropagation()}>
           <div className="giant-modal-header">
-            <h2 style={{margin: 0, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '15px', fontSize: '1.4rem'}}>
-              <span style={{color: 'var(--primary)'}}>📝</span> Editor Visual de Currículo
+            <h2 style={{margin: 0, color: 'var(--text-main)', fontSize: '1.35rem', fontWeight: 700}}>
+              Editor de Perfil
             </h2>
             <button 
               className="neo-btn" 
@@ -154,7 +152,7 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
                 fontSize: '12px'
               }}
             >
-              CONCLUÍDO ✕
+              Concluído ✕
             </button>
           </div>
 
@@ -172,38 +170,37 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
       <div className="glass-card">
         <header className="panel-header">
           <div className="section-title-wrapper">
-            <span className="section-icon">📝</span>
-            <h3 className="section-heading">Dados & Perfis</h3>
+            <h3 className="section-heading">Perfil</h3>
           </div>
         </header>
 
-        {/* GERENCIADOR DE MÚLTIPLOS PERFIS */}
-        <div className="profiles-manager-container" style={{ marginBottom: '14px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-            <label className="modern-label" style={{ fontSize: '11px', margin: 0 }}>
-              Versões / Perfis ({profiles.length})
+        {/* GERENCIADOR DE VERSÕES SALVAS */}
+        <div className="control-group">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+            <label className="modern-label" style={{ margin: 0 }}>
+              Versões salvas ({profiles.length})
             </label>
             <button
               type="button"
               className="add-profile-btn"
               onClick={() => setIsCreatingProfile(!isCreatingProfile)}
-              title="Criar nova versão ou perfil"
+              title="Criar nova versão"
             >
               {isCreatingProfile ? 'Cancelar' : '+ Nova Versão'}
             </button>
           </div>
 
           {isCreatingProfile && (
-            <form onSubmit={handleCreateNewProfile} style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
+            <form onSubmit={handleCreateNewProfile} style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
               <input
                 className="modern-select"
-                style={{ padding: '6px 10px', fontSize: '12px', flex: 1 }}
-                placeholder="Ex: Desenvolvedor Senior / Versão EN"
+                style={{ padding: '8px 12px', fontSize: '12px', flex: 1 }}
+                placeholder="Nome da versão (ex: Backend Senior)"
                 value={newProfileName}
                 onChange={(e) => setNewProfileName(e.target.value)}
                 autoFocus
               />
-              <button type="submit" className="neo-btn" style={{ padding: '6px 12px', height: 'auto', fontSize: '11px' }}>
+              <button type="submit" className="neo-btn" style={{ padding: '8px 14px', height: 'auto', fontSize: '11px' }}>
                 Salvar
               </button>
             </form>
@@ -223,7 +220,7 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
                     type="button"
                     className="profile-pill-del"
                     onClick={(e) => handleDeleteProfile(p.id, e)}
-                    title="Excluir perfil"
+                    title="Excluir versão"
                   >
                     ×
                   </button>
@@ -233,27 +230,25 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
           </div>
         </div>
 
+        {/* MODO DE EDIÇÃO */}
         <div className="mode-toggle-container">
           <button 
             type="button"
             className={`mode-btn ${viewMode === 'form' ? 'active' : ''}`}
             onClick={() => !parseError && setViewMode('form')}
-            title="Preencher campos visualmente"
           >
-            <span style={{fontSize: '1.1em'}}>📝</span> 
-            <span>MODO FÁCIL</span>
+            <span>Formulário</span>
           </button>
           <button 
             type="button"
             className={`mode-btn ${viewMode === 'code' ? 'active' : ''}`}
             onClick={() => setViewMode('code')}
-            title="Editar código JSON puro"
           >
-            <span style={{fontSize: '1.1em'}}>💻</span> 
-            <span>MODO CÓDIGO</span>
+            <span>JSON</span>
           </button>
         </div>
 
+        {/* BACKUP & IMPORTAR (Mantendo 💾 e 📂 conforme solicitado) */}
         <div className="action-button-group">
           <button type="button" className="neo-btn download-variant" onClick={handleDownload} title="Baixar Backup">
             <span className="btn-icon">💾</span>
@@ -266,15 +261,15 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
         </div>
         <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept=".json" onChange={handleFileUpload} />
 
-        <div className="section-spacer" style={{height: '12px'}}></div>
+        <div style={{ height: '16px' }}></div>
 
         {viewMode === 'form' ? (
           parseError ? (
-            <div className="error-toast-neon">⚠️ {parseError}<br/><small>Corrija no Modo Código.</small></div>
+            <div className="error-toast-neon">{parseError}</div>
           ) : (
             <>
-              <p className="description-text" style={{textAlign: 'center', marginBottom: '12px'}}>
-                Preencha seus dados com conforto e visualização clara das seções.
+              <p className="description-text" style={{ textAlign: 'center', marginBottom: '14px' }}>
+                Abra o editor completo para preencher experiências, formação, habilidades e projetos.
               </p>
               
               <button 
@@ -282,10 +277,9 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
                 className="btn-launch-modal" 
                 onClick={() => setIsFormOpen(true)}
               >
-                <span className="launch-icon">✨</span>
-                <span>ABRIR FORMULÁRIO DE DADOS</span>
-                <small style={{fontWeight: '400', opacity: 0.7, fontSize: '0.8rem'}}>
-                  Editar em Tela Cheia
+                <span>Editar Dados do Perfil</span>
+                <small style={{ fontWeight: '400', opacity: 0.7, fontSize: '0.8rem' }}>
+                  Abrir em Tela Cheia
                 </small>
               </button>
             </>
@@ -294,7 +288,7 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
           <div className="code-editor-container">
             <div className="editor-toolbar">
               <div className="traffic-lights"><span className="red"></span><span className="yellow"></span><span className="green"></span></div>
-              <div className="editor-title" style={{color: '#666', fontSize: '10px'}}>raw_data.json</div>
+              <div className="editor-title" style={{ color: '#666', fontSize: '10px' }}>dados_curriculo.json</div>
             </div>
             <textarea 
               className="modern-textarea"

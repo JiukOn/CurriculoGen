@@ -29,7 +29,7 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
     {
       id: 'init_1',
       sender: 'assistant',
-      text: 'Olá! Sou o seu Copiloto de Carreira com política de Zero Alucinação. 🛡️\n\nVocê pode me enviar seus currículos em PDF, perfis do LinkedIn ou anotações. Tenho controle do aplicativo para ajustar layout, modelo, cores e conteúdo com base em fatos reais. O que deseja fazer?',
+      text: 'Olá! Sou o seu Copiloto de Carreira com política de Zero Alucinação.\n\nVocê pode me enviar seus currículos em PDF, perfis do LinkedIn ou anotações. Tenho controle do aplicativo para ajustar layout, modelo, cores e conteúdo com base em fatos reais. O que deseja fazer?',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
@@ -144,7 +144,7 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
           id: 'err_' + Date.now(),
           sender: 'assistant',
           isError: true,
-          text: `⚠️ ${err.message || 'Erro ao processar sua solicitação.'}`,
+          text: `${err.message || 'Erro ao processar sua solicitação.'}`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
@@ -176,7 +176,7 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
       {
         id: 'sys_' + Date.now(),
         sender: 'assistant',
-        text: `✨ ${summaryText}`,
+        text: summaryText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
     ]);
@@ -215,7 +215,7 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
         {
           id: 'sys_' + Date.now(),
           sender: 'assistant',
-          text: `📁 Anexei ${newSources.length} novo(s) arquivo(s) como evidência comprovada: ${newSources.map(s => s.title).join(', ')}. Posso usá-los agora para reescrever ou atualizar seu currículo!`,
+          text: `Anexei ${newSources.length} novo(s) arquivo(s) como evidência comprovada: ${newSources.map(s => s.title).join(', ')}. Posso usá-los agora para reescrever ou atualizar seu currículo!`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
@@ -259,7 +259,7 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
               onClick={() => setShowConfig(!showConfig)}
               title="Configurar Chave da API"
             >
-              ⚙️ Chave & Modelo
+              Chave & Modelo
             </button>
             <button type="button" className="copilot-close-btn" onClick={onClose} title="Fechar">
               ✕
@@ -272,7 +272,7 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
           <div className="copilot-config-panel">
             <div className="config-row-top">
               <span style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-main)' }}>
-                🔑 Configuração da Gemini API Key
+                Configuração da Gemini API Key
               </span>
               <a
                 href="https://aistudio.google.com/app/apikey"
@@ -304,11 +304,11 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
                 {availableModels.length > 0 ? (
                   availableModels.map(m => (
                     <option key={m} value={m}>
-                      {m} {m.includes('flash') ? '⚡' : ''}
+                      {m}
                     </option>
                   ))
                 ) : (
-                  <option value="gemini-2.0-flash">gemini-2.0-flash ⚡</option>
+                  <option value="gemini-2.0-flash">gemini-2.0-flash</option>
                 )}
               </select>
             </div>
@@ -331,7 +331,6 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
         >
           <div className="evidence-bar-header">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '14px' }}>🛡️</span>
               <span style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
                 Dossiê de Evidências ({evidenceSources.length} anexados)
               </span>
@@ -362,9 +361,6 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
             <div className="evidence-chips-list">
               {evidenceSources.map(src => (
                 <div key={src.id} className="evidence-chip" title={src.content.substring(0, 150) + '...'}>
-                  <span className="evidence-chip-icon">
-                    {src.type === 'pdf' ? '📄' : (src.type === 'json' ? '💾' : '✍️')}
-                  </span>
                   <span className="evidence-chip-name">{src.title}</span>
                   <button
                     type="button"
@@ -389,14 +385,14 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
           {messages.map(msg => (
             <div key={msg.id} className={`chat-bubble-row ${msg.sender}`}>
               <div className="bubble-avatar">
-                {msg.sender === 'user' ? '👤' : '🤖'}
+                {msg.sender === 'user' ? 'EU' : '🤖'}
               </div>
               <div className={`chat-bubble ${msg.isError ? 'error-bubble' : ''}`}>
                 <div className="bubble-text">{msg.text}</div>
                 <div className="bubble-footer">
                   <span className="bubble-time">{msg.timestamp}</span>
                   {msg.hasAction && (
-                    <span className="bubble-badge-update">⚡ Ação Disponível</span>
+                    <span className="bubble-badge-update">Ação Disponível</span>
                   )}
                 </div>
               </div>
@@ -421,7 +417,6 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
           <div className="pending-resume-bar">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '16px' }}>✨</span>
                 <span style={{ fontSize: '12px', fontWeight: 'bold' }}>
                   {pendingAction.summary || 'Proposta de atualização pronta!'}
                 </span>
