@@ -1,10 +1,15 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 /* --- TÍTULOS BONITOS: CONFIGURAÇÃO DINÂMICA E ALTA PERFORMANCE --- */
 
 export default defineConfig(({ command }) => {
+  const isCodespaces = process.env.CODESPACES === 'true'
+
   return {
     // TÍTULOS BONITOS: TRATAMENTO DE CAMINHO BASE
     // Se for 'build', usa o subdiretório do GitHub Pages. Se for desenvolvimento, usa a raiz.
@@ -21,15 +26,15 @@ export default defineConfig(({ command }) => {
     server: {
       port: 5173,
       open: true,
-      // Habilita polling para garantir que mudanças no Iframe reflitam no Codespaces
       watch: {
-        usePolling: true,
+        usePolling: isCodespaces,
       },
-      // Necessário para o redirecionamento de portas do GitHub Dev
       strictPort: true,
-      hmr: {
-        clientPort: 443, // Força o HMR a usar a porta segura do Codespaces
-      },
+      hmr: isCodespaces
+        ? {
+            clientPort: 443, // Força o HMR a usar a porta segura apenas no Codespaces
+          }
+        : undefined,
     },
 
     /* --- TÍTULOS BONITOS: OTIMIZAÇÃO DE BUILD --- */

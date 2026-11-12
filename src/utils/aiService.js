@@ -125,7 +125,7 @@ async function callGeminiAPI(model, key, promptText, timeoutMs = 15000) {
   }
 }
 
-function processAndValidateResponse(text, originalJson) {
+function processAndValidateResponse(text, _originalJson) {
   let cleanedText = text.replace(/```json/g, '').replace(/```/g, '').trim();
   const firstBrace = cleanedText.indexOf('{');
   const lastBrace = cleanedText.lastIndexOf('}');
