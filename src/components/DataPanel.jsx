@@ -12,13 +12,15 @@ import {
   setActiveProfileId
 } from '../utils/profileManager';
 
+/* --- GESTÃO DE DADOS & PERFIS (SEM NUMERAÇÃO 02) --- */
+
 const DataPanel = ({ jsonInput, setJsonInput }) => {
   const [viewMode, setViewMode] = useState('form'); 
   const [parsedData, setParsedData] = useState({});
   const [parseError, setParseError] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   
-  // Múltiplos Perfis (Item 3)
+  // Múltiplos Perfis
   const [profiles, setProfiles] = useState(() => getSavedProfiles(structureBase));
   const [activeProfileId, setActiveIdState] = useState(() => getActiveProfileId() || 'prof_default');
   const [isCreatingProfile, setIsCreatingProfile] = useState(false);
@@ -35,12 +37,11 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
       const parsed = JSON.parse(jsonInput) || {};
       setParsedData(parsed);
       setParseError(null);
-    } catch (e) {
+    } catch {
       setParseError("JSON inválido detectado. Corrija no Modo Código.");
     }
   }, [jsonInput]);
 
-  // Se não houver perfis salvos, inicializa o primeiro com o estado atual
   useEffect(() => {
     if (profiles.length === 0 && parsedData && parsedData.nome) {
       const initial = createProfile(parsedData.cargo || "Meu Primeiro Currículo", parsedData);
@@ -49,7 +50,7 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
     }
   }, [profiles.length, parsedData]);
 
-  // --- HANDLERS DE FORMULÁRIO E PERFIS ---
+  // --- HANDLERS ---
   const handleFormUpdate = (newData) => {
     setParsedData(newData);
     const jsonStr = JSON.stringify(newData, null, 2);
@@ -122,7 +123,7 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
         setProfiles(getSavedProfiles());
         setActiveIdState(newP.id);
         setViewMode('form');
-      } catch (err) {
+      } catch {
         setViewMode('code');
       }
     };
@@ -137,19 +138,20 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
       <div className="modal-overlay" onClick={() => setIsFormOpen(false)}>
         <div className="modal-content giant-modal glass-card" onClick={e => e.stopPropagation()}>
           <div className="giant-modal-header">
-            <h2 style={{margin: 0, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '15px', fontSize: '1.5rem'}}>
+            <h2 style={{margin: 0, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '15px', fontSize: '1.4rem'}}>
               <span style={{color: 'var(--primary)'}}>📝</span> Editor Visual de Currículo
             </h2>
             <button 
               className="neo-btn" 
               onClick={() => setIsFormOpen(false)}
               style={{
-                padding: '10px 20px', 
+                padding: '8px 18px', 
                 height: 'auto', 
                 background: 'rgba(231, 76, 60, 0.1)', 
                 borderColor: 'var(--error-red)', 
                 color: 'var(--error-red)',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                fontSize: '12px'
               }}
             >
               CONCLUÍDO ✕
@@ -169,15 +171,17 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
     <>
       <div className="glass-card">
         <header className="panel-header">
-          <div className="step-indicator">02</div>
-          <h3>Gestão de Dados & Perfis</h3>
+          <div className="section-title-wrapper">
+            <span className="section-icon">📝</span>
+            <h3 className="section-heading">Dados & Perfis</h3>
+          </div>
         </header>
 
-        {/* GERENCIADOR DE MÚLTIPLOS PERFIS (ITEM 3) */}
+        {/* GERENCIADOR DE MÚLTIPLOS PERFIS */}
         <div className="profiles-manager-container" style={{ marginBottom: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
             <label className="modern-label" style={{ fontSize: '11px', margin: 0 }}>
-              Perfis de Currículo ({profiles.length})
+              Versões / Perfis ({profiles.length})
             </label>
             <button
               type="button"
@@ -185,7 +189,7 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
               onClick={() => setIsCreatingProfile(!isCreatingProfile)}
               title="Criar nova versão ou perfil"
             >
-              {isCreatingProfile ? 'Cancelar' : '+ Novo Perfil'}
+              {isCreatingProfile ? 'Cancelar' : '+ Nova Versão'}
             </button>
           </div>
 
@@ -236,7 +240,7 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
             onClick={() => !parseError && setViewMode('form')}
             title="Preencher campos visualmente"
           >
-            <span style={{fontSize: '1.2em'}}>📝</span> 
+            <span style={{fontSize: '1.1em'}}>📝</span> 
             <span>MODO FÁCIL</span>
           </button>
           <button 
@@ -245,7 +249,7 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
             onClick={() => setViewMode('code')}
             title="Editar código JSON puro"
           >
-            <span style={{fontSize: '1.2em'}}>💻</span> 
+            <span style={{fontSize: '1.1em'}}>💻</span> 
             <span>MODO CÓDIGO</span>
           </button>
         </div>
@@ -270,7 +274,7 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
           ) : (
             <>
               <p className="description-text" style={{textAlign: 'center', marginBottom: '12px'}}>
-                Abra o editor visual para preencher dados, cursos, idiomas e projetos.
+                Preencha seus dados com conforto e visualização clara das seções.
               </p>
               
               <button 

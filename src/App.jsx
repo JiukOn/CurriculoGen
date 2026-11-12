@@ -7,11 +7,12 @@ import HelpPanel from './components/HelpPanel';
 import { injectDataToIframe } from './utils/cvInjector';
 import { exportToPDF, downloadDirectPDF } from './utils/exportHandler';
 import { validateAndFormat } from './utils/dataHandlers';
+import { useHistory } from './hooks/useHistory';
 import { PALETTES } from './config/constants';
 import structureBase from './data/structure.json';
 import './App.css';
 
-/* --- JIUKURRICULO ENGINE: ENHANCED MULTI-FEATURE EDITION --- */
+/* --- JIUKURRICULO ENGINE: ENHANCED RESIZABLE & UNDO/REDO EDITION --- */
 
 const safeStorage = {
   get: (key, fallback) => {
@@ -33,7 +34,7 @@ const safeStorage = {
 };
 
 function App() {
-  // --- ESTADOS GLOBAIS ---
+  // --- CONFIGURAÇÃO DO MODELO VISUAL ---
   const [config, setConfig] = useState(() => {
     try {
       const saved = localStorage.getItem('jiu_editor_config');
@@ -43,16 +44,26 @@ function App() {
       model: 'model1.html', 
       palette: 'graphite', 
       font: "'Inter', sans-serif",
-      spacing: 'normal' // 'compact' | 'normal' | 'relaxed'
+      spacing: 'normal'
     };
   });
   
   const [theme, setTheme] = useState(() => safeStorage.get('jiu_theme', 'dark'));
 
-  const [jsonInput, setJsonInput] = useState(() => {
+  // --- HISTÓRICO DE ESTADOS (UNDO / REDO COM CTRL+Z / CTRL+Y) ---
+  const initialJson = useMemo(() => {
     const saved = safeStorage.get('cv_generation_cache', null);
     return saved || JSON.stringify(structureBase, null, 2);
-  });
+  }, []);
+
+  const {
+    state: jsonInput,
+    set: setJsonInput,
+    undo,
+    redo,
+    canUndo,
+    canRedo
+  } = useHistory(initialJson, 30);
 
   // --- ESTADOS DE CONTROLE E UI ---
   const [error, setError] = useState(null);
@@ -63,13 +74,55 @@ function App() {
   const [showHelp, setShowHelp] = useState(false);
   const [showCopilot, setShowCopilot] = useState(false);
 
-  // Zoom e Visualização Mobile (Item 4)
+  // Zoom e Visualização Mobile
   const [zoomLevel, setZoomLevel] = useState(100);
-  const [mobileTab, setMobileTab] = useState('editor'); // 'editor' | 'preview'
+  const [mobileTab, setMobileTab] = useState('editor');
+
+  // --- PAINEL LATERAL REDIMENSIONÁVEL (SPLITTER DRAG & DROP) ---
+  const [sidebarWidth, setSidebarWidth] = useState(() => {
+    try {
+      const saved = localStorage.getItem('jiu_sidebar_width');
+      return saved ? parseInt(saved, 10) : 430;
+    } catch { return 430; }
+  });
+  const [isDragging, setIsDragging] = useState(false);
 
   const iframeRef = useRef(null);
 
-  // 1. Aplicação de Tema e Configurações Persistentes
+  // Efeito de redimensionamento do Splitter
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isDragging) return;
+      const minW = 330;
+      const maxW = Math.min(window.innerWidth * 0.55, 680);
+      const newWidth = Math.max(minW, Math.min(maxW, e.clientX));
+      setSidebarWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      if (isDragging) {
+        setIsDragging(false);
+        try { localStorage.setItem('jiu_sidebar_width', sidebarWidth.toString()); } catch {}
+      }
+    };
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    } else {
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, sidebarWidth]);
+
+  // Persistências
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     safeStorage.set('jiu_theme', theme);
@@ -85,12 +138,12 @@ function App() {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
 
-  // 2. Validação de Dados (Core)
+  // Validação dos Dados
   const validatedData = useMemo(() => {
     setIsSyncing(true);
     const result = validateAndFormat(jsonInput);
     
-    if (!result && jsonInput.trim() !== "") {
+    if (!result && jsonInput && jsonInput.trim() !== "") {
       setError("Estrutura JSON inválida. Verifique a sintaxe no Painel de Dados.");
       setIsSyncing(false);
       return null;
@@ -99,11 +152,11 @@ function App() {
     setError(null);
     safeStorage.set('cv_generation_cache', jsonInput);
     
-    setTimeout(() => setIsSyncing(false), 300);
+    setTimeout(() => setIsSyncing(false), 200);
     return result;
   }, [jsonInput]);
 
-  // 3. Sincronização com Iframe
+  // Sincronização com Iframe
   const syncPreview = useCallback(() => {
     const iframe = iframeRef.current;
     if (!iframe?.contentWindow || !isIframeReady) return;
@@ -121,7 +174,7 @@ function App() {
   }, [validatedData, config, zoomLevel, isIframeReady]);
 
   useEffect(() => {
-    const timeout = setTimeout(syncPreview, 120);
+    const timeout = setTimeout(syncPreview, 100);
     return () => clearTimeout(timeout);
   }, [syncPreview]);
 
@@ -130,7 +183,7 @@ function App() {
     syncPreview();
   };
 
-  // 4. Exportação via Impressora do Sistema / PDF
+  // Exportação via Impressora
   const handleExport = async () => {
     if (isExporting || error) return;
     
@@ -146,7 +199,7 @@ function App() {
     }
   };
 
-  // 5. Download Direto de PDF sem diálogo do navegador (Item 2)
+  // Download Direto de PDF
   const handleDirectPdfDownload = async () => {
     if (isDirectDownloading || error) return;
 
@@ -165,18 +218,20 @@ function App() {
   return (
     <div className="app-container glass-bg">
       
-      {/* MODAL DE AJUDA */}
+      {/* MODAL DE AJUDA REFORMULADO */}
       {showHelp && <HelpPanel onClose={() => setShowHelp(false)} />}
 
-      {/* MODAL DO COPILOTO IA INTERATIVO */}
+      {/* MODAL DO COPILOTO IA INTERATIVO COM CONSCIÊNCIA DO APP */}
       <AiCopilotModal 
         isOpen={showCopilot}
         onClose={() => setShowCopilot(false)}
         jsonInput={jsonInput}
         setJsonInput={setJsonInput}
+        config={config}
+        setConfig={setConfig}
       />
 
-      {/* BARRA DE ALTERNÂNCIA MOBILE (ITEM 4) */}
+      {/* NAVEGAÇÃO MOBILE */}
       <div className="mobile-nav-toggle">
         <button
           type="button"
@@ -194,20 +249,45 @@ function App() {
         </button>
       </div>
 
-      {/* SIDEBAR COM CONTROLES */}
-      <aside className={`sidebar-controls glass-sidebar ${mobileTab === 'preview' ? 'hide-on-mobile' : ''}`}>
+      {/* SIDEBAR COM LARGURA DINÂMICA (RESIZABLE) */}
+      <aside 
+        className={`sidebar-controls glass-sidebar ${mobileTab === 'preview' ? 'hide-on-mobile' : ''}`}
+        style={{ width: `${sidebarWidth}px`, minWidth: `${sidebarWidth}px` }}
+      >
         
-        {/* HEADER */}
+        {/* HEADER COM AÇÕES RÁPIDAS (TEMA, AJUDA, UNDO / REDO) */}
         <header className="brand-header-neon">
           <div className="header-top-row">
             <h1 className="brand-title-jiu">JIU<span>KURRICULO</span></h1>
             
             <div className="header-controls">
+              {/* BOTÕES DE HISTÓRICO UNDO / REDO */}
+              <div className="history-controls-group">
+                <button
+                  type="button"
+                  className="history-btn"
+                  onClick={undo}
+                  disabled={!canUndo}
+                  title="Desfazer (Ctrl + Z)"
+                >
+                  ↺
+                </button>
+                <button
+                  type="button"
+                  className="history-btn"
+                  onClick={redo}
+                  disabled={!canRedo}
+                  title="Refazer (Ctrl + Y)"
+                >
+                  ↻
+                </button>
+              </div>
+
               <button 
                 type="button"
                 onClick={() => setShowHelp(true)} 
                 className="help-toggle-btn"
-                title="Guia de Uso e Tutoriais"
+                title="Guia de Uso & Tutoriais"
               >
                 ?
               </button>
@@ -235,35 +315,33 @@ function App() {
             {isDirectDownloading ? 'BAIXANDO PDF...' : (isExporting ? 'PREPARANDO PDF...' : (isSyncing ? 'PROCESSANDO...' : 'SISTEMA ATIVO'))}
           </div>
         </header>
+
+        {/* COPILOTO IA NO TOPO (DESTAQUE MÁXIMO) */}
+        <div style={{ padding: '0 0 14px 0' }}>
+          <AiPanel onOpenCopilot={() => setShowCopilot(true)} />
+        </div>
         
-        {/* ÁREA DE ROLAGEM COM OS PAINEIS */}
+        {/* ÁREA DE ROLAGEM COM DESIGN & DADOS */}
         <div className="control-sections-scroll">
           
-          {/* PASSO 01: Visual & Densidade */}
+          {/* Estilo & Layout */}
           <VisualEditor config={config} setConfig={setConfig} />
           
-          <div className="section-spacer"></div>
+          <div className="section-spacer" style={{ height: '14px' }}></div>
 
-          {/* PASSO 02: Gestão de Dados & Múltiplos Perfis */}
+          {/* Dados & Perfis */}
           <DataPanel 
             jsonInput={jsonInput} 
             setJsonInput={setJsonInput} 
           />
-
-          <div className="section-spacer"></div>
-
-          {/* PASSO 03: Copiloto IA de Carreira */}
-          <AiPanel onOpenCopilot={() => setShowCopilot(true)} />
-          
-          <div className="section-spacer"></div>
           
           {error && <div className="error-toast-neon">⚠️ {error}</div>}
 
         </div>
 
-        <div className="section-spacer-large"></div>
+        <div className="section-spacer-large" style={{ height: '20px' }}></div>
 
-        {/* FOOTER ACTIONS COM OPÇÃO DUPLA DE PDF (ITEM 2) */}
+        {/* FOOTER ACTIONS COM OPÇÃO DUPLA DE PDF */}
         <div className="export-section-glass">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
             <button 
@@ -285,7 +363,7 @@ function App() {
               className="btn-neon-export" 
               disabled={!!error || !jsonInput || isSyncing || isExporting || isDirectDownloading}
               onClick={handleExport}
-              title="Abrir driver de impressão / Salvar PDF do navegador"
+              title="Abrir driver de impressão nativo"
               style={{ padding: '12px 6px', borderColor: '#3498db', color: '#3498db' }}
             >
               <div className="btn-glow" style={{ background: 'rgba(52, 152, 219, 0.3)' }}></div>
@@ -297,7 +375,16 @@ function App() {
         </div>
       </aside>
 
-      {/* ÁREA DE PREVIEW COM CONTROLES DE ZOOM (ITEM 4) */}
+      {/* DIVISÓRIA ARRASTÁVEL (RESIZER / SPLITTER) */}
+      <div 
+        className={`sidebar-resizer ${isDragging ? 'dragging' : ''}`}
+        onMouseDown={() => setIsDragging(true)}
+        title="Arraste para redimensionar a barra lateral"
+      >
+        <div className="resizer-handle"></div>
+      </div>
+
+      {/* ÁREA DE PREVIEW COM CONTROLES DE ZOOM */}
       <main className={`preview-area-expanded ${mobileTab === 'editor' ? 'hide-on-mobile' : ''}`}>
         <div className="viewport-container-full">
           
@@ -311,7 +398,7 @@ function App() {
               )}
             </div>
 
-            {/* CONTROLES DE ZOOM (ITEM 4) */}
+            {/* CONTROLES DE ZOOM */}
             <div className="zoom-controls-wrapper">
               <button 
                 type="button"

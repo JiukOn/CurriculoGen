@@ -1498,3 +1498,412 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* --- ESTILOS ADICIONAIS: SPLITTER, UNDO/REDO, LAUNCHER SUPERIOR & GUIA MODERNO --- */
+
+/* Splitter / Resizer entre Sidebar e Preview */
+.sidebar-resizer {
+  width: 6px;
+  cursor: col-resize;
+  background: transparent;
+  position: relative;
+  z-index: 60;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-resizer:hover,
+.sidebar-resizer.dragging {
+  background: rgba(46, 204, 113, 0.4);
+}
+
+.resizer-handle {
+  width: 2px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  transition: var(--transition);
+}
+
+.sidebar-resizer:hover .resizer-handle,
+.sidebar-resizer.dragging .resizer-handle {
+  background: var(--primary);
+  height: 36px;
+}
+
+/* Controles de Histórico Undo / Redo */
+.history-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  padding: 2px 4px;
+  border-radius: 8px;
+}
+
+.history-btn {
+  background: none;
+  border: none;
+  color: var(--text-main);
+  font-size: 0.95rem;
+  padding: 4px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.history-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--primary);
+}
+
+.history-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+/* Card Launcher Superior do Copiloto IA */
+.copilot-top-launcher-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(155, 89, 182, 0.15) 0%, rgba(52, 152, 219, 0.1) 100%);
+  border: 1px solid rgba(155, 89, 182, 0.35);
+  border-radius: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 15px rgba(155, 89, 182, 0.1);
+}
+
+.copilot-top-launcher-card:hover {
+  border-color: #9b59b6;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(155, 89, 182, 0.25);
+}
+
+.launcher-glow-effect {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 70px;
+  height: 70px;
+  background: rgba(155, 89, 182, 0.3);
+  filter: blur(25px);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.launcher-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.launcher-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.launcher-avatar {
+  font-size: 20px;
+  background: rgba(155, 89, 182, 0.2);
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(155, 89, 182, 0.4);
+}
+
+.launcher-title {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.3px;
+}
+
+.launcher-desc {
+  margin: 2px 0 0 0;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.launcher-action-btn {
+  background: rgba(155, 89, 182, 0.25);
+  border: 1px solid #9b59b6;
+  color: #d4acfc;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Títulos Modernos sem Marcadores Numéricos */
+.section-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-icon {
+  font-size: 1.1rem;
+}
+
+.section-heading {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+/* Área de Dropzone Descomplicada do Copiloto */
+.evidence-dropzone-bar {
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--border-color);
+  padding: 10px 24px;
+  transition: var(--transition);
+}
+
+.evidence-dropzone-bar.drag-over {
+  background: rgba(155, 89, 182, 0.15);
+  border-bottom-color: #9b59b6;
+}
+
+.evidence-empty-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.discard-action-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-muted);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.discard-action-btn:hover {
+  border-color: var(--error-red);
+  color: var(--error-red);
+}
+
+/* Guia de Bordo Moderno em Abas */
+.help-modal-modern {
+  width: 780px;
+  max-width: 95vw;
+  max-height: 85vh;
+  padding: 24px 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.help-modern-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.help-header-title-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.help-icon-badge {
+  font-size: 26px;
+  background: rgba(46, 204, 113, 0.15);
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.help-modern-header h2 {
+  font-size: 1.3rem;
+  margin: 0;
+  color: var(--text-main);
+}
+
+.help-modern-header p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 2px 0 0 0;
+}
+
+.help-nav-tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+  margin-bottom: 18px;
+  overflow-x: auto;
+}
+
+.help-nav-tab {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition);
+}
+
+.help-nav-tab:hover {
+  color: var(--text-main);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.help-nav-tab.active {
+  background: rgba(46, 204, 113, 0.15);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.help-card-callout {
+  background: rgba(46, 204, 113, 0.08);
+  border: 1px solid rgba(46, 204, 113, 0.25);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 18px;
+}
+
+.help-card-callout h4 {
+  margin: 0 0 6px 0;
+  color: var(--primary);
+  font-size: 0.9rem;
+}
+
+.help-card-callout p {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-main);
+}
+
+.help-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.help-step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.step-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #3498db;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.help-step-card h5 {
+  font-size: 0.85rem;
+  margin: 0 0 6px 0;
+  color: var(--text-main);
+}
+
+.help-step-card p {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.help-tips-box {
+  background: var(--bg-input);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.78rem;
+  color: var(--text-main);
+}
+
+.anti-hallucination-rules,
+.density-explanation-cards,
+.export-modes-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.rule-item,
+.density-card,
+.export-mode-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.rule-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.rule-icon {
+  font-size: 1.2rem;
+}
+
+.rule-item strong,
+.density-card h4,
+.export-mode-box h4 {
+  font-size: 0.88rem;
+  color: var(--text-main);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.rule-item p,
+.density-card p,
+.export-mode-box p {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.export-mode-box ul {
+  margin: 8px 0 0 16px;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .sidebar-resizer {
+    display: none;
+  }
+  .sidebar-controls {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+  .help-steps-grid {
+    grid-template-columns: 1fr;
+  }
+}

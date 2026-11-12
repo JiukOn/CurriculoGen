@@ -1,20 +1,22 @@
 import React from 'react';
 import { PALETTES, FONTS, MODELS } from '../config/constants';
 
-/* --- DESIGN ENGINE: CONTROLES VISUAIS & DENSIDADE --- */
+/* --- DESIGN ENGINE: CONTROLES VISUAIS & DENSIDADE (SEM NUMERAÇÃO 01) --- */
 
 const VisualEditor = ({ config, setConfig }) => {
   return (
     <div className="visual-editor-container">
       <div className="glass-card">
         <header className="panel-header">
-          <div className="step-indicator">01</div>
-          <h3>Estilização Visual</h3>
+          <div className="section-title-wrapper">
+            <span className="section-icon">🎨</span>
+            <h3 className="section-heading">Estilo & Layout</h3>
+          </div>
         </header>
 
         {/* Escolha do Template */}
         <div className="control-group">
-          <label className="modern-label">Arquitetura de Layout</label>
+          <label className="modern-label">Modelo de Currículo</label>
           <select 
             className="modern-select no-arrow"
             value={config.model} 
@@ -53,7 +55,7 @@ const VisualEditor = ({ config, setConfig }) => {
           </div>
         </div>
 
-        {/* Densidade e Espaçamento de Página (Item 5) */}
+        {/* Densidade e Espaçamento de Página */}
         <div className="control-group">
           <label className="modern-label">Densidade da Página (Ajuste A4)</label>
           <div className="spacing-density-selector">

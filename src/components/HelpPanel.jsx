@@ -1,150 +1,167 @@
-import React from 'react';
-import structureBase from '../data/structure.json'; 
+import React, { useState } from 'react';
+
+/* --- GUIA DE BORDO & TUTORIAIS REFORMULADO: MODERNO, DIDÁTICO E VISUAL --- */
 
 const HelpPanel = ({ onClose }) => {
-
-  const downloadJSON = (filename, data) => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
-    const anchor = document.createElement('a');
-    anchor.setAttribute("href", dataStr);
-    anchor.setAttribute("download", filename);
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-  };
-
-  const downloadVagaTemplate = () => {
-    const template = {
-      nome: "Título da Vaga (Ex: Desenvolvedor C#)",
-      requisitos: ["Experiência com React", ".NET Core 8", "Azure DevOps"],
-      responsabilidades: ["Desenvolver APIs", "Manter sistemas legados"],
-      diferenciais: ["Inglês Avançado", "Docker"]
-    };
-    downloadJSON("vaga_exemplo.json", template);
-  };
+  const [activeTab, setActiveTab] = useState('quickstart');
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content glass-card" onClick={e => e.stopPropagation()}>
+      <div className="modal-content help-modal-modern glass-card" onClick={e => e.stopPropagation()}>
         
-        <button className="close-btn" onClick={onClose} title="Fechar Ajuda">&times;</button>
-        
-        <header className="help-header">
-          <h2 className="help-title">Guia de Bordo <span>JIUKURRICULO</span></h2>
-          <p className="help-subtitle">Crie currículos de alto nível otimizados para IA.</p>
+        <header className="help-modern-header">
+          <div className="help-header-title-box">
+            <span className="help-icon-badge">📖</span>
+            <div>
+              <h2>Guia de Bordo <span>JIUKURRICULO</span></h2>
+              <p>Domine a criação de currículos profissionais de alta conversão</p>
+            </div>
+          </div>
+          <button className="close-btn" onClick={onClose} title="Fechar Guia">&times;</button>
         </header>
+
+        {/* NAVEGAÇÃO POR ABAS SIMPLES E DIRETAS */}
+        <div className="help-nav-tabs">
+          {[
+            { id: 'quickstart', label: '🚀 Início Rápido (30s)', icon: '🚀' },
+            { id: 'copilot', label: '🤖 Copiloto & Zero Alucinação', icon: '🤖' },
+            { id: 'a4_layout', label: '📐 Ajuste de 1 Página A4', icon: '📐' },
+            { id: 'export_tips', label: '💾 Exportação & Impressão', icon: '💾' }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              type="button"
+              className={`help-nav-tab ${activeTab === tab.id ? 'active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </div>
 
         <div className="help-scroll-area">
           
-          <section className="help-section">
-            <h3>🎨 01. Estilo & Visual</h3>
-            <p>
-              O primeiro painel à esquerda controla a aparência.
-            </p>
-            <ul className="step-list">
-              <li><strong>Modelo:</strong> Escolha entre layouts diferentes (Clássico, Moderno, Minimalista).</li>
-              <li><strong>Paleta:</strong> Defina as cores principais (clique nos círculos coloridos).</li>
-              <li><strong>Live Preview:</strong> Tudo o que você edita aparece instantaneamente na direita.</li>
-            </ul>
-          </section>
+          {/* ABA 1: INÍCIO RÁPIDO */}
+          {activeTab === 'quickstart' && (
+            <div className="help-tab-content">
+              <div className="help-card-callout">
+                <h4>✨ O jeito mais rápido de criar seu currículo:</h4>
+                <p>
+                  Não precisa começar do zero digitando tudo campo por campo! Você pode arrastar um PDF do seu currículo antigo ou perfil do LinkedIn para o <strong>Copiloto IA</strong> e vê-lo montado na hora.
+                </p>
+              </div>
 
-          <hr className="divider"/>
+              <div className="help-steps-grid">
+                <div className="help-step-card">
+                  <div className="step-badge">Passo 1</div>
+                  <h5>Abra o Copiloto IA</h5>
+                  <p>Clique no botão <strong>✨ Copiloto IA</strong> no topo da barra esquerda. Cole sua chave gratuita do Google AI Studio.</p>
+                </div>
 
-          <section className="help-section">
-            <h3>📝 02. Preenchendo seus Dados</h3>
-            <p>
-              Agora temos duas formas de inserir suas informações. Escolha a que preferir:
-            </p>
-            
-            <div className="info-box">
-              <strong>✨ MODO FÁCIL (Recomendado):</strong><br/>
-              Clique no botão <strong>"Abrir Formulário de Dados"</strong>. Uma janela grande se abrirá onde você pode preencher campos (Nome, Experiência, etc.) visualmente, sem mexer em código.
-            </div>
+                <div className="help-step-card">
+                  <div className="step-badge">Passo 2</div>
+                  <h5>Arraste seus Arquivos</h5>
+                  <p>Solte seu currículo antigo em <strong>PDF</strong>, um arquivo de texto ou cole seu LinkedIn na área de evidências.</p>
+                </div>
 
-            <div style={{marginTop: '10px', fontSize: '0.9rem', color: 'var(--text-muted)'}}>
-              <strong>💻 MODO AVANÇADO (JSON):</strong><br/>
-              Para usuários técnicos. Edite o código bruto. Útil para copiar e colar dados de outros lugares.
-            </div>
-
-            <div className="action-row" style={{marginTop: '15px'}}>
-              <span>Quer começar do zero ou restaurar o padrão?</span>
-              <button 
-                className="neo-btn small-btn" 
-                onClick={() => downloadJSON("meu-curriculo-base.json", structureBase)}
-                style={{borderColor: '#2ecc71', color: '#2ecc71'}}
-              >
-                📥 Baixar Modelo de Currículo (.json)
-              </button>
-            </div>
-          </section>
-
-          <hr className="divider"/>
-
-          <section className="help-section">
-            <h3>🧠 03. Otimização com IA (Gemini)</h3>
-            <p>
-              A IA reescreve seu currículo para passar nos filtros de RH (ATS), usando as palavras-chave exatas da vaga que você deseja.
-            </p>
-            
-            <div className="tutorial-steps">
-              <div className="step-item">
-                <span className="step-num">1</span>
-                <div className="step-content">
-                  <strong>Obtenha sua Chave (API Key):</strong>
-                  <p>O sistema usa a IA do Google. É gratuito e rápido.</p>
-                  <a 
-                    href="https://aistudio.google.com/app/apikey" 
-                    target="_blank" 
-                    rel="noreferrer"
-                    className="external-link-btn"
-                  >
-                    🔑 Gerar Chave no Google AI Studio ↗
-                  </a>
+                <div className="help-step-card">
+                  <div className="step-badge">Passo 3</div>
+                  <h5>Converse & Aplique</h5>
+                  <p>Peça ajustes (ex: <em>"Foque na vaga X"</em>). Quando estiver satisfeito, clique em <strong>Aplicar ao Currículo</strong>.</p>
                 </div>
               </div>
 
-              <div className="step-item">
-                <span className="step-num">2</span>
-                <div className="step-content">
-                  <strong>Descreva a Vaga:</strong>
-                  <p>Cole a descrição da vaga (LinkedIn, Gupy, etc) ou importe um JSON.</p>
-                  <button 
-                    className="neo-btn small-btn" 
-                    onClick={downloadVagaTemplate}
-                    style={{borderColor: '#9b59b6', color: '#9b59b6', marginTop: '5px', padding: '6px'}}
-                  >
-                    📥 Baixar Modelo de Vaga (.json)
-                  </button>
-                </div>
+              <div className="help-tips-box">
+                💡 <strong>Dica Pro:</strong> Você pode usar <code>Ctrl + Z</code> para desfazer e <code>Ctrl + Y</code> para refazer qualquer alteração a qualquer momento!
               </div>
+            </div>
+          )}
 
-              <div className="step-item">
-                <span className="step-num">3</span>
-                <div className="step-content">
-                  <strong>Otimizar:</strong>
-                  <p>Clique em "Otimizar Currículo". A IA vai analisar e reescrever seus textos mantendo a verdade, mas focando na vaga.</p>
+          {/* ABA 2: COPILOTO & ZERO ALUCINAÇÃO */}
+          {activeTab === 'copilot' && (
+            <div className="help-tab-content">
+              <h3>🛡️ O que é a Política de Zero Alucinação?</h3>
+              <p>
+                Muitas IAs genéricas inventam dados falsos, números inflados ou tecnologias que você nunca usou. No Jiukurriculo, implementamos uma <strong>auditoria estrita de fatos</strong>:
+              </p>
+
+              <div className="anti-hallucination-rules">
+                <div className="rule-item">
+                  <span className="rule-icon">✅</span>
+                  <div>
+                    <strong>Apenas fatos comprováveis:</strong>
+                    <p>A IA só inclui o que você explicitamente forneceu no Dossiê de Evidências (PDFs, LinkedIn, textos e mensagens).</p>
+                  </div>
+                </div>
+
+                <div className="rule-item">
+                  <span className="rule-icon">💬</span>
+                  <div>
+                    <strong>Perguntas ao invés de suposições:</strong>
+                    <p>Se faltar uma data importante ou métrica de resultado, a IA pergunta no chat para você confirmar em vez de inventar.</p>
+                  </div>
+                </div>
+
+                <div className="rule-item">
+                  <span className="rule-icon">🎨</span>
+                  <div>
+                    <strong>Controle Completo do App:</strong>
+                    <p>Você pode pedir para a IA mudar o modelo, trocar a paleta de cores ou condensar o espaçamento em linguagem natural.</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </section>
+          )}
 
-          <hr className="divider"/>
+          {/* ABA 3: AJUSTE DE PÁGINA A4 */}
+          {activeTab === 'a4_layout' && (
+            <div className="help-tab-content">
+              <h3>📐 Como fazer seu currículo caber exatamente em 1 página?</h3>
+              <p>
+                Recrutadores gastam em média 6 a 10 segundos analisando um currículo. Para cargos juniores e plenos, o ideal é <strong>uma única página A4</strong>.
+              </p>
 
-          <section className="help-section">
-            <h3>💾 04. Exportar PDF (Importante!)</h3>
-            <p>
-              Para salvar o arquivo final corretamente:
-            </p>
-            <ol className="step-list" style={{listStyle: 'decimal', marginLeft: '20px'}}>
-              <li>Clique no botão <strong>EXPORTAR PDF</strong> na barra lateral.</li>
-              <li>A janela de impressão do navegador abrirá.</li>
-              <li>Defina o Destino como <strong>"Salvar como PDF"</strong>.</li>
-              <li>
-                <span style={{color: '#e74c3c'}}>⚠️ Atenção:</span> Em "Mais Definições", marque a opção <strong>"Gráficos de Segundo Plano"</strong> (Background Graphics).
-              </li>
-              <li>Defina as Margens como <strong>"Nenhuma"</strong>.</li>
-            </ol>
-          </section>
+              <div className="density-explanation-cards">
+                <div className="density-card">
+                  <h4>📐 Modo Compacto</h4>
+                  <p>Otimiza os espaçamentos entre linhas e margens para encaixar mais histórico sem deixar páginas em branco indesejadas.</p>
+                </div>
+
+                <div className="density-card">
+                  <h4>📄 Modo Padrão</h4>
+                  <p>Equilíbrio perfeito de leitura com respiro visual para perfis com volume moderado de informações.</p>
+                </div>
+
+                <div className="density-card">
+                  <h4>📑 Modo Espaçoso</h4>
+                  <p>Recomendado para perfis seniores ou acadêmicos com 2 páginas bem distribuídas.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ABA 4: EXPORTAÇÃO E IMPRESSÃO */}
+          {activeTab === 'export_tips' && (
+            <div className="help-tab-content">
+              <h3>💾 Qual botão de exportação escolher?</h3>
+
+              <div className="export-modes-comparison">
+                <div className="export-mode-box">
+                  <h4>📥 DOWNLOAD PDF (Recomendado)</h4>
+                  <p>Gera o arquivo <code>.pdf</code> diretamente com escala vetorial 2x nítida com apenas 1 clique, sem abrir janelas extras.</p>
+                </div>
+
+                <div className="export-mode-box">
+                  <h4>🖨️ IMPRIMIR (A4)</h4>
+                  <p>Abre o driver nativo da sua impressora. Caso use essa opção para salvar em PDF:</p>
+                  <ul>
+                    <li>Marque a opção <strong>"Gráficos de Segundo Plano"</strong> (Background Graphics).</li>
+                    <li>Defina as Margens como <strong>"Nenhuma"</strong>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
 
         </div>
       </div>

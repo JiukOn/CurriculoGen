@@ -1,50 +1,49 @@
-// Serviço do Copiloto Conversacional com Grounding Estrito e Anti-Alucinação
+// Serviço do Copiloto Conversacional com Grounding Estrito, Anti-Alucinação e Consciência do App
 import { fetchAvailableModels, selectBestModel } from './aiService';
 
 const SYSTEM_INSTRUCTION_GROUNDING = `
-VOCÊ É: Um Consultor Especialista de Carreira e Auditor Técnico de Currículos do Jiukurriculo.
-SUA MISSÃO: Ajudar o usuário a construir, refinar e otimizar seu currículo profissional através de conversa iterativa.
+VOCÊ É: Um Consultor Especialista de Carreira, Designer de Currículos e Auditor Técnico do Jiukurriculo.
+SUA MISSÃO: Ajudar o usuário a construir, refinar e otimizar seu currículo profissional através de conversa iterativa com base estrita nos fatos fornecidos.
 
 REGRA SUPREMA DE INTEGRIDADE (ANTI-ALUCINAÇÃO ESTRITA):
-1. ZERO INVENÇÃO: Você JAMAIS deve inventar cargos, empresas, cursos, datas, métricas ou tecnologias que não tenham evidência explícita nas "FONTES DE EVIDÊNCIA DO USUÁRIO" fornecidas ou nas mensagens enviadas pelo próprio usuário.
-2. RESPEITO AOS FATOS: Se o usuário pedir para focar em uma vaga que exige tecnologias ou experiências que ele NÃO possui no dossiê de evidências, NUNCA crie essas experiências. Em vez disso, explique no chat a lacuna e valorize as competências reais correlatas que ele de fato possui.
-3. ESCLARECIMENTO DE DÚVIDAS: Se uma informação estiver vaga ou incompleta no dossiê (ex: período de atuação, nível de inglês, papel em um projeto), pergunte ao usuário no chat em vez de supor.
-4. SAÍDA DUPLA INTELIGENTE: Em cada resposta, você deve fornecer:
-   a) Uma mensagem explicativa clara, amigável e profissional ao usuário explicando o que foi feito ou tirando dúvidas.
-   b) Se houve alteração ou geração de currículo, forneça o objeto completo e válido no formato JSON dentro de um bloco delimitado:
-   <<<RESUME_JSON>>>
-   { ...objeto de currículo... }
-   <<<END_RESUME_JSON>>>
+1. ZERO INVENÇÃO: Você JAMAIS deve inventar empresas, cargos, cursos, certificações, datas, métricas ou tecnologias que não tenham evidência explícita nas "FONTES DE EVIDÊNCIA DO USUÁRIO" fornecidas ou nas mensagens enviadas pelo próprio usuário.
+2. RESPEITO AOS FATOS: Se o usuário pedir para focar em uma vaga cujos requisitos ele NÃO possui no dossiê de evidências, NUNCA crie essas experiências. Em vez disso, aponte a lacuna no chat com clareza e destaque as competências reais correlatas que ele possui.
+3. CONSCIÊNCIA DO APLICATIVO (DESIGN & LAYOUT):
+   Você pode sugerir ou alterar configurações visuais do aplicativo quando o usuário pedir ou quando achar mais adequado:
+   - "model": 'model1.html' (Modern Slate), 'model2.html' (Minimalist), 'model3.html' (Executive), 'model4.html' (Grid Tech)
+   - "palette": 'graphite', 'azul', 'roxo', 'rosa', 'verde', 'marrom'
+   - "spacing": 'compact' (ajuste para 1 página), 'normal' (padrão equilibrado), 'relaxed' (2 páginas)
+   - "font": "'Inter', sans-serif", "'Roboto', sans-serif", "'Montserrat', sans-serif", "'Georgia', serif", "'Playfair Display', serif"
 
-ESTRUTURA COMPLETA ESPERADA NO JSON DO CURRÍCULO:
+4. FORMATO DE SAÍDA:
+   Em cada resposta, forneça:
+   a) Uma mensagem explicativa clara, cordial e profissional no chat detalhando o que foi feito ou tirando dúvidas.
+   b) Se houver alteração de currículo OU de configurações visuais, inclua o bloco delimitado exatamente assim:
+   <<<RESUME_ACTION>>>
+   {
+     "resume": { ...objeto completo de dados do currículo... },
+     "config": {
+       "model": "modelX.html",
+       "palette": "azul",
+       "spacing": "compact"
+     },
+     "summary": "Resumo em 1 frase das alterações realizadas"
+   }
+   <<<END_RESUME_ACTION>>>
+
+ESTRUTURA DE DADOS DO CURRÍCULO:
 {
   "nome": string,
   "cargo": string,
   "resumo": string,
-  "contato": {
-    "tel": string,
-    "email": string,
-    "local": string,
-    "linkedin": string,
-    "nascimento": string
-  },
-  "formacao": [
-    { "curso": string, "instituicao": string, "periodo": string, "status": string, "descricao": string }
-  ],
-  "experiencias": [
-    { "titulo": string, "subtitulo": string, "periodo": string, "descricao": string }
-  ],
-  "hard_skills": [
-    { "nome": string, "nivel": number }
-  ],
+  "contato": { "tel": string, "email": string, "local": string, "linkedin": string, "nascimento": string },
+  "formacao": [{ "curso": string, "instituicao": string, "periodo": string, "status": string, "descricao": string }],
+  "experiencias": [{ "titulo": string, "subtitulo": string, "periodo": string, "descricao": string }],
+  "hard_skills": [{ "nome": string, "nivel": number }],
   "soft_skills": [ string ],
   "cursos": [ string ],
-  "idiomas": [
-    { "idioma": string, "nivel": string }
-  ],
-  "projetos": [
-    { "nome": string, "link": string, "descricao": string }
-  ]
+  "idiomas": [{ "idioma": string, "nivel": string }],
+  "projetos": [{ "nome": string, "link": string, "descricao": string }]
 }
 `;
 
@@ -54,24 +53,25 @@ export const sendCopilotMessage = async ({
   chatHistory = [],
   evidenceSources = [],
   currentResumeData,
+  currentAppConfig = {},
   selectedModel = null,
-  timeoutMs = 30000
+  timeoutMs = 35000
 }) => {
   if (!apiKey || !apiKey.trim()) {
     throw new Error("API Key do Gemini é obrigatória.");
   }
 
   // 1. Monta o contexto de evidências compiladas
-  let evidenceContext = "=== FONTES DE EVIDÊNCIA FORNECIDAS PELO USUÁRIO (GROUNDING REAL) ===\n";
+  let evidenceContext = "=== FONTES DE EVIDÊNCIA DO USUÁRIO (GROUNDING REAL COMPROVADO) ===\n";
   if (!evidenceSources || evidenceSources.length === 0) {
-    evidenceContext += "(Nenhuma fonte externa cadastrada ainda. Use as mensagens da conversa e o currículo atual como fontes de fato).\n";
+    evidenceContext += "(Nenhum arquivo externo anexado ainda. Use as mensagens da conversa e o currículo atual como fontes de fato).\n";
   } else {
     evidenceSources.forEach((src, idx) => {
-      evidenceContext += `\n[FONTE ${idx + 1}: ${src.title || 'Sem título'} (${src.type || 'Texto'})]\n${src.content}\n`;
+      evidenceContext += `\n[FONTE ${idx + 1}: ${src.title || 'Sem título'} (Tipo: ${src.type})]\n${src.content}\n`;
     });
   }
 
-  evidenceContext += `\n=== CURRÍCULO ATUAL EM TELA ===\n${JSON.stringify(currentResumeData, null, 2)}\n`;
+  evidenceContext += `\n=== ESTADO ATUAL DO APP ===\nConfigurações Visuais Atuais: ${JSON.stringify(currentAppConfig)}\nDados Atuais do Currículo: ${JSON.stringify(currentResumeData, null, 2)}\n`;
 
   // 2. Determina o modelo dinâmico
   let modelToUse = selectedModel;
@@ -83,17 +83,15 @@ export const sendCopilotMessage = async ({
   // 3. Formata histórico para o formato da API Gemini
   const contents = [];
 
-  // Primeira mensagem do sistema / contexto injetada
   contents.push({
     role: "user",
     parts: [{ text: `${SYSTEM_INSTRUCTION_GROUNDING}\n\n${evidenceContext}` }]
   });
   contents.push({
     role: "model",
-    parts: [{ text: "Compreendido perfeitamente. Sou seu Consultor de Carreira e Auditor de Currículos do Jiukurriculo. Seguirei estritamente a política de Zero Alucinação, baseando-me exclusivamente nas suas fontes de evidência comprováveis. Como posso te ajudar a estruturar ou refinar seu currículo agora?" }]
+    parts: [{ text: "Entendido perfeitamente. Sou seu Consultor de Carreira e Designer do Jiukurriculo. Sigo estritamente a política de Zero Alucinação baseando-me apenas em evidências reais. Tenho conhecimento do design do app e posso ajustar layout, paleta e conteúdo com precisão. Como posso te ajudar?" }]
   });
 
-  // Histórico anterior da conversa
   chatHistory.forEach(msg => {
     contents.push({
       role: msg.sender === 'user' ? 'user' : 'model',
@@ -101,7 +99,6 @@ export const sendCopilotMessage = async ({
     });
   });
 
-  // Mensagem atual do usuário
   contents.push({
     role: "user",
     parts: [{ text: userMessage }]
@@ -142,7 +139,7 @@ export const sendCopilotMessage = async ({
       throw new Error("A IA retornou uma resposta em branco.");
     }
 
-    return parseCopilotResponse(rawResponse);
+    return parseCopilotAction(rawResponse);
 
   } catch (err) {
     clearTimeout(timeoutId);
@@ -153,39 +150,57 @@ export const sendCopilotMessage = async ({
   }
 };
 
-function parseCopilotResponse(text) {
+function parseCopilotAction(text) {
   let messageText = text;
-  let parsedResumeJson = null;
+  let proposedAction = null;
 
-  // Procura pelo delimitador de JSON
-  const markerStart = '<<<RESUME_JSON>>>';
-  const markerEnd = '<<<END_RESUME_JSON>>>';
+  // Busca delimitador novo <<<RESUME_ACTION>>>
+  const markerStart = '<<<RESUME_ACTION>>>';
+  const markerEnd = '<<<END_RESUME_ACTION>>>';
 
   const startIdx = text.indexOf(markerStart);
   const endIdx = text.indexOf(markerEnd);
 
   if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
-    const jsonBlock = text.substring(startIdx + markerStart.length, endIdx).trim();
+    const block = text.substring(startIdx + markerStart.length, endIdx).trim();
     messageText = (text.substring(0, startIdx) + text.substring(endIdx + markerEnd.length)).trim();
 
     try {
-      parsedResumeJson = JSON.parse(jsonBlock);
+      proposedAction = JSON.parse(block);
     } catch (e) {
-      console.warn("Falha ao fazer parse do bloco de JSON do Copiloto:", e);
+      console.warn("Falha no parse do bloco de ação do Copiloto:", e);
     }
   } else {
-    // Tenta encontrar bloco json padrão se o modelo usar ```json
-    const codeBlockMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
-    if (codeBlockMatch && codeBlockMatch[1]) {
+    // Compatibilidade com delimitador antigo <<<RESUME_JSON>>>
+    const oldStart = '<<<RESUME_JSON>>>';
+    const oldEnd = '<<<END_RESUME_JSON>>>';
+    const oStartIdx = text.indexOf(oldStart);
+    const oEndIdx = text.indexOf(oldEnd);
+
+    if (oStartIdx !== -1 && oEndIdx !== -1 && oEndIdx > oStartIdx) {
+      const block = text.substring(oStartIdx + oldStart.length, oEndIdx).trim();
+      messageText = (text.substring(0, oStartIdx) + text.substring(oEndIdx + oldEnd.length)).trim();
       try {
-        parsedResumeJson = JSON.parse(codeBlockMatch[1]);
-        messageText = text.replace(codeBlockMatch[0], '').trim();
+        const resumeData = JSON.parse(block);
+        proposedAction = { resume: resumeData, summary: "Atualização de dados do currículo" };
       } catch {}
+    } else {
+      // Fallback para blocos ```json
+      const codeMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
+      if (codeMatch && codeMatch[1]) {
+        try {
+          const parsed = JSON.parse(codeMatch[1]);
+          if (parsed.nome || parsed.experiencias) {
+            proposedAction = { resume: parsed, summary: "Currículo reestruturado" };
+            messageText = text.replace(codeMatch[0], '').trim();
+          }
+        } catch {}
+      }
     }
   }
 
   return {
-    replyText: messageText || "Currículo atualizado com sucesso com base nas suas evidências!",
-    updatedResume: parsedResumeJson
+    replyText: messageText || "Currículo e layout ajustados com sucesso com base nas suas evidências!",
+    proposedAction
   };
 }
