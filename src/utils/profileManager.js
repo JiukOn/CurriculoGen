@@ -83,6 +83,28 @@ export const updateProfile = (id, data, newName = null) => {
   return null;
 };
 
+export const renameProfile = (id, newName) => {
+  const cleanName = String(newName || '').trim();
+  if (!cleanName) return null;
+  const profiles = getSavedProfiles();
+  const idx = profiles.findIndex(p => p.id === id);
+  if (idx !== -1) {
+    profiles[idx].name = cleanName;
+    profiles[idx].updatedAt = new Date().toISOString();
+    saveProfilesList(profiles);
+    return profiles[idx];
+  }
+  return null;
+};
+
+export const duplicateProfile = (id) => {
+  const profiles = getSavedProfiles();
+  const source = profiles.find(p => p.id === id);
+  if (!source) return null;
+  const clonedData = JSON.parse(JSON.stringify(source.data || {}));
+  return createProfile(`${source.name} (Cópia)`, clonedData);
+};
+
 export const deleteProfile = (id) => {
   let profiles = getSavedProfiles();
   profiles = profiles.filter(p => p.id !== id);

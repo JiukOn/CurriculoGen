@@ -101,6 +101,14 @@ const EasyForm = ({ jsonData, onUpdate }) => {
     onUpdate({ ...data, [arrayName]: newArray });
   };
 
+  const moveItem = (arrayName, index, direction) => {
+    const list = [...(data[arrayName] || [])];
+    const targetIdx = index + direction;
+    if (targetIdx < 0 || targetIdx >= list.length) return;
+    [list[index], list[targetIdx]] = [list[targetIdx], list[index]];
+    onUpdate({ ...data, [arrayName]: list });
+  };
+
   const updateSkill = (index, field, value) => {
     const newSkills = [...(data.hard_skills || [])];
     if (field === 'nivel') {
@@ -195,6 +203,29 @@ const EasyForm = ({ jsonData, onUpdate }) => {
       <Accordion title="Experiência Profissional">
         {(data.experiencias || []).map((exp, idx) => (
           <div key={idx} className="array-item-wrapper">
+            <div className="array-item-toolbar">
+              <span className="array-item-index">Experiência #{idx + 1}</span>
+              <div className="array-reorder-btns">
+                <button
+                  type="button"
+                  className="reorder-btn"
+                  disabled={idx === 0}
+                  onClick={() => moveItem('experiencias', idx, -1)}
+                  title="Mover para cima"
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  className="reorder-btn"
+                  disabled={idx === (data.experiencias || []).length - 1}
+                  onClick={() => moveItem('experiencias', idx, 1)}
+                  title="Mover para baixo"
+                >
+                  ↓
+                </button>
+              </div>
+            </div>
             <div className="responsive-grid">
               <div className="form-group">
                 <label className="form-label">Cargo</label>
@@ -242,6 +273,29 @@ const EasyForm = ({ jsonData, onUpdate }) => {
       <Accordion title="Formação Acadêmica">
         {(data.formacao || []).map((form, idx) => (
           <div key={idx} className="array-item-wrapper">
+            <div className="array-item-toolbar">
+              <span className="array-item-index">Formação #{idx + 1}</span>
+              <div className="array-reorder-btns">
+                <button
+                  type="button"
+                  className="reorder-btn"
+                  disabled={idx === 0}
+                  onClick={() => moveItem('formacao', idx, -1)}
+                  title="Mover para cima"
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  className="reorder-btn"
+                  disabled={idx === (data.formacao || []).length - 1}
+                  onClick={() => moveItem('formacao', idx, 1)}
+                  title="Mover para baixo"
+                >
+                  ↓
+                </button>
+              </div>
+            </div>
             <div className="responsive-grid">
               <div className="form-group">
                 <label className="form-label">Curso</label>
@@ -263,13 +317,23 @@ const EasyForm = ({ jsonData, onUpdate }) => {
                 <input className="form-input" value={form.status || ''} onChange={(e) => updateItem('formacao', idx, 'status', e.target.value)} placeholder="Ex: Concluído" />
               </div>
             </div>
+
+            <div className="form-group">
+              <label className="form-label">Descrição (Opcional)</label>
+              <textarea
+                className="form-input"
+                value={form.descricao || ''}
+                onChange={(e) => updateItem('formacao', idx, 'descricao', e.target.value)}
+                placeholder="Ênfase, projetos acadêmicos ou destaques..."
+              />
+            </div>
             
             <button className="btn-remove" onClick={() => removeItem('formacao', idx)}>
               ✕ Remover Item
             </button>
           </div>
         ))}
-        <button className="btn-add" onClick={() => addItem('formacao', { curso: '', instituicao: '', periodo: '', status: '' })}>
+        <button className="btn-add" onClick={() => addItem('formacao', { curso: '', instituicao: '', periodo: '', status: '', descricao: '' })}>
           + Adicionar Nova Formação
         </button>
       </Accordion>
@@ -288,15 +352,23 @@ const EasyForm = ({ jsonData, onUpdate }) => {
                  onChange={(e) => updateSkill(idx, 'nome', e.target.value)} 
                />
             </div>
-            <div style={{flex: 1}}>
+            <div style={{flex: 2, display: 'flex', alignItems: 'center', gap: '8px'}}>
+               <input
+                 type="range"
+                 min="0"
+                 max="100"
+                 className="skill-range-input"
+                 value={skill.nivel ?? 0}
+                 onChange={(e) => updateSkill(idx, 'nivel', e.target.value)}
+               />
                <input 
                  type="number" 
                  min="0" max="100"
                  className="form-input" 
                  placeholder="%" 
-                 value={skill.nivel || ''} 
+                 value={skill.nivel ?? 0} 
                  onChange={(e) => updateSkill(idx, 'nivel', e.target.value)} 
-                 style={{textAlign: 'center'}}
+                 style={{textAlign: 'center', width: '68px', flexShrink: 0}}
                />
             </div>
             <button 
@@ -371,28 +443,60 @@ const EasyForm = ({ jsonData, onUpdate }) => {
         <p className="description-text">Projetos em destaque, links e contribuições.</p>
         {(data.projetos || []).map((proj, idx) => (
           <div key={idx} className="array-item-wrapper">
-            <div className="form-group-row">
-              <input 
+            <div className="array-item-toolbar">
+              <span className="array-item-index">Projeto #{idx + 1}</span>
+              <div className="array-reorder-btns">
+                <button
+                  type="button"
+                  className="reorder-btn"
+                  disabled={idx === 0}
+                  onClick={() => moveItem('projetos', idx, -1)}
+                  title="Mover para cima"
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  className="reorder-btn"
+                  disabled={idx === (data.projetos || []).length - 1}
+                  onClick={() => moveItem('projetos', idx, 1)}
+                  title="Mover para baixo"
+                >
+                  ↓
+                </button>
+              </div>
+            </div>
+            <div className="responsive-grid">
+              <div className="form-group">
+                <label className="form-label">Nome do Projeto</label>
+                <input 
+                  className="form-input" 
+                  placeholder="Ex: Jiukurriculo" 
+                  value={proj.nome || ''} 
+                  onChange={(e) => updateItem('projetos', idx, 'nome', e.target.value)} 
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Link / URL</label>
+                <input 
+                  className="form-input" 
+                  placeholder="Ex: github.com/..." 
+                  value={proj.link || ''} 
+                  onChange={(e) => updateItem('projetos', idx, 'link', e.target.value)} 
+                />
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Descrição do Projeto</label>
+              <textarea 
                 className="form-input" 
-                placeholder="Nome do Projeto" 
-                value={proj.nome || ''} 
-                onChange={(e) => updateItem('projetos', idx, 'nome', e.target.value)} 
-              />
-              <input 
-                className="form-input" 
-                placeholder="Link / URL (Ex: github.com/...)" 
-                value={proj.link || ''} 
-                onChange={(e) => updateItem('projetos', idx, 'link', e.target.value)} 
+                placeholder="Descrição do projeto, tecnologias e resultados alcançados..."
+                value={proj.descricao || ''} 
+                onChange={(e) => updateItem('projetos', idx, 'descricao', e.target.value)} 
               />
             </div>
-            <textarea 
-              className="form-textarea" 
-              placeholder="Descrição do projeto, tecnologias e resultados alcançados..."
-              value={proj.descricao || ''} 
-              onChange={(e) => updateItem('projetos', idx, 'descricao', e.target.value)} 
-            />
             <button className="btn-remove" onClick={() => removeItem('projetos', idx)}>
-              Remover Projeto
+              ✕ Remover Projeto
             </button>
           </div>
         ))}

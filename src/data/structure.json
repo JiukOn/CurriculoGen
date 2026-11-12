@@ -7,7 +7,7 @@
     "email": "seu.email@exemplo.com",
     "local": "Cidade - Estado",
     "linkedin": "linkedin.com/in/seu-usuario",
-    "nascimento": "01/01/1995"
+    "nascimento": ""
   },
   "formacao": [
     {
@@ -72,8 +72,8 @@
   ],
   "projetos": [
     {
-      "nome": "CurriculoGen Engine",
-      "link": "https://github.com/JiukOn/CurriculoGen",
+      "nome": "Jiukurriculo Engine",
+      "link": "https://github.com/JiukOn/Jiukurriculo",
       "descricao": "Gerador de currículos reativo com renderização visual e otimização por IA."
     }
   ]

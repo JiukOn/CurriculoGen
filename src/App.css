@@ -2018,3 +2018,115 @@ body {
   border-radius: 8px;
   padding: 4px 8px;
 }
+
+/* --- MELHORIAS DE PERFIL, REORDENAÇÃO E EDITOR JSON --- */
+.profile-pill-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 4px;
+}
+
+.profile-pill-action-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: var(--transition);
+}
+
+.profile-pill-action-btn:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.editor-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.editor-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.editor-mini-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.editor-mini-btn:hover {
+  color: var(--text-main);
+  border-color: var(--primary);
+}
+
+.editor-mini-btn.danger:hover {
+  color: var(--error-red);
+  border-color: var(--error-red);
+}
+
+.array-item-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.array-item-index {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--primary);
+}
+
+.array-reorder-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.reorder-btn {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.reorder-btn:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.reorder-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.skill-range-input {
+  flex: 1;
+  accent-color: var(--primary);
+  cursor: pointer;
+}

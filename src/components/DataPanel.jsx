@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import EasyForm from './EasyForm';
 import structureBase from '../data/structure.json';
-import { downloadBaseSchema } from '../utils/dataHandlers';
+import { downloadBaseSchema, validateAndFormat } from '../utils/dataHandlers';
 import {
   getSavedProfiles,
   createProfile,
   updateProfile,
+  renameProfile,
+  duplicateProfile,
   deleteProfile,
   getActiveProfileId,
   setActiveProfileId
@@ -15,58 +17,69 @@ import {
 /* --- GESTÃO DE PERFIL E DADOS --- */
 
 const DataPanel = ({ jsonInput, setJsonInput }) => {
-  const [viewMode, setViewMode] = useState('form'); 
+  const [viewMode, setViewMode] = useState('form');
   const [parsedData, setParsedData] = useState({});
   const [parseError, setParseError] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  
+
   const [profiles, setProfiles] = useState(() => getSavedProfiles(structureBase));
   const [activeProfileId, setActiveIdState] = useState(() => getActiveProfileId() || 'prof_default');
   const [isCreatingProfile, setIsCreatingProfile] = useState(false);
   const [newProfileName, setNewProfileName] = useState('');
+  const [editingProfileId, setEditingProfileId] = useState(null);
+  const [editingProfileName, setEditingProfileName] = useState('');
+  const [copyFeedback, setCopyFeedback] = useState(false);
 
   const fileInputRef = useRef(null);
+  const skipNextProfileSyncRef = useRef(false);
 
+  // Mantém parsedData e o perfil ativo sincronizados com qualquer alteração de jsonInput (Form, JSON, Copiloto IA ou Ctrl+Z/Y)
   useEffect(() => {
     try {
-      if (!jsonInput || jsonInput.trim() === "") {
+      if (!jsonInput || jsonInput.trim() === '') {
         setParsedData({});
+        setParseError(null);
         return;
       }
-      const parsed = JSON.parse(jsonInput) || {};
+      const parsed = JSON.parse(jsonInput);
+      if (!parsed || typeof parsed !== 'object') {
+        setParseError('JSON inválido detectado. Corrija na aba JSON.');
+        return;
+      }
+
       setParsedData(parsed);
       setParseError(null);
-    } catch {
-      setParseError("JSON inválido detectado. Corrija na aba JSON.");
-    }
-  }, [jsonInput]);
 
-  useEffect(() => {
-    if (profiles.length === 0 && parsedData && parsedData.nome) {
-      const initial = createProfile(parsedData.cargo || "Meu Primeiro Currículo", parsedData);
-      setProfiles([initial]);
-      setActiveIdState(initial.id);
+      if (skipNextProfileSyncRef.current) {
+        skipNextProfileSyncRef.current = false;
+        return;
+      }
+
+      if (activeProfileId) {
+        const updated = updateProfile(activeProfileId, parsed);
+        if (updated) {
+          setProfiles(getSavedProfiles());
+        }
+      }
+    } catch {
+      setParseError('JSON inválido detectado. Corrija na aba JSON.');
     }
-  }, [profiles.length, parsedData]);
+  }, [jsonInput, activeProfileId]);
 
   const handleFormUpdate = (newData) => {
     setParsedData(newData);
-    const jsonStr = JSON.stringify(newData, null, 2);
-    setJsonInput(jsonStr);
-
-    if (activeProfileId) {
-      updateProfile(activeProfileId, newData);
-      setProfiles(getSavedProfiles());
-    }
+    setJsonInput(JSON.stringify(newData, null, 2));
   };
 
   const handleSelectProfile = (id) => {
     const found = profiles.find(p => p.id === id);
     if (found) {
+      skipNextProfileSyncRef.current = true;
       setActiveIdState(id);
       setActiveProfileId(id);
       setParsedData(found.data);
       setJsonInput(JSON.stringify(found.data, null, 2));
+      setEditingProfileId(null);
     }
   };
 
@@ -74,26 +87,56 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
     e.preventDefault();
     if (!newProfileName.trim()) return;
 
+    skipNextProfileSyncRef.current = true;
     const newP = createProfile(newProfileName, parsedData || structureBase);
-    const updated = getSavedProfiles();
-    setProfiles(updated);
+    setProfiles(getSavedProfiles());
     setActiveIdState(newP.id);
     setNewProfileName('');
     setIsCreatingProfile(false);
   };
 
+  const handleStartRename = (profile, e) => {
+    e.stopPropagation();
+    setEditingProfileId(profile.id);
+    setEditingProfileName(profile.name);
+  };
+
+  const handleConfirmRename = (e) => {
+    e.preventDefault();
+    if (!editingProfileId || !editingProfileName.trim()) {
+      setEditingProfileId(null);
+      return;
+    }
+    renameProfile(editingProfileId, editingProfileName);
+    setProfiles(getSavedProfiles());
+    setEditingProfileId(null);
+  };
+
+  const handleDuplicateProfile = (id, e) => {
+    e.stopPropagation();
+    const duplicated = duplicateProfile(id);
+    if (duplicated) {
+      skipNextProfileSyncRef.current = true;
+      setProfiles(getSavedProfiles());
+      setActiveIdState(duplicated.id);
+      setParsedData(duplicated.data);
+      setJsonInput(JSON.stringify(duplicated.data, null, 2));
+    }
+  };
+
   const handleDeleteProfile = (id, e) => {
     e.stopPropagation();
     if (profiles.length <= 1) {
-      alert("Você deve manter pelo menos um perfil de currículo.");
+      alert('Você deve manter pelo menos um perfil de currículo.');
       return;
     }
-    if (window.confirm("Deseja realmente excluir este perfil?")) {
+    if (window.confirm('Deseja realmente excluir este perfil?')) {
       const remaining = deleteProfile(id);
       setProfiles(remaining);
       const nextId = remaining[0]?.id || null;
       setActiveIdState(nextId);
       if (nextId) {
+        skipNextProfileSyncRef.current = true;
         const nextProfile = remaining[0];
         setParsedData(nextProfile.data);
         setJsonInput(JSON.stringify(nextProfile.data, null, 2));
@@ -102,7 +145,7 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
   };
 
   const handleDownload = () => {
-    const currentName = profiles.find(p => p.id === activeProfileId)?.name || "curriculo";
+    const currentName = profiles.find(p => p.id === activeProfileId)?.name || 'curriculo';
     downloadBaseSchema(parsedData || structureBase, `backup_${currentName.replace(/\s+/g, '_')}`);
   };
 
@@ -112,21 +155,47 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      try {
-        const data = JSON.parse(event.target.result);
-        setJsonInput(event.target.result);
-        setParsedData(data);
-        const fileName = file.name.replace(/\.[^/.]+$/, "");
-        const newP = createProfile(fileName, data);
+      const validated = validateAndFormat(event.target.result);
+      if (validated) {
+        skipNextProfileSyncRef.current = true;
+        const formattedStr = JSON.stringify(validated, null, 2);
+        const fileName = file.name.replace(/\.[^/.]+$/, '');
+        const newP = createProfile(fileName, validated);
         setProfiles(getSavedProfiles());
         setActiveIdState(newP.id);
+        setParsedData(validated);
+        setJsonInput(formattedStr);
         setViewMode('form');
-      } catch {
+      } else {
+        setJsonInput(event.target.result);
         setViewMode('code');
       }
     };
     reader.readAsText(file);
     e.target.value = '';
+  };
+
+  const handleFormatJson = () => {
+    const validated = validateAndFormat(jsonInput);
+    if (validated) {
+      setJsonInput(JSON.stringify(validated, null, 2));
+      setParseError(null);
+    }
+  };
+
+  const handleCopyJson = async () => {
+    try {
+      await navigator.clipboard.writeText(jsonInput || '');
+      setCopyFeedback(true);
+      setTimeout(() => setCopyFeedback(false), 1800);
+    } catch {}
+  };
+
+  const handleResetBaseJson = () => {
+    if (window.confirm('Restaurar os dados deste perfil para o modelo de exemplo padrão?')) {
+      setJsonInput(JSON.stringify(structureBase, null, 2));
+      setParseError(null);
+    }
   };
 
   const renderModal = () => {
@@ -136,17 +205,17 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
       <div className="modal-overlay" onClick={() => setIsFormOpen(false)}>
         <div className="modal-content giant-modal glass-card" onClick={e => e.stopPropagation()}>
           <div className="giant-modal-header">
-            <h2 style={{margin: 0, color: 'var(--text-main)', fontSize: '1.35rem', fontWeight: 700}}>
+            <h2 style={{ margin: 0, color: 'var(--text-main)', fontSize: '1.35rem', fontWeight: 700 }}>
               Editor de Perfil
             </h2>
-            <button 
-              className="neo-btn" 
+            <button
+              className="neo-btn"
               onClick={() => setIsFormOpen(false)}
               style={{
-                padding: '8px 18px', 
-                height: 'auto', 
-                background: 'rgba(231, 76, 60, 0.1)', 
-                borderColor: 'var(--error-red)', 
+                padding: '8px 18px',
+                height: 'auto',
+                background: 'rgba(231, 76, 60, 0.1)',
+                borderColor: 'var(--error-red)',
                 color: 'var(--error-red)',
                 fontWeight: 'bold',
                 fontSize: '12px'
@@ -206,6 +275,30 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
             </form>
           )}
 
+          {editingProfileId && (
+            <form onSubmit={handleConfirmRename} style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+              <input
+                className="modern-select"
+                style={{ padding: '8px 12px', fontSize: '12px', flex: 1 }}
+                placeholder="Novo nome da versão..."
+                value={editingProfileName}
+                onChange={(e) => setEditingProfileName(e.target.value)}
+                autoFocus
+              />
+              <button type="submit" className="neo-btn" style={{ padding: '8px 12px', height: 'auto', fontSize: '11px' }}>
+                OK
+              </button>
+              <button
+                type="button"
+                className="neo-btn"
+                style={{ padding: '8px 10px', height: 'auto', fontSize: '11px' }}
+                onClick={() => setEditingProfileId(null)}
+              >
+                ✕
+              </button>
+            </form>
+          )}
+
           <div className="profiles-pill-list">
             {profiles.map(p => (
               <div
@@ -215,16 +308,34 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
                 title={`Última alteração: ${new Date(p.updatedAt).toLocaleDateString()}`}
               >
                 <span className="profile-pill-name">{p.name}</span>
-                {profiles.length > 1 && (
+                <div className="profile-pill-actions">
                   <button
                     type="button"
-                    className="profile-pill-del"
-                    onClick={(e) => handleDeleteProfile(p.id, e)}
-                    title="Excluir versão"
+                    className="profile-pill-action-btn"
+                    onClick={(e) => handleStartRename(p, e)}
+                    title="Renomear versão"
                   >
-                    ×
+                    ✎
                   </button>
-                )}
+                  <button
+                    type="button"
+                    className="profile-pill-action-btn"
+                    onClick={(e) => handleDuplicateProfile(p.id, e)}
+                    title="Duplicar versão"
+                  >
+                    ⧉
+                  </button>
+                  {profiles.length > 1 && (
+                    <button
+                      type="button"
+                      className="profile-pill-del"
+                      onClick={(e) => handleDeleteProfile(p.id, e)}
+                      title="Excluir versão"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -232,14 +343,14 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
 
         {/* MODO DE EDIÇÃO */}
         <div className="mode-toggle-container">
-          <button 
+          <button
             type="button"
             className={`mode-btn ${viewMode === 'form' ? 'active' : ''}`}
             onClick={() => !parseError && setViewMode('form')}
           >
             <span>Formulário</span>
           </button>
-          <button 
+          <button
             type="button"
             className={`mode-btn ${viewMode === 'code' ? 'active' : ''}`}
             onClick={() => setViewMode('code')}
@@ -271,10 +382,10 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
               <p className="description-text" style={{ textAlign: 'center', marginBottom: '14px' }}>
                 Abra o editor completo para preencher experiências, formação, habilidades e projetos.
               </p>
-              
-              <button 
+
+              <button
                 type="button"
-                className="btn-launch-modal" 
+                className="btn-launch-modal"
                 onClick={() => setIsFormOpen(true)}
               >
                 <span>Editar Dados do Perfil</span>
@@ -287,10 +398,23 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
         ) : (
           <div className="code-editor-container">
             <div className="editor-toolbar">
-              <div className="traffic-lights"><span className="red"></span><span className="yellow"></span><span className="green"></span></div>
-              <div className="editor-title" style={{ color: '#666', fontSize: '10px' }}>dados_curriculo.json</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="traffic-lights"><span className="red"></span><span className="yellow"></span><span className="green"></span></div>
+                <div className="editor-title" style={{ color: '#666', fontSize: '10px' }}>dados_curriculo.json</div>
+              </div>
+              <div className="editor-toolbar-actions">
+                <button type="button" className="editor-mini-btn" onClick={handleFormatJson} title="Formatar e validar JSON">
+                  Formatar
+                </button>
+                <button type="button" className="editor-mini-btn" onClick={handleCopyJson} title="Copiar JSON">
+                  {copyFeedback ? 'Copiado!' : 'Copiar'}
+                </button>
+                <button type="button" className="editor-mini-btn danger" onClick={handleResetBaseJson} title="Restaurar modelo padrão">
+                  Resetar
+                </button>
+              </div>
             </div>
-            <textarea 
+            <textarea
               className="modern-textarea"
               value={jsonInput}
               onChange={(e) => setJsonInput(e.target.value)}
