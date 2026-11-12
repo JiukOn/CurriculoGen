@@ -3,11 +3,27 @@
 const PROFILES_KEY = 'jiu_saved_profiles';
 const ACTIVE_PROFILE_KEY = 'jiu_active_profile_id';
 
-export const getSavedProfiles = () => {
+export const getSavedProfiles = (fallbackData = null) => {
   try {
     const raw = localStorage.getItem(PROFILES_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+    if (fallbackData) {
+      const initial = {
+        id: 'prof_default',
+        name: fallbackData.cargo || 'Currículo Principal',
+        updatedAt: new Date().toISOString(),
+        data: fallbackData
+      };
+      saveProfilesList([initial]);
+      setActiveProfileId(initial.id);
+      return [initial];
+    }
+    return [];
   } catch (e) {
     console.error('Erro ao ler perfis salvos:', e);
     return [];

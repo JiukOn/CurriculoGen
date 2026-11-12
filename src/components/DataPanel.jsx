@@ -19,8 +19,8 @@ const DataPanel = ({ jsonInput, setJsonInput }) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   
   // Múltiplos Perfis (Item 3)
-  const [profiles, setProfiles] = useState(() => getSavedProfiles());
-  const [activeProfileId, setActiveIdState] = useState(() => getActiveProfileId());
+  const [profiles, setProfiles] = useState(() => getSavedProfiles(structureBase));
+  const [activeProfileId, setActiveIdState] = useState(() => getActiveProfileId() || 'prof_default');
   const [isCreatingProfile, setIsCreatingProfile] = useState(false);
   const [newProfileName, setNewProfileName] = useState('');
 

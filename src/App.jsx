@@ -17,9 +17,14 @@ const safeStorage = {
   get: (key, fallback) => {
     try {
       const item = localStorage.getItem(key);
-      return item ? item : (typeof fallback === 'object' ? JSON.stringify(fallback) : fallback);
+      if (item !== null && item !== undefined && item !== 'null' && item !== 'undefined') {
+        return item;
+      }
+      if (fallback === null || fallback === undefined) return null;
+      return typeof fallback === 'object' ? JSON.stringify(fallback) : String(fallback);
     } catch {
-      return (typeof fallback === 'object' ? JSON.stringify(fallback) : fallback);
+      if (fallback === null || fallback === undefined) return null;
+      return typeof fallback === 'object' ? JSON.stringify(fallback) : String(fallback);
     }
   },
   set: (key, value) => {
