@@ -196,6 +196,7 @@ export const sendCopilotMessage = async ({
   currentResumeData,
   currentAppConfig = {},
   selectedModel = null,
+  availableModels = [],
   timeoutMs = 45000
 }) => {
   if (!apiKey || !apiKey.trim()) {
@@ -234,120 +235,147 @@ export const sendCopilotMessage = async ({
     });
   }
 
-  // 2. Determina o modelo dinâmico
-  let modelToUse = selectedModel;
-  if (!modelToUse) {
-    const available = await fetchAvailableModels(apiKey);
-    modelToUse = selectBestModel(available);
-  }
+  // 2. Monta fila dinâmica de modelos candidatos (priorizando o selecionado + melhores disponíveis)
+  const fetchedModels = availableModels.length > 0 ? availableModels : await fetchAvailableModels(apiKey);
+  const bestDefault = selectBestModel(fetchedModels);
+  const candidateQueue = Array.from(
+    new Set([selectedModel, bestDefault, ...fetchedModels].filter(Boolean))
+  );
+  const deprecatedModels = [];
 
-  // 3. Monta histórico da conversa
-  const contents = [];
+  // 3. Monta histórico base da conversa
+  const baseContents = [];
 
   const initialParts = [{ text: `${SYSTEM_INSTRUCTION_GROUNDING}\n\n${evidenceContext}` }, ...multimodalParts];
-  contents.push({
+  baseContents.push({
     role: "user",
     parts: initialParts
   });
-  contents.push({
+  baseContents.push({
     role: "model",
     parts: [{ text: "Entendido perfeitamente. Sigo estritamente a política de Zero Alucinação e utilizarei as ferramentas para inspecionar o currículo atual e os chunks de documentos sempre que necessário. Como posso ajudar?" }]
   });
 
   chatHistory.forEach(msg => {
-    contents.push({
+    baseContents.push({
       role: msg.sender === 'user' ? 'user' : 'model',
       parts: [{ text: msg.text }]
     });
   });
 
-  contents.push({
+  baseContents.push({
     role: "user",
     parts: [{ text: userMessage }]
   });
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${apiKey.trim()}`;
-
-  // 4. Loop de Function Calling (até 6 rodadas de ferramentas)
+  // 4. Loop de modelos com auto-fallback em caso de 404 / modelo depreciado
   const MAX_TOOL_ROUNDS = 6;
   const toolContext = { currentResumeData, currentAppConfig, evidenceSources };
+  let lastError = null;
 
-  for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
-    const payload = {
-      contents,
-      tools: [{ functionDeclarations: COPILOT_TOOL_DECLARATIONS }],
-      generationConfig: {
-        temperature: 0.2
-      }
-    };
+  for (let mIdx = 0; mIdx < candidateQueue.length; mIdx++) {
+    const modelToUse = candidateQueue[mIdx];
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${apiKey.trim()}`;
+    const contents = baseContents.map(c => ({ ...c }));
+    let switchModel = false;
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
+      const payload = {
+        contents,
+        tools: [{ functionDeclarations: COPILOT_TOOL_DECLARATIONS }],
+        generationConfig: {
+          temperature: 0.2
+        }
+      };
 
-    let data;
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        signal: controller.signal
-      });
-      clearTimeout(timeoutId);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        const errorMsg = errData.error?.message || res.statusText;
-        throw new Error(`Erro Gemini (${res.status}): ${errorMsg}`);
-      }
+      let data;
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
 
-      data = await res.json();
-    } catch (err) {
-      clearTimeout(timeoutId);
-      if (err.name === 'AbortError') {
-        throw new Error(`Tempo limite excedido (${timeoutMs / 1000}s) no modelo ${modelToUse}. Tente novamente.`);
-      }
-      throw err;
-    }
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          const errorMsg = errData.error?.message || res.statusText;
+          const lowerErr = errorMsg.toLowerCase();
 
-    const candidateContent = data.candidates?.[0]?.content;
-    const parts = candidateContent?.parts || [];
-    const functionCalls = parts.filter(p => p.functionCall);
-
-    if (functionCalls.length > 0) {
-      // Registra a chamada do modelo no histórico da rodada
-      contents.push({
-        role: 'model',
-        parts
-      });
-
-      // Executa todas as tools solicitadas e devolve como functionResponse
-      const responseParts = functionCalls.map(fc => {
-        const { name, args } = fc.functionCall;
-        const result = executeCopilotTool(name, args, toolContext);
-        return {
-          functionResponse: {
-            name,
-            response: result
+          // Se for 404 ou modelo descontinuado/depreciado, tenta automaticamente o próximo modelo
+          if (
+            res.status === 404 ||
+            lowerErr.includes('no longer available') ||
+            lowerErr.includes('deprecated') ||
+            lowerErr.includes('not found')
+          ) {
+            deprecatedModels.push(modelToUse);
+            const suggestedMatch = errorMsg.match(/use\s+models\/([a-z0-9.-]+)/i);
+            if (suggestedMatch && suggestedMatch[1]) {
+              const suggested = suggestedMatch[1];
+              if (!candidateQueue.includes(suggested)) {
+                candidateQueue.splice(mIdx + 1, 0, suggested);
+              }
+            }
+            lastError = new Error(`Erro Gemini (${res.status}): ${errorMsg}`);
+            switchModel = true;
+            break;
           }
-        };
-      });
 
-      contents.push({
-        role: 'user',
-        parts: responseParts
-      });
-      continue;
+          throw new Error(`Erro Gemini (${res.status}): ${errorMsg}`);
+        }
+
+        data = await res.json();
+      } catch (err) {
+        clearTimeout(timeoutId);
+        if (err.name === 'AbortError') {
+          throw new Error(`Tempo limite excedido (${timeoutMs / 1000}s) no modelo ${modelToUse}. Tente novamente.`);
+        }
+        throw err;
+      }
+
+      const candidateContent = data.candidates?.[0]?.content;
+      const parts = candidateContent?.parts || [];
+      const functionCalls = parts.filter(p => p.functionCall);
+
+      if (functionCalls.length > 0) {
+        contents.push({ role: 'model', parts });
+        const responseParts = functionCalls.map(fc => {
+          const { name, args } = fc.functionCall;
+          const result = executeCopilotTool(name, args, toolContext);
+          return {
+            functionResponse: {
+              name,
+              response: result
+            }
+          };
+        });
+        contents.push({ role: 'user', parts: responseParts });
+        continue;
+      }
+
+      const textParts = parts.filter(p => typeof p.text === 'string').map(p => p.text).join('\n').trim();
+      if (!textParts) {
+        throw new Error("A IA retornou uma resposta em branco.");
+      }
+
+      return {
+        ...parseCopilotAction(textParts),
+        usedModel: modelToUse,
+        deprecatedModels
+      };
     }
 
-    const textParts = parts.filter(p => typeof p.text === 'string').map(p => p.text).join('\n').trim();
-    if (!textParts) {
-      throw new Error("A IA retornou uma resposta em branco.");
+    if (!switchModel) {
+      throw new Error("O Copiloto excedeu o limite de consultas de ferramentas. Tente reformular seu pedido.");
     }
-
-    return parseCopilotAction(textParts);
   }
 
-  throw new Error("O Copiloto excedeu o limite de consultas de ferramentas. Tente reformular seu pedido.");
+  throw lastError || new Error("Nenhum modelo Gemini disponível respondeu com sucesso.");
 };
 
 function parseCopilotAction(text) {

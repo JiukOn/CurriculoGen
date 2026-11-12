@@ -3,18 +3,57 @@
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Modelo de preferência ordenado por melhor equilíbrio custo x velocidade x estabilidade
+// Lista de preferência de fallback caso a consulta dinâmica falhe
 const PREFERRED_MODELS = [
-  "gemini-2.5-flash-lite",
-  "gemini-2.0-flash-lite",
+  "gemini-3.5-flash-lite",
+  "gemini-3.5-flash",
+  "gemini-3.0-flash-lite",
+  "gemini-3.0-flash",
   "gemini-2.5-flash",
-  "gemini-2.0-flash",
-  "gemini-1.5-flash",
-  "gemini-1.5-pro",
-  "gemini-2.5-pro"
+  "gemini-2.5-pro",
+  "gemini-3.5-pro"
 ];
 
-// Lista dinamicamente os modelos disponíveis para a chave do usuário
+const EXCLUDED_MODEL_PATTERNS = [
+  'embedding',
+  'aqa',
+  'imagen',
+  'veo',
+  'tts',
+  'native-audio',
+  'audio',
+  'robotics',
+  'computer-use',
+  'deep-research',
+  '-exp',
+  'gemini-1.0',
+  'gemini-1.5',
+  'gemini-pro-vision'
+];
+
+// Extrai pontuação numérica de versão (ex: gemini-3.5-flash-lite -> 305) para ordenar sempre do mais novo para o mais antigo
+export const getModelVersionScore = (modelName) => {
+  const match = String(modelName).match(/gemini-(\d+)(?:\.(\d+))?/i);
+  if (!match) return 0;
+  const major = parseInt(match[1], 10) || 0;
+  const minor = parseInt(match[2] || '0', 10) || 0;
+  return major * 100 + minor;
+};
+
+const isSuitableTextModel = (modelObj) => {
+  const rawName = (modelObj.name || '').replace('models/', '');
+  const lowerName = rawName.toLowerCase();
+  const desc = (modelObj.description || '').toLowerCase();
+
+  if (!modelObj.supportedGenerationMethods?.includes('generateContent')) return false;
+  if (!lowerName.startsWith('gemini-')) return false;
+  if (EXCLUDED_MODEL_PATTERNS.some(pat => lowerName.includes(pat))) return false;
+  if (desc.includes('deprecated') || desc.includes('discontinued') || desc.includes('no longer available')) return false;
+
+  return true;
+};
+
+// Lista dinamicamente os modelos disponíveis e ativos para a chave do usuário
 export const fetchAvailableModels = async (apiKey) => {
   if (!apiKey || apiKey.trim() === '') return [];
 
@@ -27,10 +66,22 @@ export const fetchAvailableModels = async (apiKey) => {
     const data = await res.json();
     if (!data.models) return [];
 
-    // Filtra apenas modelos que suportam geração de conteúdo
     const supported = data.models
-      .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
+      .filter(isSuitableTextModel)
       .map(m => m.name.replace('models/', ''));
+
+    // Ordena dinamicamente: versão mais recente primeiro, priorizando modelos estáveis e flash/flash-lite
+    supported.sort((a, b) => {
+      const verDiff = getModelVersionScore(b) - getModelVersionScore(a);
+      if (verDiff !== 0) return verDiff;
+
+      const isStable = (n) => !n.includes('preview') && !n.includes('experimental');
+      const stableDiff = Number(isStable(b)) - Number(isStable(a));
+      if (stableDiff !== 0) return stableDiff;
+
+      const tierScore = (n) => (n.includes('flash-lite') ? 3 : n.includes('flash') ? 2 : 1);
+      return tierScore(b) - tierScore(a);
+    });
 
     return supported;
   } catch (err) {
@@ -39,24 +90,28 @@ export const fetchAvailableModels = async (apiKey) => {
   }
 };
 
-// Determina dinamicamente o melhor modelo com bom custo-benefício e velocidade
+// Determina dinamicamente o melhor modelo ativo com bom custo-benefício e velocidade
 export const selectBestModel = (availableModels) => {
   if (!availableModels || availableModels.length === 0) {
-    return "gemini-2.0-flash"; // Fallback padrão seguro
+    return "gemini-3.5-flash-lite";
   }
 
-  // Procura na ordem de prioridade (baixo custo e alta velocidade primeiro)
+  // 1. Prioriza o flash-lite ou flash estável de maior versão disponível na conta
+  const stableFlash = availableModels.find(
+    m => m.includes('flash') && !m.includes('preview') && !m.includes('experimental')
+  );
+  if (stableFlash) return stableFlash;
+
+  // 2. Fallback para lista preferida caso exista
   for (const preferred of PREFERRED_MODELS) {
     if (availableModels.includes(preferred)) {
       return preferred;
     }
   }
 
-  // Se nenhum dos preferidos estiver exato, procura algum com 'flash'
-  const flashModel = availableModels.find(m => m.toLowerCase().includes('flash') && !m.includes('preview'));
-  if (flashModel) return flashModel;
-
-  return availableModels[0];
+  // 3. Qualquer modelo flash disponível ou o primeiro da lista ordenada por versão
+  const anyFlash = availableModels.find(m => m.toLowerCase().includes('flash'));
+  return anyFlash || availableModels[0];
 };
 
 export const optimizeResumeWithGemini = async (apiKey, currentJson, jobData, selectedModel = null) => {

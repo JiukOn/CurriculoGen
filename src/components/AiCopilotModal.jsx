@@ -124,8 +124,16 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
         evidenceSources,
         currentResumeData: currentResume,
         currentAppConfig: config,
-        selectedModel
+        selectedModel,
+        availableModels
       });
+
+      if (response.deprecatedModels?.length > 0) {
+        setAvailableModels(prev => prev.filter(m => !response.deprecatedModels.includes(m)));
+      }
+      if (response.usedModel && response.usedModel !== selectedModel) {
+        setSelectedModel(response.usedModel);
+      }
 
       const assistantMsg = {
         id: 'ast_' + Date.now(),
@@ -321,7 +329,7 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
                     </option>
                   ))
                 ) : (
-                  <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+                  <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite</option>
                 )}
               </select>
             </div>
