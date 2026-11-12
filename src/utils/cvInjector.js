@@ -8,13 +8,38 @@ const escapeHtml = (unsafe) => {
     .replace(/'/g, "&#039;");
 };
 
+const normalizeHex = (hex) => {
+  if (typeof hex !== 'string') return '#2563eb';
+  const clean = hex.trim().replace(/^#/, '');
+  if (/^[0-9a-fA-F]{3}$/.test(clean)) {
+    return '#' + clean.split('').map(c => c + c).join('');
+  }
+  if (/^[0-9a-fA-F]{6}$/.test(clean)) {
+    return '#' + clean;
+  }
+  return '#2563eb';
+};
+
+const deriveAccentHex = (hex, ratio = 0.22) => {
+  const norm = normalizeHex(hex).slice(1);
+  const r = parseInt(norm.slice(0, 2), 16);
+  const g = parseInt(norm.slice(2, 4), 16);
+  const b = parseInt(norm.slice(4, 6), 16);
+  const mix = (c) => Math.min(255, Math.round(c + (255 - c) * ratio));
+  return '#' + [mix(r), mix(g), mix(b)].map(v => v.toString(16).padStart(2, '0')).join('');
+};
+
 export const injectDataToIframe = (doc, data, config, palettes) => {
   if (!doc || !data) return;
 
   try {
     // 1. Injeção de Identidade Visual e Estilos
     if (config && palettes) {
-      const colors = palettes[config.palette];
+      let colors = palettes[config.palette];
+      if (config.palette === 'custom') {
+        const primary = normalizeHex(config.customColor);
+        colors = { primary, accent: deriveAccentHex(primary) };
+      }
       if (colors) {
         doc.documentElement.style.setProperty('--primary-dark', colors.primary);
         doc.documentElement.style.setProperty('--accent-steel', colors.accent);

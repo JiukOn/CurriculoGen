@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { sendCopilotMessage } from '../utils/copilotService';
 import { fetchAvailableModels, selectBestModel } from '../utils/aiService';
-import { readFileContent } from '../utils/fileExtractor';
+import { parseUploadedFile } from '../utils/fileExtractor';
+import { buildEvidenceSource } from '../utils/documentTools';
 
 /* --- COPILOTO IA AVANÇADO: CHAT, UPLOAD DIRETO DE PDF/TXT/MD E CONSCIÊNCIA DO APP --- */
 
@@ -46,7 +47,10 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
   }, [apiKey]);
 
   useEffect(() => {
-    try { localStorage.setItem('jiu_evidence_sources', JSON.stringify(evidenceSources)); } catch {}
+    try {
+      const serializable = evidenceSources.map(({ base64Data: _omit, ...rest }) => rest);
+      localStorage.setItem('jiu_evidence_sources', JSON.stringify(serializable));
+    } catch {}
   }, [evidenceSources]);
 
   // Consulta modelos dinâmicos
@@ -158,7 +162,20 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
     if (!pendingAction) return;
 
     if (pendingAction.resume) {
-      setJsonInput(JSON.stringify(pendingAction.resume, null, 2));
+      if (pendingAction.mode === 'patch') {
+        let baseResume = {};
+        try { baseResume = JSON.parse(jsonInput); } catch {}
+        const merged = {
+          ...baseResume,
+          ...pendingAction.resume,
+          contato: pendingAction.resume.contato
+            ? { ...(baseResume.contato || {}), ...pendingAction.resume.contato }
+            : baseResume.contato
+        };
+        setJsonInput(JSON.stringify(merged, null, 2));
+      } else {
+        setJsonInput(JSON.stringify(pendingAction.resume, null, 2));
+      }
     }
 
     if (pendingAction.config && setConfig) {
@@ -191,31 +208,27 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
 
     for (const file of Array.from(files)) {
       try {
-        const text = await readFileContent(file);
-        if (text && text.trim().length > 10) {
-          const isPdf = file.name.toLowerCase().endsWith('.pdf');
-          newSources.push({
-            id: 'src_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
-            title: file.name,
-            type: isPdf ? 'pdf' : (file.name.endsWith('.json') ? 'json' : 'texto'),
-            content: text,
-            dateAdded: new Date().toLocaleDateString()
-          });
+        const parsed = await parseUploadedFile(file);
+        if ((parsed.text && parsed.text.trim().length > 0) || parsed.base64Data) {
+          newSources.push(buildEvidenceSource(parsed));
+        } else {
+          alert(`O arquivo ${file.name} parece estar vazio.`);
         }
       } catch (err) {
         console.error(`Erro ao ler arquivo ${file.name}:`, err);
-        alert(`Não foi possível extrair o texto de ${file.name}.`);
+        alert(`Não foi possível processar ${file.name}: ${err.message || 'erro desconhecido'}`);
       }
     }
 
     if (newSources.length > 0) {
       setEvidenceSources(prev => [...newSources, ...prev]);
+      const details = newSources.map(s => `${s.title} (${s.totalChunks} parte${s.totalChunks > 1 ? 's' : ''})`).join(', ');
       setMessages(prev => [
         ...prev,
         {
           id: 'sys_' + Date.now(),
           sender: 'assistant',
-          text: `Anexei ${newSources.length} novo(s) arquivo(s) como evidência comprovada: ${newSources.map(s => s.title).join(', ')}. Posso usá-los agora para reescrever ou atualizar seu currículo!`,
+          text: `Anexei ${newSources.length} novo(s) arquivo(s) como evidência comprovada: ${details}. Posso consultá-los e usá-los agora para editar ou criar seu currículo!`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
@@ -349,7 +362,7 @@ const AiCopilotModal = ({ isOpen, onClose, jsonInput, setJsonInput, config, setC
                 type="file"
                 ref={fileInputRef}
                 style={{ display: 'none' }}
-                accept=".pdf,.txt,.md,.json"
+                accept=".pdf,.txt,.md,.json,application/pdf,text/plain,text/markdown,application/json"
                 multiple
                 onChange={(e) => handleProcessFiles(e.target.files)}
               />
