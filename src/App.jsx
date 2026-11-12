@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import VisualEditor from './components/VisualEditor';
 import DataPanel from './components/DataPanel';
 import AiPanel from './components/AiPanel';
+import AiCopilotModal from './components/AiCopilotModal';
 import HelpPanel from './components/HelpPanel';
 import { injectDataToIframe } from './utils/cvInjector';
 import { exportToPDF, downloadDirectPDF } from './utils/exportHandler';
@@ -55,6 +56,7 @@ function App() {
   const [isExporting, setIsExporting] = useState(false);
   const [isDirectDownloading, setIsDirectDownloading] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [showCopilot, setShowCopilot] = useState(false);
 
   // Zoom e Visualização Mobile (Item 4)
   const [zoomLevel, setZoomLevel] = useState(100);
@@ -161,6 +163,14 @@ function App() {
       {/* MODAL DE AJUDA */}
       {showHelp && <HelpPanel onClose={() => setShowHelp(false)} />}
 
+      {/* MODAL DO COPILOTO IA INTERATIVO */}
+      <AiCopilotModal 
+        isOpen={showCopilot}
+        onClose={() => setShowCopilot(false)}
+        jsonInput={jsonInput}
+        setJsonInput={setJsonInput}
+      />
+
       {/* BARRA DE ALTERNÂNCIA MOBILE (ITEM 4) */}
       <div className="mobile-nav-toggle">
         <button
@@ -237,8 +247,8 @@ function App() {
 
           <div className="section-spacer"></div>
 
-          {/* PASSO 03: Neural Engine (IA Gemini) */}
-          <AiPanel jsonInput={jsonInput} setJsonInput={setJsonInput} />
+          {/* PASSO 03: Copiloto IA de Carreira */}
+          <AiPanel onOpenCopilot={() => setShowCopilot(true)} />
           
           <div className="section-spacer"></div>
           
