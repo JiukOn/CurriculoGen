@@ -1,3 +1,5 @@
+import { GOOGLE_FONTS_URL } from '../config/constants';
+
 const escapeHtml = (unsafe) => {
   if (typeof unsafe !== 'string') return '';
   return unsafe
@@ -33,6 +35,15 @@ export const injectDataToIframe = (doc, data, config, palettes) => {
   if (!doc || !data) return;
 
   try {
+    // 0. Garante carregamento das fontes Google Fonts dentro do iframe
+    if (doc.head && !doc.getElementById('jiu-google-fonts')) {
+      const fontLink = doc.createElement('link');
+      fontLink.id = 'jiu-google-fonts';
+      fontLink.rel = 'stylesheet';
+      fontLink.href = GOOGLE_FONTS_URL;
+      doc.head.appendChild(fontLink);
+    }
+
     // 1. Injeção de Identidade Visual e Estilos
     if (config && palettes) {
       let colors = palettes[config.palette];

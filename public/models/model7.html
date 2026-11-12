@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CurriculoGen - Creative Split</title>
+  <style>
+    :root {
+      --primary-dark: #1e293b;
+      --accent-steel: #3b82f6;
+      --text-main: #1f2937;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+      background: #ffffff;
+      line-height: 1.45;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 34% 66%;
+      background: #ffffff;
+    }
+
+    @media print {
+      @page { size: A4; margin: 0; }
+      .page { width: 100%; min-height: 100%; margin: 0; }
+    }
+
+    .sidebar {
+      background-color: var(--primary-dark);
+      color: #f8fafc;
+      padding: 16mm 12mm;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .sidebar-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 14px;
+    }
+
+    h1#nome {
+      font-size: 19pt;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.15;
+    }
+
+    #cargo {
+      font-size: 9.5pt;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.82);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 6px;
+    }
+
+    .side-title {
+      font-size: 9pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #ffffff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+      padding-bottom: 4px;
+      margin-bottom: 8px;
+    }
+
+    .contact-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 8.5pt;
+      color: rgba(255, 255, 255, 0.9);
+      word-break: break-word;
+    }
+
+    .sidebar #hard-skills-lista span,
+    .sidebar #cursos-lista li,
+    .sidebar #cursos-lista li span {
+      color: #f1f5f9 !important;
+    }
+
+    .sidebar #soft-skills-lista,
+    .sidebar #idiomas-lista {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .main-area {
+      padding: 16mm 14mm;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .main-title {
+      font-size: 11pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--primary-dark);
+      border-left: 4px solid var(--accent-steel);
+      padding-left: 10px;
+      margin-bottom: 10px;
+    }
+
+    p#resumo {
+      font-size: 9.5pt;
+      text-align: justify;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1 id="nome">NOME DO CANDIDATO</h1>
+        <div id="cargo">TÍTULO PROFISSIONAL</div>
+      </div>
+
+      <div>
+        <div class="side-title">Contato</div>
+        <ul class="contact-list">
+          <li><span id="local">Cidade, UF</span></li>
+          <li><span id="tel">Telefone</span></li>
+          <li><span id="email">E-mail</span></li>
+          <li><span id="linkedin">LinkedIn</span></li>
+          <li><span id="nascimento">Nascimento</span></li>
+        </ul>
+      </div>
+
+      <section id="section-hard-skills">
+        <div class="side-title">Hard Skills</div>
+        <div id="hard-skills-lista"></div>
+      </section>
+
+      <section id="section-soft-skills">
+        <div class="side-title">Soft Skills</div>
+        <div id="soft-skills-lista"></div>
+      </section>
+
+      <section id="section-idiomas">
+        <div class="side-title">Idiomas</div>
+        <div id="idiomas-lista"></div>
+      </section>
+
+      <section id="section-cursos">
+        <div class="side-title">Cursos</div>
+        <ul id="cursos-lista"></ul>
+      </section>
+    </aside>
+
+    <main class="main-area">
+      <section id="section-resumo">
+        <h2 class="main-title">Sobre Mim</h2>
+        <p id="resumo"></p>
+      </section>
+
+      <section id="section-experiencia">
+        <h2 class="main-title">Experiência Profissional</h2>
+        <div id="experiencias"></div>
+      </section>
+
+      <section id="section-projetos">
+        <h2 class="main-title">Projetos em Destaque</h2>
+        <div id="projetos-lista"></div>
+      </section>
+
+      <section id="section-formacao">
+        <h2 class="main-title">Formação Acadêmica</h2>
+        <div id="formacao"></div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

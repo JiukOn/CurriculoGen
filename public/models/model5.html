@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CurriculoGen - Nordic Clean</title>
+  <style>
+    :root {
+      --primary-dark: #1a365d;
+      --accent-steel: #2b6cb0;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --border-soft: #e5e7eb;
+      --bg-page: #ffffff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+      background: #ffffff;
+      line-height: 1.5;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      background: var(--bg-page);
+      padding: 14mm 16mm;
+      border-top: 8px solid var(--primary-dark);
+    }
+
+    @media print {
+      @page { size: A4; margin: 0; }
+      .page { width: 100%; min-height: 100%; margin: 0; }
+    }
+
+    header {
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-soft);
+      margin-bottom: 18px;
+    }
+
+    h1#nome {
+      font-size: 24pt;
+      font-weight: 800;
+      color: var(--primary-dark);
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    #cargo {
+      font-size: 11.5pt;
+      font-weight: 600;
+      color: var(--accent-steel);
+      margin-top: 4px;
+    }
+
+    .contact-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin-top: 10px;
+      font-size: 8.5pt;
+      color: var(--text-muted);
+    }
+
+    .contact-pills span {
+      background: #f8fafc;
+      border: 1px solid var(--border-soft);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 1.85fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .section-block {
+      margin-bottom: 16px;
+    }
+
+    h2.sec-title {
+      font-size: 10pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--primary-dark);
+      border-bottom: 2px solid var(--primary-dark);
+      padding-bottom: 4px;
+      margin-bottom: 10px;
+    }
+
+    p#resumo {
+      font-size: 9.5pt;
+      text-align: justify;
+      color: var(--text-main);
+    }
+
+    .side-col .sec-title {
+      border-bottom-color: var(--accent-steel);
+      color: var(--accent-steel);
+    }
+
+    #soft-skills-lista, #idiomas-lista {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1 id="nome">NOME DO CANDIDATO</h1>
+      <div id="cargo">TÍTULO PROFISSIONAL</div>
+      <div class="contact-pills">
+        <span id="local">Cidade, UF</span>
+        <span id="tel">Telefone</span>
+        <span id="email">E-mail</span>
+        <span id="linkedin">LinkedIn</span>
+        <span id="nascimento">Nascimento</span>
+      </div>
+    </header>
+
+    <div class="layout-grid">
+      <div class="main-col">
+        <section id="section-resumo" class="section-block">
+          <h2 class="sec-title">Resumo</h2>
+          <p id="resumo"></p>
+        </section>
+
+        <section id="section-experiencia" class="section-block">
+          <h2 class="sec-title">Experiência</h2>
+          <div id="experiencias"></div>
+        </section>
+
+        <section id="section-projetos" class="section-block">
+          <h2 class="sec-title">Projetos</h2>
+          <div id="projetos-lista"></div>
+        </section>
+
+        <section id="section-formacao" class="section-block">
+          <h2 class="sec-title">Formação Acadêmica</h2>
+          <div id="formacao"></div>
+        </section>
+      </div>
+
+      <aside class="side-col">
+        <section id="section-hard-skills" class="section-block">
+          <h2 class="sec-title">Hard Skills</h2>
+          <div id="hard-skills-lista"></div>
+        </section>
+
+        <section id="section-soft-skills" class="section-block">
+          <h2 class="sec-title">Soft Skills</h2>
+          <div id="soft-skills-lista"></div>
+        </section>
+
+        <section id="section-idiomas" class="section-block">
+          <h2 class="sec-title">Idiomas</h2>
+          <div id="idiomas-lista"></div>
+        </section>
+
+        <section id="section-cursos" class="section-block">
+          <h2 class="sec-title">Cursos</h2>
+          <ul id="cursos-lista"></ul>
+        </section>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>
