@@ -35,36 +35,55 @@ const safeStorage = {
 };
 
 function App() {
-  // --- CONFIGURAÇÃO DO MODELO VISUAL ---
-  const [config, setConfig] = useState(() => {
-    try {
-      const saved = localStorage.getItem('jiu_editor_config');
-      if (saved) return JSON.parse(saved);
-    } catch {}
-    return { 
-      model: 'model1.html', 
-      palette: 'graphite', 
+  // --- ESTADO UNIFICADO (ESTILO + CONTEÚDO) COM HISTÓRICO UNDO / REDO ---
+  const initialSnapshot = useMemo(() => {
+    let initialConfig = {
+      model: 'model1.html',
+      palette: 'graphite',
       font: "'Inter', sans-serif",
       spacing: 'normal'
     };
-  });
-  
-  const [theme, setTheme] = useState(() => safeStorage.get('jiu_theme', 'dark'));
+    try {
+      const savedConfig = localStorage.getItem('jiu_editor_config');
+      if (savedConfig) initialConfig = JSON.parse(savedConfig);
+    } catch {}
 
-  // --- HISTÓRICO DE ESTADOS (UNDO / REDO COM CTRL+Z / CTRL+Y) ---
-  const initialJson = useMemo(() => {
-    const saved = safeStorage.get('cv_generation_cache', null);
-    return saved || JSON.stringify(structureBase, null, 2);
+    const savedJson = safeStorage.get('cv_generation_cache', null);
+    return {
+      config: initialConfig,
+      jsonInput: savedJson || JSON.stringify(structureBase, null, 2)
+    };
   }, []);
 
   const {
-    state: jsonInput,
-    set: setJsonInput,
+    state: historyState,
+    set: setHistoryState,
     undo,
     redo,
     canUndo,
-    canRedo
-  } = useHistory(initialJson, 30);
+    canRedo,
+    undoCount,
+    redoCount
+  } = useHistory(initialSnapshot, 40);
+
+  const config = historyState.config;
+  const jsonInput = historyState.jsonInput;
+
+  const setConfig = useCallback((valueOrUpdater) => {
+    setHistoryState(prev => ({
+      ...prev,
+      config: typeof valueOrUpdater === 'function' ? valueOrUpdater(prev.config) : valueOrUpdater
+    }));
+  }, [setHistoryState]);
+
+  const setJsonInput = useCallback((valueOrUpdater) => {
+    setHistoryState(prev => ({
+      ...prev,
+      jsonInput: typeof valueOrUpdater === 'function' ? valueOrUpdater(prev.jsonInput) : valueOrUpdater
+    }));
+  }, [setHistoryState]);
+
+  const [theme, setTheme] = useState(() => safeStorage.get('jiu_theme', 'dark'));
 
   // --- ESTADOS DE CONTROLE E UI ---
   const [error, setError] = useState(null);
@@ -269,7 +288,7 @@ function App() {
                   className="history-btn"
                   onClick={undo}
                   disabled={!canUndo}
-                  title="Desfazer (Ctrl + Z)"
+                  title={canUndo ? `Desfazer (Ctrl + Z) • ${undoCount} passo(s)` : 'Nada para desfazer'}
                 >
                   ↺
                 </button>
@@ -278,7 +297,7 @@ function App() {
                   className="history-btn"
                   onClick={redo}
                   disabled={!canRedo}
-                  title="Refazer (Ctrl + Y)"
+                  title={canRedo ? `Refazer (Ctrl + Y) • ${redoCount} passo(s)` : 'Nada para refazer'}
                 >
                   ↻
                 </button>

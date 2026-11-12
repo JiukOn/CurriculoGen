@@ -1,67 +1,75 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 /**
- * Hook para gerenciamento de histórico com Undo / Redo e limite de snapshots
+ * Hook atômico para gerenciamento de histórico com Undo / Redo e suporte a functional updaters
  */
-export const useHistory = (initialPresent, maxHistory = 30) => {
-  const [past, setPast] = useState([]);
-  const [present, setPresent] = useState(initialPresent);
-  const [future, setFuture] = useState([]);
+export const useHistory = (initialPresent, maxHistory = 40) => {
+  const [history, setHistory] = useState(() => ({
+    past: [],
+    present: initialPresent,
+    future: []
+  }));
 
-  const isInternalChangeRef = useRef(false);
-
-  const canUndo = past.length > 0;
-  const canRedo = future.length > 0;
+  const canUndo = history.past.length > 0;
+  const canRedo = history.future.length > 0;
 
   const undo = useCallback(() => {
-    if (!canUndo) return;
-
-    const previous = past[past.length - 1];
-    const newPast = past.slice(0, past.length - 1);
-
-    isInternalChangeRef.current = true;
-    setPast(newPast);
-    setFuture([present, ...future]);
-    setPresent(previous);
-  }, [canUndo, past, present, future]);
+    setHistory(prev => {
+      if (prev.past.length === 0) return prev;
+      const previous = prev.past[prev.past.length - 1];
+      const newPast = prev.past.slice(0, prev.past.length - 1);
+      return {
+        past: newPast,
+        present: previous,
+        future: [prev.present, ...prev.future]
+      };
+    });
+  }, []);
 
   const redo = useCallback(() => {
-    if (!canRedo) return;
-
-    const next = future[0];
-    const newFuture = future.slice(1);
-
-    isInternalChangeRef.current = true;
-    setPast([...past, present]);
-    setPresent(next);
-    setFuture(newFuture);
-  }, [canRedo, future, past, present]);
-
-  const set = useCallback((newPresent) => {
-    if (newPresent === present) return;
-
-    if (isInternalChangeRef.current) {
-      isInternalChangeRef.current = false;
-      return;
-    }
-
-    setPast(prevPast => {
-      const updated = [...prevPast, present];
-      if (updated.length > maxHistory) {
-        return updated.slice(updated.length - maxHistory);
-      }
-      return updated;
+    setHistory(prev => {
+      if (prev.future.length === 0) return prev;
+      const next = prev.future[0];
+      const newFuture = prev.future.slice(1);
+      return {
+        past: [...prev.past, prev.present],
+        present: next,
+        future: newFuture
+      };
     });
-    setPresent(newPresent);
-    setFuture([]);
-  }, [present, maxHistory]);
+  }, []);
+
+  const set = useCallback((valueOrUpdater) => {
+    setHistory(prev => {
+      const nextPresent = typeof valueOrUpdater === 'function'
+        ? valueOrUpdater(prev.present)
+        : valueOrUpdater;
+
+      if (Object.is(nextPresent, prev.present)) return prev;
+      try {
+        if (JSON.stringify(nextPresent) === JSON.stringify(prev.present)) {
+          return prev;
+        }
+      } catch {}
+
+      const updatedPast = [...prev.past, prev.present];
+      const trimmedPast = updatedPast.length > maxHistory
+        ? updatedPast.slice(updatedPast.length - maxHistory)
+        : updatedPast;
+
+      return {
+        past: trimmedPast,
+        present: nextPresent,
+        future: []
+      };
+    });
+  }, [maxHistory]);
 
   // Suporte aos atalhos universais de teclado Ctrl+Z e Ctrl+Y / Ctrl+Shift+Z
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Ignora atalhos se o foco estiver em inputs/textareas nativos
       const activeTag = document.activeElement?.tagName;
-      if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
+      if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT') return;
 
       const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
       const isCtrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
@@ -87,11 +95,13 @@ export const useHistory = (initialPresent, maxHistory = 30) => {
   }, [undo, redo]);
 
   return {
-    state: present,
+    state: history.present,
     set,
     undo,
     redo,
     canUndo,
-    canRedo
+    canRedo,
+    undoCount: history.past.length,
+    redoCount: history.future.length
   };
 };
