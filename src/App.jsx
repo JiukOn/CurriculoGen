@@ -9,6 +9,7 @@ import { exportToPDF, downloadDirectPDF } from './utils/exportHandler';
 import { validateAndFormat } from './utils/dataHandlers';
 import { useHistory } from './hooks/useHistory';
 import { PALETTES } from './config/constants';
+import { MODEL_TEMPLATES } from './templates/modelRegistry';
 import structureBase from './data/structure.json';
 import './App.css';
 
@@ -436,9 +437,10 @@ function App() {
 
           <div className="iframe-shadow-box">
             <iframe 
+              key={config.model}
               ref={iframeRef} 
               onLoad={handleIframeLoad}
-              src={`./models/${config.model}`} 
+              srcDoc={MODEL_TEMPLATES[config.model] || MODEL_TEMPLATES['model1.html']}
               className="cv-iframe-full"
               title="Jiukurriculo Canvas"
               sandbox="allow-scripts allow-modals allow-same-origin"
