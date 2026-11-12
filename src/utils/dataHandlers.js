@@ -53,14 +53,12 @@ const sanitizeRecursive = (item) => {
 };
 
 export const validateAndFormat = (rawData) => {
-  // 1. Validação Básica de Entrada
   if (!rawData || typeof rawData !== 'string' || rawData.trim() === "") {
     return null;
   }
 
   try {
     const parsedData = JSON.parse(rawData);
-
     const safeData = sanitizeRecursive(parsedData);
 
     const formattedData = {
@@ -70,7 +68,9 @@ export const validateAndFormat = (rawData) => {
       formacao: Array.isArray(safeData.formacao) ? safeData.formacao : [],
       hard_skills: Array.isArray(safeData.hard_skills) ? safeData.hard_skills : [],
       soft_skills: Array.isArray(safeData.soft_skills) ? safeData.soft_skills : [],
-      cursos: Array.isArray(safeData.cursos) ? safeData.cursos : []
+      cursos: Array.isArray(safeData.cursos) ? safeData.cursos : [],
+      idiomas: Array.isArray(safeData.idiomas) ? safeData.idiomas : [],
+      projetos: Array.isArray(safeData.projetos) ? safeData.projetos : []
     };
 
     formattedData.formacao = formattedData.formacao.map(item => ({

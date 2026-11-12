@@ -1,7 +1,7 @@
 import React from 'react';
 import { PALETTES, FONTS, MODELS } from '../config/constants';
 
-/* --- TÍTULOS BONITOS: DESIGN ENGINE - CLEAN INTERFACE --- */
+/* --- DESIGN ENGINE: CONTROLES VISUAIS & DENSIDADE --- */
 
 const VisualEditor = ({ config, setConfig }) => {
   return (
@@ -12,7 +12,7 @@ const VisualEditor = ({ config, setConfig }) => {
           <h3>Estilização Visual</h3>
         </header>
 
-        {/* Escolha do Template - Sem setas, visual limpo */}
+        {/* Escolha do Template */}
         <div className="control-group">
           <label className="modern-label">Arquitetura de Layout</label>
           <select 
@@ -28,7 +28,7 @@ const VisualEditor = ({ config, setConfig }) => {
           </select>
         </div>
 
-        {/* Seleção de Cores - Grid Jiukurrcuilo (Esferas Grandes) */}
+        {/* Seleção de Cores - Grid Jiukurriculo */}
         <div className="control-group">
           <label className="modern-label">Paleta de Identidade</label>
           <div className="palette-grid-jiu">
@@ -40,13 +40,11 @@ const VisualEditor = ({ config, setConfig }) => {
                 <button
                   key={key}
                   type="button"
-                  /* Usa a classe 'color-sphere' definida no novo CSS para ser grande e redonda */
                   className={`color-sphere ${isActive ? 'active' : ''}`}
                   onClick={() => setConfig({ ...config, palette: key })}
                   title={colorData.name}
                   style={{ 
                     backgroundColor: colorData.primary,
-                    /* O box-shadow cria o efeito neon na cor ativa */
                     boxShadow: isActive ? `0 0 15px ${colorData.primary}` : 'none'
                   }}
                 />
@@ -55,7 +53,29 @@ const VisualEditor = ({ config, setConfig }) => {
           </div>
         </div>
 
-        {/* Escolha da Tipografia - Sem setas */}
+        {/* Densidade e Espaçamento de Página (Item 5) */}
+        <div className="control-group">
+          <label className="modern-label">Densidade da Página (Ajuste A4)</label>
+          <div className="spacing-density-selector">
+            {[
+              { id: 'compact', label: 'Compacto (1 Pág)', icon: '📐' },
+              { id: 'normal', label: 'Padrão', icon: '📄' },
+              { id: 'relaxed', label: 'Espaçoso (2 Págs)', icon: '📑' }
+            ].map(d => (
+              <button
+                key={d.id}
+                type="button"
+                className={`density-pill-btn ${config.spacing === d.id ? 'active' : ''}`}
+                onClick={() => setConfig({ ...config, spacing: d.id })}
+                title={d.label}
+              >
+                <span>{d.icon}</span> {d.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Escolha da Tipografia */}
         <div className="control-group no-margin">
           <label className="modern-label">Tipografia</label>
           <select 

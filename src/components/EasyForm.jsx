@@ -332,6 +332,75 @@ const EasyForm = ({ jsonData, onUpdate }) => {
         />
       </Accordion>
 
+      <Accordion title="Idiomas" icon="🌐">
+        <p className="description-text">Línguas e nível de proficiência.</p>
+        {(data.idiomas || []).map((item, idx) => (
+          <div key={idx} className="array-item-wrapper" style={{display: 'flex', gap: '10px', alignItems: 'center', paddingBottom: '10px'}}>
+            <div style={{flex: 2}}>
+              <input 
+                className="form-input" 
+                placeholder="Idioma (Ex: Inglês)" 
+                value={item.idioma || ''} 
+                onChange={(e) => updateItem('idiomas', idx, 'idioma', e.target.value)} 
+              />
+            </div>
+            <div style={{flex: 2}}>
+              <input 
+                className="form-input" 
+                placeholder="Nível (Ex: Fluente, Intermediário)" 
+                value={item.nivel || ''} 
+                onChange={(e) => updateItem('idiomas', idx, 'nivel', e.target.value)} 
+              />
+            </div>
+            <button 
+              className="btn-remove" 
+              style={{marginTop: 0, padding: '10px', height: '100%'}} 
+              onClick={() => removeItem('idiomas', idx)}
+              title="Remover"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+        <button className="btn-add" onClick={() => addItem('idiomas', { idioma: '', nivel: 'Intermediário' })}>
+          + Adicionar Idioma
+        </button>
+      </Accordion>
+
+      <Accordion title="Projetos & Portfólio" icon="💻">
+        <p className="description-text">Projetos em destaque, links e contribuições.</p>
+        {(data.projetos || []).map((proj, idx) => (
+          <div key={idx} className="array-item-wrapper">
+            <div className="form-group-row">
+              <input 
+                className="form-input" 
+                placeholder="Nome do Projeto" 
+                value={proj.nome || ''} 
+                onChange={(e) => updateItem('projetos', idx, 'nome', e.target.value)} 
+              />
+              <input 
+                className="form-input" 
+                placeholder="Link / URL (Ex: github.com/...)" 
+                value={proj.link || ''} 
+                onChange={(e) => updateItem('projetos', idx, 'link', e.target.value)} 
+              />
+            </div>
+            <textarea 
+              className="form-textarea" 
+              placeholder="Descrição do projeto, tecnologias e resultados alcançados..."
+              value={proj.descricao || ''} 
+              onChange={(e) => updateItem('projetos', idx, 'descricao', e.target.value)} 
+            />
+            <button className="btn-remove" onClick={() => removeItem('projetos', idx)}>
+              Remover Projeto
+            </button>
+          </div>
+        ))}
+        <button className="btn-add" onClick={() => addItem('projetos', { nome: '', link: '', descricao: '' })}>
+          + Adicionar Projeto
+        </button>
+      </Accordion>
+
     </div>
   );
 };

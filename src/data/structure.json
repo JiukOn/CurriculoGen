@@ -7,62 +7,74 @@
     "email": "seu.email@exemplo.com",
     "local": "Cidade - Estado",
     "linkedin": "linkedin.com/in/seu-usuario",
-    "nascimento":"XX/XX/XXXX"
-    
+    "nascimento": "01/01/1995"
   },
   "formacao": [
     {
-      "curso": "Nome da Graduação Atual",
-      "instituicao": "Nome da Universidade ou Faculdade",
-      "periodo": "Mês/Ano Início - Mês/Ano Previsão",
-      "status": "Cursando",
-      "descricao": "Descreva brevemente o foco do curso ou projetos acadêmicos relevantes."
-    },
-    {
-      "curso": "Nome do Curso Anterior",
-      "instituicao": "Nome da Instituição Anterior",
-      "periodo": "Mês/Ano Início - Mês/Ano Fim",
-      "status": "Transferido / Trancado / Concluído",
-      "descricao": "Explique aqui transições de curso ou fundamentos adquiridos nesta etapa."
+      "curso": "Engenharia de Software",
+      "instituicao": "Universidade de Tecnologia",
+      "periodo": "2020 - 2024",
+      "status": "Concluído",
+      "descricao": "Ênfase em arquitetura distribuída, algoritmos avançados e computação em nuvem."
     }
   ],
   "experiencias": [
     {
-      "titulo": "Cargo ou Função Ocupada",
-      "subtitulo": "Nome da Empresa ou Organização",
-      "periodo": "Mês/Ano Início - Mês/Ano Fim (ou Atual)",
-      "descricao": "Liste suas principais responsabilidades e resultados quantificáveis. Utilize verbos de ação."
+      "titulo": "Desenvolvedor de Software Pleno",
+      "subtitulo": "Tech Solutions Corp",
+      "periodo": "2022 - Atual",
+      "descricao": "Liderança técnica no desenvolvimento de microsserviços de alta disponibilidade. Otimização de tempo de resposta em 40%."
     },
     {
-      "titulo": "Título do Projeto ou Cargo Freelance",
-      "subtitulo": "Cliente ou Projeto Independente",
-      "periodo": "Ano de Atuação",
-      "descricao": "Descreva as tecnologias utilizadas e o impacto da solução entregue."
+      "titulo": "Desenvolvedor Júnior",
+      "subtitulo": "Inova Sistemas",
+      "periodo": "2020 - 2022",
+      "descricao": "Desenvolvimento full-stack de dashboards em tempo real com React e Node.js."
     }
   ],
   "hard_skills": [
     {
-      "nome": "Linguagem ou Framework X",
-      "nivel": "95"
+      "nome": "JavaScript / TypeScript",
+      "nivel": 95
     },
     {
-      "nome": "Tecnologia ou Ferramenta Y",
-      "nivel": "80"
+      "nome": "React & Redux",
+      "nivel": 90
     },
     {
-      "nome": "Banco de Dados ou Cloud Z",
-      "nivel": "70"
+      "nome": "Node.js & Express",
+      "nivel": 85
+    },
+    {
+      "nome": "PostgreSQL & Docker",
+      "nivel": 80
     }
   ],
   "soft_skills": [
-    "Habilidade Comportamental 1",
-    "Habilidade Comportamental 2",
-    "Habilidade Comportamental 3",
-    "Habilidade Comportamental 4"
+    "Liderança Técnica",
+    "Comunicação Assertiva",
+    "Resolução de Problemas Complexos",
+    "Trabalho em Equipe Ágil"
   ],
   "cursos": [
-    "Nome da Certificação ou Workshop - Instituição (Ano)",
-    "Nome do Curso Complementar - Plataforma (Ano)",
-    "Especialização Técnica - Nome do Órgão Emissor (Ano)"
+    "AWS Certified Solutions Architect - Amazon Web Services (2023)",
+    "Clean Architecture e Microsserviços - Udemy (2022)"
+  ],
+  "idiomas": [
+    {
+      "idioma": "Português",
+      "nivel": "Nativo"
+    },
+    {
+      "idioma": "Inglês",
+      "nivel": "Avançado / Fluente"
+    }
+  ],
+  "projetos": [
+    {
+      "nome": "CurriculoGen Engine",
+      "link": "https://github.com/JiukOn/CurriculoGen",
+      "descricao": "Gerador de currículos reativo com renderização visual e otimização por IA."
+    }
   ]
 }
